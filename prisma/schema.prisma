@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model users {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model teachers {
+  id            Int       @id @default(autoincrement())
+  idUser        Int
+  name          String
+  placeBirth    String?
+  dateTimeBirth DateTime?
+  religion      String?
+  education     String?
+  job           String?
+  address       String?
+  phone         String?
+}
+
+model parents {
+  id            Int       @id @default(autoincrement())
+  idUser        Int
+  name          String
+  type          String // ayah, ibu, wali
+  placeBirth    String?
+  dateTimeBirth DateTime?
+  religion      String?
+  education     String?
+  job           String?
+  address       String?
+  phone         String?
+
+  children children[]
+}
+
+model children {
+  id              Int       @id @default(autoincrement())
+  parentId        Int
+  fullName        String
+  name            String
+  gender          String
+  placeBirth      String?
+  dateTimeBirth   DateTime?
+  religion        String?
+  countOfSiblings Int?
+
+  parents           parents             @relation(fields: [parentId], references: [id])
+  // one to one birthHistory
+  birthHistory      birthHistory?
+  // one to many childHealthStatus
+  childHealthStatus childHealthStatus[]
+  // one to many expertExamination
+  expertExamination expertExamination[]
+}
+
+model birthHistory {
+  id         Int    @id @default(autoincrement())
+  childrenId Int    @unique
+  type       String // sebelum kelahiran, saat kelahiran
+  question   String
+  answer     String
+
+  children children @relation(fields: [childrenId], references: [id])
+}
+
+model healthStatus {
+  id       Int    @id @default(autoincrement())
+  type     String // keadaan kesehatan, perkembangan jasmani
+  question String // pernah sakit keras? dll
+}
+
+// Keadaan kesehatan dan perkembangan jasmani
+model childHealthStatus {
+  id             Int    @id @default(autoincrement())
+  childrenId     Int
+  healthStatusId Int
+  answer         String
+
+  children children @relation(fields: [childrenId], references: [id])
+}
+
+// hasil pemeriksaan ahli
+model expertExamination {
+  id         Int    @id @default(autoincrement())
+  childrenId Int
+  type       String // Dokter Ahli Anak, Dokter Ahli Rehabilitasi, Psikolog, Therapist
+  answer     String
+
+  children children @relation(fields: [childrenId], references: [id])
+}
