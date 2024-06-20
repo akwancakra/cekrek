@@ -25,7 +25,7 @@ export async function GET(req: any, { params }: any) {
             },
             child_recommendation: {
               include: {
-                recommendation: true,
+                recommendations: true,
               },
             },
           },
@@ -112,13 +112,13 @@ export async function PUT(req: any, { params }: any) {
       ...(hashedPassword && { password: hashedPassword }),
     };
 
-    const user = await prisma.users.update({
+    const parent = await prisma.users.update({
       where: { id: id },
       data: teacherData,
     });
 
     return NextResponse.json(
-      { status: "success", message: "Parent Updated Successfully", user },
+      { status: "success", message: "Parent Updated Successfully", parent },
       { status: 200 }
     );
   } catch (error: any) {

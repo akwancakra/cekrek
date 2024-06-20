@@ -67,7 +67,6 @@ model children {
   id                Int       @id @default(autoincrement())
   parent_id         Int
   full_name         String
-  name              String
   gender            String
   place_birth       String?
   date_time_birth   DateTime? @db.Date
@@ -140,7 +139,7 @@ model child_expert_examination {
 
 // rekomendasi
 // ketika repetisi ada, maka durasi diubah menjadi jumlah hari
-model recommendation {
+model recommendations {
   id            Int     @id @default(autoincrement())
   type          String // Standar, Durasi, Repetisi (Enum)
   title         String
@@ -149,7 +148,7 @@ model recommendation {
   duration      Int?
   duration_type String? // detik, menit, jam, hari, minggu, bulan
   repetition    Int?
-  risk_cateogry String? // rendah, sedang, tinggi (enum)
+  risk_category String? // rendah, sedang, tinggi (enum)
 
   // children             children               @relation(fields: [children_id], references: [id])
   // child_recommendation child_recommendation[]
@@ -159,10 +158,10 @@ model recommendation {
 
 // tabel pivot rekomendasi dan anak
 model child_recommendation {
-  id                Int            @id @default(autoincrement())
-  children          children       @relation(fields: [children_id], references: [id])
+  id                Int             @id @default(autoincrement())
+  children          children        @relation(fields: [children_id], references: [id])
   children_id       Int
-  recommendation    recommendation @relation(fields: [recommendation_id], references: [id])
+  recommendations   recommendations @relation(fields: [recommendation_id], references: [id])
   recommendation_id Int
 }
 

@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
             },
             child_recommendation: {
               include: {
-                recommendation: true,
+                recommendations: true,
               },
             },
           },

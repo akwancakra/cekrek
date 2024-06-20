@@ -89,13 +89,13 @@ export async function PUT(req: any, { params }: any) {
       ...(hashedPassword && { password: hashedPassword }),
     };
 
-    const user = await prisma.users.update({
+    const teacher = await prisma.users.update({
       where: { id: id },
       data: teacherData,
     });
 
     return NextResponse.json(
-      { status: "success", message: "Teacher Updated Successfully", user },
+      { status: "success", message: "Teacher Updated Successfully", teacher },
       { status: 200 }
     );
   } catch (error: any) {

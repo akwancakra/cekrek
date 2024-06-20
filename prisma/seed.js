@@ -45,7 +45,6 @@ async function main() {
     data: {
       parent_id: parent.id,
       full_name: "Zahra Aulia",
-      name: "Zahra",
       gender: "Perempuan",
       place_birth: "Bandung",
       date_time_birth: new Date("2000-01-01"),
@@ -168,7 +167,7 @@ async function main() {
   );
 
   // Create a recommendation
-  const recommendation1 = await prisma.recommendation.create({
+  const recommendation1 = await prisma.recommendations.create({
     data: {
       type: "Standar",
       title: "Pemeriksaan Rutin",
@@ -177,7 +176,7 @@ async function main() {
       duration: 30,
       duration_type: "hari",
       repetition: 1,
-      risk_cateogry: "rendah",
+      risk_category: "rendah",
     },
   });
 
@@ -187,7 +186,7 @@ async function main() {
       children: {
         connect: { id: child1.id }, // Connect to the actual child created
       },
-      recommendation: {
+      recommendations: {
         connect: { id: recommendation1.id }, // Connect to the created recommendation
       },
     },

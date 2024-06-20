@@ -25,7 +25,7 @@ export async function GET(req: any, { params }: any) {
             },
             child_recommendation: {
               include: {
-                recommendation: true,
+                recommendations: true,
               },
             },
           },
