@@ -14,43 +14,54 @@ datasource db {
 }
 
 model users {
-  id         Int      @id @default(autoincrement())
-  email      String   @unique
-  password   String
-  role       String // admin, teacher, parent
-  is_google  Boolean  @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-}
-
-model teachers {
   id              Int       @id @default(autoincrement())
-  user_id         Int
+  email           String    @unique
+  password        String
+  role            String // admin, teacher, parent
   name            String
+  type            String? // ayah, ibu, wali
   place_birth     String?
-  date_time_birth DateTime?
+  date_time_birth DateTime? @db.Date
   religion        String?
   education       String?
   job             String?
   address         String?
   phone           String?
-}
-
-model parents {
-  id              Int       @id @default(autoincrement())
-  user_id         Int
-  name            String
-  type            String // ayah, ibu, wali
-  place_birth     String?
-  date_time_birth DateTime?
-  religion        String?
-  education       String?
-  job             String?
-  address         String?
-  phone           String?
+  is_google       Boolean   @default(false)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
   children children[]
 }
+
+// model teachers {
+//   id              Int       @id @default(autoincrement())
+//   user_id         Int
+//   name            String
+//   place_birth     String?
+//   date_time_birth DateTime?
+//   religion        String?
+//   education       String?
+//   job             String?
+//   address         String?
+//   phone           String?
+// }
+
+// model parents {
+//   id              Int       @id @default(autoincrement())
+//   user_id         Int
+//   name            String
+//   type            String? // ayah, ibu, wali
+//   place_birth     String?
+//   date_time_birth DateTime?
+//   religion        String?
+//   education       String?
+//   job             String?
+//   address         String?
+//   phone           String?
+
+//   children children[]
+// }
 
 model children {
   id                Int       @id @default(autoincrement())
@@ -59,14 +70,14 @@ model children {
   name              String
   gender            String
   place_birth       String?
-  date_time_birth   DateTime?
+  date_time_birth   DateTime? @db.Date
   religion          String?
   count_of_siblings Int?
   risk_category     String? // rendah, sedang, tinggi (enum)
   // Riwayat hasil tes pendengaran. soal no 2 MCHAT
   hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
 
-  parent              parents               @relation(fields: [parent_id], references: [id])
+  parent              users                 @relation(fields: [parent_id], references: [id])
   // one to one birth_history
   birth_history       birth_history?
   // one to many child_health_status

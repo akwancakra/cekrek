@@ -4,44 +4,20 @@ CREATE TABLE `users` (
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `role` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `type` VARCHAR(191) NULL,
+    `place_birth` VARCHAR(191) NULL,
+    `date_time_birth` DATE NULL,
+    `religion` VARCHAR(191) NULL,
+    `education` VARCHAR(191) NULL,
+    `job` VARCHAR(191) NULL,
+    `address` VARCHAR(191) NULL,
+    `phone` VARCHAR(191) NULL,
     `is_google` BOOLEAN NOT NULL DEFAULT false,
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
     UNIQUE INDEX `users_email_key`(`email`),
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `teachers` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `place_birth` VARCHAR(191) NULL,
-    `date_time_birth` DATETIME(3) NULL,
-    `religion` VARCHAR(191) NULL,
-    `education` VARCHAR(191) NULL,
-    `job` VARCHAR(191) NULL,
-    `address` VARCHAR(191) NULL,
-    `phone` VARCHAR(191) NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
-CREATE TABLE `parents` (
-    `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `user_id` INTEGER NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-    `type` VARCHAR(191) NOT NULL,
-    `place_birth` VARCHAR(191) NULL,
-    `date_time_birth` DATETIME(3) NULL,
-    `religion` VARCHAR(191) NULL,
-    `education` VARCHAR(191) NULL,
-    `job` VARCHAR(191) NULL,
-    `address` VARCHAR(191) NULL,
-    `phone` VARCHAR(191) NULL,
-
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -53,7 +29,7 @@ CREATE TABLE `children` (
     `name` VARCHAR(191) NOT NULL,
     `gender` VARCHAR(191) NOT NULL,
     `place_birth` VARCHAR(191) NULL,
-    `date_time_birth` DATETIME(3) NULL,
+    `date_time_birth` DATE NULL,
     `religion` VARCHAR(191) NULL,
     `count_of_siblings` INTEGER NULL,
     `risk_category` VARCHAR(191) NULL,
@@ -136,7 +112,7 @@ CREATE TABLE `child_recommendation` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `children` ADD CONSTRAINT `children_parent_id_fkey` FOREIGN KEY (`parent_id`) REFERENCES `parents`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `children` ADD CONSTRAINT `children_parent_id_fkey` FOREIGN KEY (`parent_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `birth_history` ADD CONSTRAINT `birth_history_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

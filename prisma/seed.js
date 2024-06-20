@@ -1,28 +1,17 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const bcrypt = require("bcrypt");
+const saltRounds = 10; // Number of salt rounds for hashing
 
 async function main() {
+  const hashedTeacherPassword = await bcrypt.hash("teacher", saltRounds);
+  const hashedParentPassword = await bcrypt.hash("parent", saltRounds);
   // Create users
   const teacher = await prisma.users.create({
     data: {
       email: "teacher@example.com",
-      password: "teacher",
+      password: hashedTeacherPassword,
       role: "teacher",
-    },
-  });
-
-  const parent = await prisma.users.create({
-    data: {
-      email: "parent@example.com",
-      password: "parent",
-      role: "parent",
-    },
-  });
-
-  // Create teachers
-  const teacher1 = await prisma.teachers.create({
-    data: {
-      user_id: teacher.id,
       name: "Sumarni.S.Pd",
       place_birth: "Bandung",
       date_time_birth: new Date("1980-01-01"),
@@ -34,10 +23,11 @@ async function main() {
     },
   });
 
-  // Create parents and related children, birth history, health status, expert examination, and child recommendations
-  const parent1 = await prisma.parents.create({
+  const parent = await prisma.users.create({
     data: {
-      user_id: parent.id,
+      email: "parent@example.com",
+      password: hashedParentPassword,
+      role: "parent",
       name: "Bambang Waluyo",
       type: "ayah",
       place_birth: "Jakarta",
@@ -53,7 +43,7 @@ async function main() {
   //   Create children
   const child1 = await prisma.children.create({
     data: {
-      parent_id: parent1.id,
+      parent_id: parent.id,
       full_name: "Zahra Aulia",
       name: "Zahra",
       gender: "Perempuan",
