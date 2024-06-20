@@ -9,7 +9,28 @@ export async function GET(req: any, { params }: any) {
     const id = parseInt(params.id);
     const user = await prisma.users.findUnique({
       where: { id: id },
-      include: { children: true },
+      include: {
+        children: {
+          include: {
+            birth_history: true,
+            child_expert_examination: {
+              include: {
+                expert_examination: true,
+              },
+            },
+            child_health_status: {
+              include: {
+                health_status: true,
+              },
+            },
+            child_recommendation: {
+              include: {
+                recommendation: true,
+              },
+            },
+          },
+        },
+      },
     });
     if (!user) {
       return NextResponse.json(

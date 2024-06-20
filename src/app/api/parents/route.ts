@@ -12,7 +12,28 @@ export async function GET(req: NextRequest) {
     const name_params = url?.searchParams?.get("name") || "";
     const parents = await prisma.users.findMany({
       where: { role: "parent", name: { contains: name_params } },
-      include: { children: true },
+      include: {
+        children: {
+          include: {
+            birth_history: true,
+            child_expert_examination: {
+              include: {
+                expert_examination: true,
+              },
+            },
+            child_health_status: {
+              include: {
+                health_status: true,
+              },
+            },
+            child_recommendation: {
+              include: {
+                recommendation: true,
+              },
+            },
+          },
+        },
+      },
       take: parseInt(limit),
       skip: parseInt(skip),
     });
