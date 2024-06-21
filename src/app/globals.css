@@ -2,32 +2,137 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+@font-face {
+    font-family: "Inter";
+    src: url("/static/fonts/Inter-Regular.ttf") format("truetype");
+    font-weight: 400;
+    font-style: normal;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+@font-face {
+    font-family: "Inter";
+    src: url("/static/fonts/Inter-Medium.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@font-face {
+    font-family: "Inter";
+    src: url("/static/fonts/Inter-SemiBold.ttf") format("truetype");
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Inter";
+    src: url("/static/fonts/Inter-Bold.ttf") format("truetype");
+    font-weight: 700;
+    font-style: normal;
+}
+
+@layer base {
+    :root {
+        --background: 0 0% 100%;
+        --foreground: 224 71.4% 4.1%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 224 71.4% 4.1%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 71.4% 4.1%;
+
+        --primary: 259.8 85.5% 64.3%;
+        --primary-foreground: 257.4 79.6% 35.5%;
+
+        --secondary: 220 14.3% 95.9%;
+        --secondary-foreground: 259.8 85.5% 64.3%;
+
+        --muted: 220 14.3% 95.9%;
+        --muted-foreground: 220 8.9% 46.1%;
+
+        --accent: 220 14.3% 95.9%;
+        --accent-foreground: 259.8 85.5% 64.3%;
+
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 257.4 79.6% 35.5%;
+
+        --border: 220 13% 91%;
+        --input: 220 13% 91%;
+        --ring: 224 71.4% 4.1%;
+
+        --radius: 0.5rem;
+    }
+
+    .dark {
+        --background: 224 71.4% 4.1%;
+        --foreground: 257.4 79.6% 35.5%;
+
+        --card: 224 71.4% 4.1%;
+        --card-foreground: 257.4 79.6% 35.5%;
+
+        --popover: 224 71.4% 4.1%;
+        --popover-foreground: 257.4 79.6% 35.5%;
+
+        --primary: 257.4 79.6% 35.5%;
+        --primary-foreground: 259.8 85.5% 64.3%;
+
+        --secondary: 215 27.9% 16.9%;
+        --secondary-foreground: 257.4 79.6% 35.5%;
+
+        --muted: 215 27.9% 16.9%;
+        --muted-foreground: 217.9 10.6% 64.9%;
+
+        --accent: 215 27.9% 16.9%;
+        --accent-foreground: 257.4 79.6% 35.5%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 257.4 79.6% 35.5%;
+
+        --border: 215 27.9% 16.9%;
+        --input: 215 27.9% 16.9%;
+        --ring: 216 12.2% 83.9%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+    body {
+        @apply bg-background text-foreground;
+    }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+    .text-balance {
+        text-wrap: balance;
+    }
+}
+
+.filled {
+    font-variation-settings: "FILL" 1, "wght" 400, "GRAD" 0, "opsz" 24;
+}
+
+.text-header {
+    @apply text-lg font-semibold tracking-tight sm:text-xl;
+}
+
+.number-input-no-arrow {
+    @apply [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none;
+}
+
+.text-xlarge {
+    @apply !text-lg sm:!text-xl;
+}
+
+.text-large {
+    @apply !text-base sm:!text-lg;
+}
+
+.text-medium {
+    @apply !text-sm sm:!text-base;
+}
+
+.text-small {
+    @apply !text-xs sm:!text-sm;
 }
