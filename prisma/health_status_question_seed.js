@@ -2,30 +2,30 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 async function main() {
-  // Create health_status
+  // Create health_status_question
   //   Keadaan Kesehatan
-  const keadaanKesehatan1 = await prisma.health_status.create({
+  const keadaanKesehatan1 = await prisma.health_status_question.create({
     data: {
       type: "keadaan kesehatan",
       question: "Pernah Sakit Keras? (ya/tidak) berikan keterangan jika ya",
     },
   });
 
-  const keadaanKesehatan2 = await prisma.health_status.create({
+  const keadaanKesehatan2 = await prisma.health_status_question.create({
     data: {
       type: "keadaan kesehatan",
       question: "Penyakit yang diderita? (jika ada)",
     },
   });
 
-  const keadaanKesehatan3 = await prisma.health_status.create({
+  const keadaanKesehatan3 = await prisma.health_status_question.create({
     data: {
       type: "keadaan kesehatan",
       question: "Dirawat di? (Rumah Sakit, Puskesmas, Bidan, dll)",
     },
   });
 
-  const keadaanKesehatan4 = await prisma.health_status.create({
+  const keadaanKesehatan4 = await prisma.health_status_question.create({
     data: {
       type: "keadaan kesehatan",
       question: "Lama dirawat? (hari, minggu, bulan)",
@@ -34,7 +34,7 @@ async function main() {
   });
 
   //   PERKEMBANGAN JASMANI
-  const perkembanganJasmani1 = await prisma.health_status.create({
+  const perkembanganJasmani1 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question:
@@ -42,42 +42,42 @@ async function main() {
     },
   });
 
-  const perkembanganJasmani2 = await prisma.health_status.create({
+  const perkembanganJasmani2 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question: "Perkembangan Merangkak (Normal, Terlambat)",
     },
   });
 
-  const perkembanganJasmani3 = await prisma.health_status.create({
+  const perkembanganJasmani3 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question: "Perkembangan Duduk (Normal, Terlambat)",
     },
   });
 
-  const perkembanganJasmani4 = await prisma.health_status.create({
+  const perkembanganJasmani4 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question: "Perkembangan Berjalan (Normal, Terlambat)",
     },
   });
 
-  const perkembanganJasmani5 = await prisma.health_status.create({
+  const perkembanganJasmani5 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question: "Mulai mengucapkan kata-kata pada usia ... tahun",
     },
   });
 
-  const perkembanganJasmani6 = await prisma.health_status.create({
+  const perkembanganJasmani6 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question: "Lancar berbicara pada usia ... tahun",
     },
   });
 
-  const perkembanganJasmani7 = await prisma.health_status.create({
+  const perkembanganJasmani7 = await prisma.health_status_question.create({
     data: {
       type: "perkembangan jasmani",
       question:

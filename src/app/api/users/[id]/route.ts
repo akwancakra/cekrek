@@ -12,21 +12,9 @@ export async function GET(req: any, { params }: any) {
       include: {
         children: {
           include: {
-            child_birth_history: {
-              include: {
-                birth_history: true,
-              },
-            },
-            child_expert_examination: {
-              include: {
-                expert_examination: true,
-              },
-            },
-            child_health_status: {
-              include: {
-                health_status: true,
-              },
-            },
+            birth_history: true,
+            health_status: true,
+            expert_examination: true,
             child_recommendation: {
               include: {
                 recommendations: true,

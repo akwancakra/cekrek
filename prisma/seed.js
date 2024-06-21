@@ -73,319 +73,45 @@ async function main() {
       parent: {
         connect: [{ id: parent1.id }, { id: parent2.id }],
       },
-    },
-  });
-
-  // Link health status to children through child_birth_history
-  const childBirthHistory1 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
       birth_history: {
-        connect: { id: 1 }, // Ibu sehat selama mengandung?
-      },
-      answer: "ya",
-    },
-  });
-
-  const childBirthHistory2 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 2 }, // Ibu pernah sakit pada usia kandungan ... bulan
-      },
-      answer: null,
-    },
-  });
-
-  const childBirthHistory3 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 3 }, // Lama Kandungan? contoh: Cukup bulan 38M, berat badan 37,5kg, Panjang 54cm
-      },
-      answer: "Cukup bulan 38M, berat badan 37,5kg, Panjang 54cm",
-    },
-  });
-
-  const childBirthHistory4 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 4 }, // Melahirkan di? (Rumah Sakit, Puskesmas, Bidan, Dukun, dll)
-      },
-      answer: "Rumah Sakit",
-    },
-  });
-
-  const childBirthHistory5 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 5 }, // Ditolong oleh? (Dokter, Bidan, Keluarga, dll)
-      },
-      answer: "Dokter",
-    },
-  });
-
-  const childBirthHistory6 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 6 }, // Proses Kelahiran? (Normal, Caesar, Vakum, dll)
-      },
-      answer: "Secar",
-    },
-  });
-
-  const childBirthHistory7 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 7 }, // Kelainan bawaan? (Tidak ada, Tuli, Buta, Bibir Sumbing, Juling, dll)
-      },
-      answer: "Tidak",
-    },
-  });
-
-  const childBirthHistory8 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 8 }, // Makanan Pertama yang diberikan? (MPASI, dll)
-      },
-      answer: "MPASI",
-    },
-  });
-
-  const childBirthHistory9 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 9 }, // Susu Formula mulai usia ... bulan, sampai dengan ... bulan
-      },
-      answer: "3 Sampai 24 Bulan",
-    },
-  });
-
-  const childBirthHistory10 = await prisma.child_birth_history.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      birth_history: {
-        connect: { id: 10 }, // Imunisasi? (Lengkap, Tidak Lengkap, Tidak Sama Sekali)
-      },
-      answer: "Lengkap",
-    },
-  });
-
-  // Link health status to children through child_health_status
-  const childHealthStatus1 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 1 }, // Pernah sakit keras? (Tidak, Ya)
-      },
-      answer: "tidak",
-    },
-  });
-
-  const childHealthStatus2 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 2 }, // Penyakit yang pernah diderita
-      },
-      answer: null,
-    },
-  });
-
-  const childHealthStatus3 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 3 }, // Dirawat di?
-      },
-      answer: null,
-    },
-  });
-
-  const childHealthStatus4 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 4 }, // Lama dirawat?
-      },
-      answer: null,
-    },
-  });
-
-  const childHealthStatus5 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 5 }, // Dibandigkan dengan saudara yang lain pada umumnya
-      },
-      answer: "sama",
-    },
-  });
-
-  const childHealthStatus6 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 6 }, // Perkembangan merangkak
-      },
-      answer: "normal",
-    },
-  });
-
-  const childHealthStatus7 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 7 }, // Perkembangan duduk
-      },
-      answer: "normal",
-    },
-  });
-
-  const childHealthStatus8 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 8 }, // Perkembangan berjalan
-      },
-      answer: "normal",
-    },
-  });
-
-  const childHealthStatus9 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 9 }, // Mulai mengucapkan kata-kata pada usia ... tahun
-      },
-      answer: "3.5 tahun",
-    },
-  });
-
-  const childHealthStatus10 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 10 }, // Lancar berbicara pada usia ... tahun
-      },
-      answer: null,
-    },
-  });
-
-  const childHealthStatus11 = await prisma.child_health_status.create({
-    data: {
-      children: {
-        connect: { id: child1.id }, // Connect to the actual child created
-      },
-      health_status: {
-        connect: { id: 11 }, // Mengompol ... (Tidak ada kelainan, Ada kelainan) Sebutkan Jika ada!
-      },
-      answer: "Tidak ada kelainan",
-    },
-  });
-
-  // Link expert examination to children through child_expert_examination
-  const child1ExpertExamination1 = await prisma.child_expert_examination.create(
-    {
-      data: {
-        children: {
-          connect: { id: child1.id }, // Dokter Ahli Anak
+        create: {
+          healthy_pregnancy: "ya",
+          pregnancy_illness: "tidak ada",
+          gestation_details: "38 minggu, 3.5kg, 50cm",
+          birthplace: "rumah sakit",
+          birth_assistance: "dokter",
+          delivery_process: "normal",
+          congenital_anomalies: "tidak ada",
+          first_food: "MPASI",
+          formula_milk: "3 sampai 23 bulan",
+          immunization: "lengkap",
         },
-        expert_examination: {
-          connect: { id: 1 }, //
-        },
-        result: "ASD",
       },
-    }
-  );
-
-  const child1ExpertExamination2 = await prisma.child_expert_examination.create(
-    {
-      data: {
-        children: {
-          connect: { id: child1.id }, // Connect to the actual child created
+      expert_examination: {
+        create: {
+          pediatrician: "ASD",
+          rehabilitation: "ASD",
+          psychologist: "tidak ada",
+          therapist: "ASD",
         },
-        expert_examination: {
-          connect: { id: 2 }, // Dokter Ahli Rehabilitasi
-        },
-        result: "ASD",
       },
-    }
-  );
-
-  const child1ExpertExamination3 = await prisma.child_expert_examination.create(
-    {
-      data: {
-        children: {
-          connect: { id: child1.id }, // Connect to the actual child created
+      health_status: {
+        create: {
+          serious_illness: "tidak",
+          current_diseases: "-",
+          treatment_location: "-",
+          treatment_duration: "-",
+          general_comparison: "normal",
+          crawling_development: "normal",
+          sitting_development: "normal",
+          walking_development: "normal",
+          first_words_age: "1 tahun",
+          speaking_fluency_age: "2 tahun",
+          bedwetting: "tidak ada kelainan",
         },
-        expert_examination: {
-          connect: { id: 3 }, // Dokter Ahli Psikolog
-        },
-        result: null,
       },
-    }
-  );
-
-  const child1ExpertExamination4 = await prisma.child_expert_examination.create(
-    {
-      data: {
-        children: {
-          connect: { id: child1.id }, // Connect to the actual child created
-        },
-        expert_examination: {
-          connect: { id: 4 }, // Dokter Ahli Therapist
-        },
-        result: "ASD",
-      },
-    }
-  );
+    },
+  });
 
   // Link recommendation to children through child_recommendation
   const childRecommendation = await prisma.child_recommendation.create({

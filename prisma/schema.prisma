@@ -47,65 +47,75 @@ model children {
   // Riwayat hasil tes pendengaran. soal no 2 MCHAT
   hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
 
-  parent                   users[]
-  child_birth_history      child_birth_history[]
-  child_expert_examination child_expert_examination[]
-  child_health_status      child_health_status[]
-  child_recommendation     child_recommendation[]
+  parent               users[]
+  child_recommendation child_recommendation[]
+  birth_history        birth_history?
+  expert_examination   expert_examination?
+  health_status        health_status?
+}
+
+model birth_history {
+  id                   Int      @id @default(autoincrement())
+  child_id             Int      @unique
+  healthy_pregnancy    String? // Ibu sehat selama mengandung? (ya/tidak)
+  pregnancy_illness    String? // Ibu pernah sakit pada usia kandungan ... bulan
+  gestation_details    String? // Lama Kandungan? contoh: Cukup bulan 38M, berat badan 37,5kg, Panjang 54cm
+  birthplace           String? // Melahirkan di? (Rumah Sakit, Puskesmas, Bidan, Dukun, dll)
+  birth_assistance     String? // Ditolong oleh? (Dokter, Bidan, Keluarga, dll)
+  delivery_process     String? // Proses kelahiran? (Normal, Caesar, Vakum, dll)
+  congenital_anomalies String? // Kelainan bawaan? (Tidak ada, Tuli, Buta, Bibir Sumbing, Juling, dll)
+  first_food           String? // Makanan Pertama yang diberikan? (MPASI, dll)
+  formula_milk         String? // Susu Formula mulai usia ... bulan, sampai dengan ... bulan
+  immunization         String? // Imunisasi? (Lengkap, Tidak Lengkap, Tidak Sama Sekali)
+  child                children @relation(fields: [child_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model expert_examination {
+  id             Int      @id @default(autoincrement())
+  child_id       Int      @unique
+  pediatrician   String? // Dokter Anak
+  rehabilitation String? // Dokter Rehabilitasi
+  psychologist   String? // Psikolog
+  therapist      String? // Terapis
+  child          children @relation(fields: [child_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model health_status {
+  id                   Int      @id @default(autoincrement())
+  child_id             Int      @unique
+  serious_illness      String? // Pernah Sakit Keras? (ya/tidak) berikan keterangan jika ya
+  current_diseases     String? // Penyakit yang diderita? (jika ada)
+  treatment_location   String? // Dirawat di? (Rumah Sakit, Puskesmas, Bidan, dll)
+  treatment_duration   String? // Lama dirawat? (hari, minggu, bulan)
+  general_comparison   String? // Dibandingkan dengan Saudara yang lain pada umumnya (sama/terlambat)
+  crawling_development String? // Perkembangan Merangkak (Normal, Terlambat)
+  sitting_development  String? // Perkembangan Duduk (Normal, Terlambat)
+  walking_development  String? // Perkembangan Berjalan (Normal, Terlambat)
+  first_words_age      String? // Mulai mengucapkan kata-kata pada usia ... tahun
+  speaking_fluency_age String? // Lancar berbicara pada usia ... tahun
+  bedwetting           String? // Mengompol ... (Tidak ada kelainan, Ada kelainan) Sebutkan Jika ada!
+  child                children @relation(fields: [child_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 // birth history harusnya many to many?
-model birth_history {
+model birth_history_question {
   id             Int     @id @default(autoincrement())
   type           String // sebelum kelahiran, saat kelahiran
   question       String
   example_answer String? // contoh jawaban
-
-  child_birth_history child_birth_history[]
 }
 
-model child_birth_history {
-  id               Int           @id @default(autoincrement())
-  children         children      @relation(fields: [children_id], references: [id])
-  children_id      Int
-  birth_history    birth_history @relation(fields: [birth_history_id], references: [id])
-  birth_history_id Int
-  answer           String?
-}
-
-model health_status {
+model health_status_question {
   id             Int     @id @default(autoincrement())
   type           String // keadaan kesehatan, perkembangan jasmani
   question       String // pernah sakit keras? dll
   example_answer String? // contoh jawaban
-
-  child_health_status child_health_status[]
-}
-
-// Keadaan kesehatan dan perkembangan jasmani
-model child_health_status {
-  id               Int           @id @default(autoincrement())
-  children         children      @relation(fields: [children_id], references: [id])
-  children_id      Int
-  health_status    health_status @relation(fields: [health_status_id], references: [id])
-  health_status_id Int
-  answer           String?
 }
 
 // hasil pemeriksaan ahli, expert examination harusnya many to many?
-model expert_examination {
-  id                       Int                        @id @default(autoincrement())
-  type                     String // Dokter Ahli Anak, Dokter Ahli Rehabilitasi, Psikolog, Therapist
-  child_expert_examination child_expert_examination[]
-}
-
-model child_expert_examination {
-  id                    Int                @id @default(autoincrement())
-  children              children           @relation(fields: [children_id], references: [id])
-  children_id           Int
-  expert_examination    expert_examination @relation(fields: [expert_examination_id], references: [id])
-  expert_examination_id Int
-  result                String?
+model expert_examination_question {
+  id   Int    @id @default(autoincrement())
+  type String // Dokter Ahli Anak, Dokter Ahli Rehabilitasi, Psikolog, Therapist
 }
 
 // rekomendasi

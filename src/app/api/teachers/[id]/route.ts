@@ -79,7 +79,12 @@ export async function PUT(req: any, { params }: any) {
       email,
       role,
       place_birth,
-      date_time_birth: date_time_birth ? new Date(date_time_birth) : null,
+      date_time_birth:
+        date_time_birth !== undefined
+          ? date_time_birth
+            ? new Date(date_time_birth)
+            : null
+          : userExists.date_time_birth, // Preserve existing date_time_birth if not provided or explicitly set to null
       religion,
       education,
       job,
