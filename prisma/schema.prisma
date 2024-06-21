@@ -14,95 +14,135 @@ datasource db {
 }
 
 model users {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model teachers {
-  id            Int       @id @default(autoincrement())
-  idUser        Int
-  name          String
-  placeBirth    String?
-  dateTimeBirth DateTime?
-  religion      String?
-  education     String?
-  job           String?
-  address       String?
-  phone         String?
-}
-
-model parents {
-  id            Int       @id @default(autoincrement())
-  idUser        Int
-  name          String
-  type          String // ayah, ibu, wali
-  placeBirth    String?
-  dateTimeBirth DateTime?
-  religion      String?
-  education     String?
-  job           String?
-  address       String?
-  phone         String?
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  password        String
+  role            String // admin, teacher, parent
+  name            String
+  type            String? // ayah, ibu, wali
+  place_birth     String?
+  date_time_birth DateTime? @db.Date
+  religion        String?
+  education       String?
+  job             String?
+  address         String?
+  phone           String?
+  is_google       Boolean   @default(false)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
 
   children children[]
 }
 
 model children {
-  id              Int       @id @default(autoincrement())
-  parentId        Int
-  fullName        String
-  name            String
-  gender          String
-  placeBirth      String?
-  dateTimeBirth   DateTime?
-  religion        String?
-  countOfSiblings Int?
+  id                Int       @id @default(autoincrement())
+  full_name         String
+  nick_name         String?
+  gender            String
+  place_birth       String?
+  date_time_birth   DateTime? @db.Date
+  religion          String?
+  count_of_siblings Int?
+  risk_category     String? // rendah, sedang, tinggi (enum)
+  // Riwayat hasil tes pendengaran. soal no 2 MCHAT
+  hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
 
-  parents           parents             @relation(fields: [parentId], references: [id])
-  // one to one birthHistory
-  birthHistory      birthHistory?
-  // one to many childHealthStatus
-  childHealthStatus childHealthStatus[]
-  // one to many expertExamination
-  expertExamination expertExamination[]
+  parent                   users[]
+  child_birth_history      child_birth_history[]
+  child_expert_examination child_expert_examination[]
+  child_health_status      child_health_status[]
+  child_recommendation     child_recommendation[]
 }
 
-model birthHistory {
-  id         Int    @id @default(autoincrement())
-  childrenId Int    @unique
-  type       String // sebelum kelahiran, saat kelahiran
-  question   String
-  answer     String
+// birth history harusnya many to many?
+model birth_history {
+  id             Int     @id @default(autoincrement())
+  type           String // sebelum kelahiran, saat kelahiran
+  question       String
+  example_answer String? // contoh jawaban
 
-  children children @relation(fields: [childrenId], references: [id])
+  child_birth_history child_birth_history[]
 }
 
-model healthStatus {
-  id       Int    @id @default(autoincrement())
-  type     String // keadaan kesehatan, perkembangan jasmani
-  question String // pernah sakit keras? dll
+model child_birth_history {
+  id               Int           @id @default(autoincrement())
+  children         children      @relation(fields: [children_id], references: [id])
+  children_id      Int
+  birth_history    birth_history @relation(fields: [birth_history_id], references: [id])
+  birth_history_id Int
+  answer           String?
+}
+
+model health_status {
+  id             Int     @id @default(autoincrement())
+  type           String // keadaan kesehatan, perkembangan jasmani
+  question       String // pernah sakit keras? dll
+  example_answer String? // contoh jawaban
+
+  child_health_status child_health_status[]
 }
 
 // Keadaan kesehatan dan perkembangan jasmani
-model childHealthStatus {
-  id             Int    @id @default(autoincrement())
-  childrenId     Int
-  healthStatusId Int
-  answer         String
-
-  children children @relation(fields: [childrenId], references: [id])
+model child_health_status {
+  id               Int           @id @default(autoincrement())
+  children         children      @relation(fields: [children_id], references: [id])
+  children_id      Int
+  health_status    health_status @relation(fields: [health_status_id], references: [id])
+  health_status_id Int
+  answer           String?
 }
 
-// hasil pemeriksaan ahli
-model expertExamination {
-  id         Int    @id @default(autoincrement())
-  childrenId Int
-  type       String // Dokter Ahli Anak, Dokter Ahli Rehabilitasi, Psikolog, Therapist
-  answer     String
-
-  children children @relation(fields: [childrenId], references: [id])
+// hasil pemeriksaan ahli, expert examination harusnya many to many?
+model expert_examination {
+  id                       Int                        @id @default(autoincrement())
+  type                     String // Dokter Ahli Anak, Dokter Ahli Rehabilitasi, Psikolog, Therapist
+  child_expert_examination child_expert_examination[]
 }
+
+model child_expert_examination {
+  id                    Int                @id @default(autoincrement())
+  children              children           @relation(fields: [children_id], references: [id])
+  children_id           Int
+  expert_examination    expert_examination @relation(fields: [expert_examination_id], references: [id])
+  expert_examination_id Int
+  result                String?
+}
+
+// rekomendasi
+// ketika repetisi ada, maka durasi diubah menjadi jumlah hari
+model recommendations {
+  id            Int     @id @default(autoincrement())
+  type          String // Standar, Durasi, Repetisi (Enum)
+  title         String
+  description   String
+  icon          String?
+  duration      Int?
+  duration_type String? // detik, menit, jam, hari, minggu, bulan
+  repetition    Int?
+  risk_category String? // rendah, sedang, tinggi (enum)
+
+  // children             children               @relation(fields: [children_id], references: [id])
+  // child_recommendation child_recommendation[]
+
+  children child_recommendation[]
+}
+
+// tabel pivot rekomendasi dan anak
+model child_recommendation {
+  id                Int             @id @default(autoincrement())
+  children          children        @relation(fields: [children_id], references: [id])
+  children_id       Int
+  recommendations   recommendations @relation(fields: [recommendation_id], references: [id])
+  recommendation_id Int
+}
+
+// model assesment {
+//   id         Int    @id @default(autoincrement())
+//   children_id Int
+//   number     Int
+//   question_type String // awal, follow-up (enum)
+//   assesment_type String // awal, follow-up (enum)
+//   question   String
+
+//   children children @relation(fields: [children_id], references: [id])
+// }
