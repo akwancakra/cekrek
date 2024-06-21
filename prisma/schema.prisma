@@ -34,39 +34,10 @@ model users {
   children children[]
 }
 
-// model teachers {
-//   id              Int       @id @default(autoincrement())
-//   user_id         Int
-//   name            String
-//   place_birth     String?
-//   date_time_birth DateTime?
-//   religion        String?
-//   education       String?
-//   job             String?
-//   address         String?
-//   phone           String?
-// }
-
-// model parents {
-//   id              Int       @id @default(autoincrement())
-//   user_id         Int
-//   name            String
-//   type            String? // ayah, ibu, wali
-//   place_birth     String?
-//   date_time_birth DateTime?
-//   religion        String?
-//   education       String?
-//   job             String?
-//   address         String?
-//   phone           String?
-
-//   children children[]
-// }
-
 model children {
   id                Int       @id @default(autoincrement())
-  parent_id         Int
   full_name         String
+  nick_name         String?
   gender            String
   place_birth       String?
   date_time_birth   DateTime? @db.Date
@@ -76,37 +47,37 @@ model children {
   // Riwayat hasil tes pendengaran. soal no 2 MCHAT
   hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
 
-  parent              users                 @relation(fields: [parent_id], references: [id])
-  // one to one birth_history
-  birth_history       birth_history?
-  // one to many child_health_status
-  child_health_status child_health_status[]
-  // one to many expert_examination
-  // expert_examination  expert_examination[]
-  // one to many recommendation
-  // recommendation       recommendation[]
-  // child_recommendation child_recommendation[]
-
-  // many to many reccomendation
-  child_recommendation     child_recommendation[]
+  parent                   users[]
+  child_birth_history      child_birth_history[]
   child_expert_examination child_expert_examination[]
+  child_health_status      child_health_status[]
+  child_recommendation     child_recommendation[]
 }
 
 // birth history harusnya many to many?
 model birth_history {
-  id          Int     @id @default(autoincrement())
-  children_id Int     @unique
-  type        String // sebelum kelahiran, saat kelahiran
-  question    String
-  answer      String?
+  id             Int     @id @default(autoincrement())
+  type           String // sebelum kelahiran, saat kelahiran
+  question       String
+  example_answer String? // contoh jawaban
 
-  children children @relation(fields: [children_id], references: [id])
+  child_birth_history child_birth_history[]
+}
+
+model child_birth_history {
+  id               Int           @id @default(autoincrement())
+  children         children      @relation(fields: [children_id], references: [id])
+  children_id      Int
+  birth_history    birth_history @relation(fields: [birth_history_id], references: [id])
+  birth_history_id Int
+  answer           String?
 }
 
 model health_status {
-  id       Int    @id @default(autoincrement())
-  type     String // keadaan kesehatan, perkembangan jasmani
-  question String // pernah sakit keras? dll
+  id             Int     @id @default(autoincrement())
+  type           String // keadaan kesehatan, perkembangan jasmani
+  question       String // pernah sakit keras? dll
+  example_answer String? // contoh jawaban
 
   child_health_status child_health_status[]
 }

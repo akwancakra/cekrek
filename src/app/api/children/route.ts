@@ -13,7 +13,11 @@ export async function GET(req: NextRequest) {
     const children = await prisma.children.findMany({
       where: { full_name: { contains: name_params } },
       include: {
-        birth_history: true,
+        child_birth_history: {
+          include: {
+            birth_history: true,
+          },
+        },
         child_expert_examination: {
           include: {
             expert_examination: true,
@@ -53,6 +57,7 @@ export async function POST(req: NextRequest) {
     const {
       parent_id,
       full_name,
+      nick_name,
       gender,
       place_birth,
       date_time_birth,
@@ -67,18 +72,29 @@ export async function POST(req: NextRequest) {
       data.date_time_birth = null;
     }
 
-    // Create user
+    // Ensure date_time_birth is a valid Date object or null
+    const birthDate = date_time_birth ? new Date(date_time_birth) : null;
+
+    // Handle both single parent_id and array of parent_id
+    const connectParents = Array.isArray(parent_id)
+      ? parent_id.map((id) => ({ id }))
+      : [{ id: parent_id }];
+
+    // Create child
     const child = await prisma.children.create({
       data: {
-        parent_id,
         full_name,
+        nick_name,
         gender,
         place_birth,
-        date_time_birth: date_time_birth ? new Date(date_time_birth) : null,
+        date_time_birth: birthDate,
         religion,
         count_of_siblings,
         risk_category,
         hearing_test,
+        parent: {
+          connect: connectParents,
+        },
       },
     });
 

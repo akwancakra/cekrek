@@ -9,7 +9,11 @@ export async function GET(req: any, { params }: any) {
     const child = await prisma.children.findUnique({
       where: { id: id },
       include: {
-        birth_history: true,
+        child_birth_history: {
+          include: {
+            birth_history: true,
+          },
+        },
         child_expert_examination: {
           include: {
             expert_examination: true,
@@ -49,6 +53,7 @@ export async function PUT(req: any, { params }: any) {
     const {
       parent_id,
       full_name,
+      nick_name,
       gender,
       place_birth,
       date_time_birth,
@@ -69,22 +74,51 @@ export async function PUT(req: any, { params }: any) {
       );
     }
 
-    // Update child data
-    const childData = {
-      parent_id,
-      full_name,
-      gender,
-      place_birth,
-      date_time_birth: date_time_birth ? new Date(date_time_birth) : null,
-      religion,
-      count_of_siblings,
-      risk_category,
-      hearing_test,
-    };
+    // Prepare the connect and disconnect arrays
+    let connectParents: any = [];
+    if (Array.isArray(parent_id)) {
+      connectParents = parent_id.map((id) => ({ id }));
+    } else if (parent_id) {
+      connectParents = [{ id: parent_id }];
+    }
 
+    // Fetch existing parents to disconnect any that are not included in the new parent_id array
+    const existingParents = await prisma.children.findUnique({
+      where: { id },
+      select: {
+        parent: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    const existingParentIds = existingParents?.parent.map((p) => p.id) || [];
+    const disconnectParents = existingParentIds
+      .filter(
+        (existingId) => !connectParents.some((cp: any) => cp.id === existingId)
+      )
+      .map((id) => ({ id }));
+
+    // Update child data
     const child = await prisma.children.update({
       where: { id: id },
-      data: childData,
+      data: {
+        full_name,
+        nick_name,
+        gender,
+        place_birth,
+        date_time_birth: date_time_birth ? new Date(date_time_birth) : null,
+        religion,
+        count_of_siblings,
+        risk_category,
+        hearing_test,
+        parent: {
+          connect: connectParents,
+          disconnect: disconnectParents,
+        },
+      },
     });
 
     return NextResponse.json(
