@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "node prisma/seed.js",
-    "migrate:fresh": "node prisma/birth_history_question_seed.js && node prisma/expert_examination_question_seed.js && node prisma/health_status_question_seed.js && node prisma/recommendation_seed.js && node prisma/seed.js"
+    "migrate:fresh": "node prisma/birth_history_question_seed.js && node prisma/expert_examination_question_seed.js && node prisma/health_status_question_seed.js && node prisma/recommendation_seed.js && node prisma/seed.js",
+    "api-docs": "npx serve ./api-docs"
   },
   "dependencies": {
     "@prisma/client": "^5.13.0",
