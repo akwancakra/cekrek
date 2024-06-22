@@ -107,74 +107,24 @@ export default function Template({}) {
                 <div className="flex flex-col items-center w-full group-[.open]:w-full lg:group-[.open]:w-1/3 md:w-1/3">
                     <div className="relative rounded-lg bg-gray-400 max-w-xs w-full lg:max-w-none">
                         <AspectRatio ratio={3 / 4}>
-                            <div className="absolute bottom-0 w-full">
+                            <p>IMG</p>
+                            {/* <div className="absolute bottom-0 w-full">
                                 <div className="m-2 flex justify-between items-center bg-white rounded-lg p-2 min-h-20">
-                                    <Select>
-                                        <SelectTrigger
-                                            id="framework"
-                                            className="h-fit"
-                                        >
-                                            <SelectValue placeholder="Pilih Anak" />
-                                        </SelectTrigger>
-                                        <SelectContent position="popper">
-                                            <SelectItem
-                                                value="dwiky"
-                                                defaultChecked
-                                            >
-                                                <div className="flex items-center gap-2">
-                                                    <div className="min-w-16 max-w-20 bg-gray-300 rounded-lg ">
-                                                        <AspectRatio
-                                                            ratio={1 / 1}
-                                                        >
-                                                            <p>IMG</p>
-                                                        </AspectRatio>
-                                                    </div>
-                                                    <div className="flex flex-col items-start">
-                                                        <p>Dwiky Putra</p>
-                                                        <Badge
-                                                            variant={"default"}
-                                                        >
-                                                            Badge
-                                                        </Badge>
-                                                    </div>
-                                                </div>
-                                            </SelectItem>
-                                            <SelectItem value="ahmad">
-                                                <div className="flex items-center gap-2">
-                                                    <div className="min-w-16 max-w-20 bg-gray-300 rounded-lg ">
-                                                        <AspectRatio
-                                                            ratio={1 / 1}
-                                                        >
-                                                            <p>IMG</p>
-                                                        </AspectRatio>
-                                                    </div>
-                                                    <div className="flex flex-col items-start">
-                                                        <p>Ahmad Jalalani</p>
-                                                        <Badge
-                                                            variant={"default"}
-                                                        >
-                                                            Badge
-                                                        </Badge>
-                                                    </div>
-                                                </div>
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {/* <div>
-                                        <p className="font-semibold text-lg tracking-tight">
-                                            Dewantara
-                                        </p>
-                                        <p className="text-xs text-gray-500">
-                                            12 Rekomendasi
-                                        </p>
+                                    <div className="flex items-center gap-2">
+                                        <div className="min-w-16 max-w-20 bg-gray-300 rounded-lg ">
+                                            <AspectRatio ratio={1 / 1}>
+                                                <p>IMG</p>
+                                            </AspectRatio>
+                                        </div>
+                                        <div className="flex flex-col items-start text-medium">
+                                            <p>Nama Siswa</p>
+                                            <Badge variant={"default"}>
+                                                Badge
+                                            </Badge>
+                                        </div>
                                     </div>
-                                    <button className="btn btn-square">
-                                        <span className="material-symbols-outlined">
-                                            expand_more
-                                        </span>
-                                    </button> */}
                                 </div>
-                            </div>
+                            </div> */}
                         </AspectRatio>
                     </div>
                     <div className="grid grid-cols-4 max-w-xs w-full gap-2 mt-2 lg:max-w-none">
@@ -204,9 +154,16 @@ export default function Template({}) {
                     <div className="w-full justify-between items-center sm:flex">
                         <div>
                             <p className="text-gray-400 text-xs">Profile</p>
-                            <p className="text-header">Dewantara</p>
+                            <div className="flex gap-2">
+                                <p className="text-header">Dewantara</p>
+                                <Badge variant={"default"}>Badge</Badge>
+                            </div>
                         </div>
-                        <Button asChild variant={"default"}>
+                        <Button
+                            asChild
+                            variant={"default"}
+                            className="mt-2 sm:mt-0"
+                        >
                             <Link href={"/t/students/1/assessment"}>
                                 Buat asesmen
                                 <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
