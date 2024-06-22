@@ -12,21 +12,9 @@ export async function GET(req: any, { params }: any) {
       include: {
         children: {
           include: {
-            child_birth_history: {
-              include: {
-                birth_history: true,
-              },
-            },
-            child_expert_examination: {
-              include: {
-                expert_examination: true,
-              },
-            },
-            child_health_status: {
-              include: {
-                health_status: true,
-              },
-            },
+            birth_history: true,
+            health_status: true,
+            expert_examination: true,
             child_recommendation: {
               include: {
                 recommendations: true,
@@ -100,13 +88,18 @@ export async function PUT(req: any, { params }: any) {
     }
 
     // Update user data
-    const teacherData = {
+    const parentData = {
       name,
       email,
       role,
       type,
       place_birth,
-      date_time_birth: date_time_birth ? new Date(date_time_birth) : null,
+      date_time_birth:
+        date_time_birth !== undefined
+          ? date_time_birth
+            ? new Date(date_time_birth)
+            : null
+          : userExists.date_time_birth, // Preserve existing date_time_birth if not provided or explicitly set to null
       religion,
       education,
       job,
@@ -118,7 +111,7 @@ export async function PUT(req: any, { params }: any) {
 
     const parent = await prisma.users.update({
       where: { id: id },
-      data: teacherData,
+      data: parentData,
     });
 
     return NextResponse.json(
