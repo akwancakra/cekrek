@@ -56,7 +56,7 @@ export default function HomeTeacher({}) {
                                     </span>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56">
+                            <DropdownMenuContent className="w-56" align="end">
                                 <DropdownMenuLabel>
                                     Tampilan Data
                                 </DropdownMenuLabel>
