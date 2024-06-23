@@ -151,7 +151,7 @@ export default function Home() {
                                 >
                                     <Link href={"/p"}>
                                         <span className="relative text-sm font-semibold text-white">
-                                            Mulai Sekarang
+                                            Coba Sekarang
                                         </span>
                                     </Link>
                                 </Button>
@@ -579,7 +579,7 @@ export default function Home() {
                                         Akwan Cakra
                                     </h6>
                                     <p className="text-sm text-gray-500 dark:text-gray-300">
-                                        Mobile dev
+                                        Pengembang
                                     </p>
                                 </div>
                             </div>
@@ -616,7 +616,7 @@ export default function Home() {
                                         Krisna Santosa
                                     </h6>
                                     <p className="text-sm text-gray-500 dark:text-gray-300">
-                                        Marketing
+                                        Pengembang
                                     </p>
                                 </div>
                             </div>
@@ -648,7 +648,7 @@ export default function Home() {
                                         Indri Salsabila
                                     </h6>
                                     <p className="text-sm text-gray-500 dark:text-gray-300">
-                                        Developer
+                                        Dokumen Pengembang
                                     </p>
                                 </div>
                             </div>
@@ -680,7 +680,7 @@ export default function Home() {
                                         Anisa Rohmah
                                     </h6>
                                     <p className="text-sm text-gray-500 dark:text-gray-300">
-                                        Mobile dev
+                                        Dokumen Pengembang
                                     </p>
                                 </div>
                             </div>
@@ -712,7 +712,7 @@ export default function Home() {
                                         Tiara Nazwa
                                     </h6>
                                     <p className="text-sm text-gray-500 dark:text-gray-300">
-                                        Manager
+                                        Sosmed Manajer
                                     </p>
                                 </div>
                             </div>
@@ -742,10 +742,10 @@ export default function Home() {
                                 </div>
                                 <div>
                                     <h6 className="text-lg font-medium text-gray-700 dark:text-white">
-                                        Triana
+                                        Triana Lestari
                                     </h6>
                                     <p className="text-sm text-gray-500 dark:text-gray-300">
-                                        Mobile dev
+                                        Pembimbing
                                     </p>
                                 </div>
                             </div>
@@ -787,7 +787,7 @@ export default function Home() {
                                 >
                                     <Link href={"/p"}>
                                         <span className="relative text-sm font-semibold">
-                                            Mulai Sekarang
+                                            Coba Sekarang
                                         </span>
                                     </Link>
                                 </Button>

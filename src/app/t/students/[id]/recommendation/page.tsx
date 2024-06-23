@@ -79,7 +79,7 @@ const datasets1 = [
     },
 ];
 
-export default function Template({}) {
+export default function RecomendationStudent({}) {
     // Initialize the date state with today's date
     const [date, setDate] = useState<Date | undefined>(new Date());
 
@@ -93,7 +93,7 @@ export default function Template({}) {
     return (
         <section className="mx-auto max-w-7xl mb-4">
             <Button asChild variant={"outline"} className="mb-3">
-                <Link href={"/p/childs"}>
+                <Link href={"/t/students"}>
                     <span className="material-symbols-outlined me-1 !leading-none !text-lg hover:no-underline">
                         arrow_back
                     </span>
@@ -282,7 +282,7 @@ export default function Template({}) {
                 </div>
                 <div className="flex justify-end items-center p-2">
                     <Button asChild variant={"outline"}>
-                        <Link href={"/p/childs/1/assessment"}>
+                        <Link href={"/t/students/1/assessment"}>
                             Cek Hari Ini
                             <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                                 chevron_right

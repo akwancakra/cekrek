@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function AssessmentChoose() {
@@ -61,7 +62,13 @@ export default function AssessmentChoose() {
                     <div className="h-full border border-gray-300 rounded-lg p-2 md:min-w-80 group-[.open]:min-w-fit lg:group-[.open]:min-w-80">
                         <div className="bg-gray-400 w-full rounded-lg">
                             <AspectRatio ratio={4 / 5}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/default.jpg"}
+                                    alt="Recomendation Image"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                         <div className="flex flex-col justify-between h-fit text-center mt-3">
@@ -88,7 +95,13 @@ export default function AssessmentChoose() {
                     <div className="h-full border border-gray-300 rounded-lg p-2 md:min-w-80 group-[.open]:min-w-fit lg:group-[.open]:min-w-80">
                         <div className="bg-gray-400 w-full rounded-lg">
                             <AspectRatio ratio={4 / 5}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/default.jpg"}
+                                    alt="Recomendation Image"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                         <div className="text-center mt-3">

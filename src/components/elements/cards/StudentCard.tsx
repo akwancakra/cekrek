@@ -7,22 +7,24 @@ import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuRadioGroup,
-    DropdownMenuRadioItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function StudentCard() {
-    const [position, setPosition] = useState("bottom");
-
     return (
         <div className="w-full border border-gray-300 p-2 rounded-lg">
             <div className="w-full bg-gray-300 rounded-lg">
                 <AspectRatio ratio={1 / 1}>
-                    <p>IMG</p>
+                    <Image
+                        src={"/static/images/user-default.jpg"}
+                        alt="Student Profile"
+                        fill={true}
+                        className="rounded-lg"
+                        draggable={false}
+                    />
                 </AspectRatio>
             </div>
             <div>
@@ -51,6 +53,17 @@ export default function StudentCard() {
                             <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
+                                <DropdownMenuItem
+                                    className="cursor-pointer"
+                                    asChild
+                                >
+                                    <Link href={"/t/students/1/assessment"}>
+                                        <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                            assignment
+                                        </span>{" "}
+                                        Lakukan monitoring
+                                    </Link>
+                                </DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="cursor-pointer"
                                     asChild

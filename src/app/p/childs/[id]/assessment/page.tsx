@@ -1,5 +1,5 @@
-import AssessmentSix from "@/components/elements/assessments/AssessmentSix";
+import AssessmentChoice from "@/components/elements/assessments/AssessmentChoice";
 
 export default function Assessment() {
-    return <AssessmentSix />;
+    return <AssessmentChoice />;
 }

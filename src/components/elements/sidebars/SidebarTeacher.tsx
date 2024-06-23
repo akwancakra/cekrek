@@ -70,9 +70,9 @@ const SidebarTeacher = ({
                             Dasbor
                         </span>
                     </li>
-                    <li className="group/nav-link relative mx-0 my-2">
+                    {/* <li className="group/nav-link relative mx-0 my-2">
                         <Link
-                            href="/t/students"
+                            href="/t"
                             className={`${
                                 pathname.startsWith("/t/students")
                                     ? "bg-primary text-white "
@@ -95,7 +95,7 @@ const SidebarTeacher = ({
                         <span className="bg-white absolute z-10 shadow-lg rounded text-sm opacity-0 whitespace-nowrap pointer-events-none transition-all duration-500 ease-in-out px-3 py-1.5 left-[calc(100%_+_15px)] -top-5 group-[.open]:hidden group-hover/nav-link:opacity-100 group-hover/nav-link:pointer-events-auto group-hover/nav-link:-translate-y-2/4 group-hover/nav-link:top-2/4">
                             Daftar Murid
                         </span>
-                    </li>
+                    </li> */}
                     <li className="group/nav-link relative mx-0 my-2">
                         <Link
                             href="/t/assessments"
@@ -174,23 +174,30 @@ const SidebarTeacher = ({
             {/* BOTTOM BAR */}
             <div className="fixed bottom-0 border-t border-gray-300 grid grid-cols-4 w-full h-16 bg-white z-20 sm:hidden">
                 <Link
+                    href="/"
+                    className={`flex flex-col justify-center items-center transition-colors duration-200 ease-in-out  hover:text-primary`}
+                >
+                    <span className={`material-symbols-outlined`}> home </span>
+                    <p className="text-xs">Home</p>
+                </Link>
+                <Link
                     href="/t"
                     className={`${
-                        pathname === "/" ? "text-primary " : ""
+                        pathname === "/t" ? "text-primary " : ""
                     }flex flex-col justify-center items-center transition-colors duration-200 ease-in-out  hover:text-primary`}
                 >
                     <span
                         className={`${
-                            pathname === "/" ? "filled " : ""
+                            pathname === "/t" ? "filled " : ""
                         }material-symbols-outlined`}
                     >
                         {" "}
-                        home{" "}
+                        grid_view{" "}
                     </span>
-                    <p className="text-xs">Home</p>
+                    <p className="text-xs">Dasbor</p>
                 </Link>
-                <Link
-                    href="/t/students"
+                {/* <Link
+                    href="/t"
                     className={`${
                         pathname.startsWith("/t/students")
                             ? "text-primary "
@@ -206,7 +213,7 @@ const SidebarTeacher = ({
                         contacts{" "}
                     </span>
                     <p className="text-xs">Murid</p>
-                </Link>
+                </Link> */}
                 <Link
                     href="/t/assessments"
                     className={`${
@@ -246,45 +253,6 @@ const SidebarTeacher = ({
                     <p className="text-xs">Pengaturan</p>
                 </Link>
             </div>
-
-            {/* CONTACT DIALOG */}
-            <dialog
-                className="modal modal-bottom sm:modal-middle"
-                ref={contactModal}
-            >
-                <div className="modal-box rounded-lg p-4">
-                    <h3 className="font-semibold text-lg">Admin Contact</h3>
-                    <p className="pt-4 text-gray-500 text-sm">
-                        If you have a problem with the app, please contact us.
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                        We&apos;ll contact you soon as possible, Our working
-                        hours are from:
-                    </p>
-                    <p className=" italic">Mon - Fri: 9am - 5pm</p>
-
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button
-                                type="submit"
-                                className="btn py-2 px-3 me-2 text-sm h-fit min-h-fit"
-                            >
-                                Close
-                            </button>
-                            <Link
-                                href="https://wa.me/+6289675984090"
-                                target="_blank"
-                                className="btn btn-primary py-2 px-3 text-sm h-fit min-h-fit !text-white"
-                            >
-                                Whatsapp us
-                            </Link>
-                        </form>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button type="submit">close</button>
-                </form>
-            </dialog>
         </>
     );
 };

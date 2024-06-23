@@ -146,7 +146,14 @@ const SidebarParent = ({
             </div>
 
             {/* BOTTOM BAR */}
-            <div className="fixed bottom-0 border-t border-gray-300 grid grid-cols-3 w-full h-16 bg-white z-20 sm:hidden">
+            <div className="fixed bottom-0 border-t border-gray-300 grid grid-cols-4 w-full h-16 bg-white z-20 sm:hidden">
+                <Link
+                    href="/"
+                    className={`flex flex-col justify-center items-center transition-colors duration-200 ease-in-out  hover:text-primary`}
+                >
+                    <span className={`material-symbols-outlined`}> home </span>
+                    <p className="text-xs">Home</p>
+                </Link>
                 <Link
                     href="/p"
                     className={`${
@@ -159,7 +166,7 @@ const SidebarParent = ({
                         }material-symbols-outlined`}
                     >
                         {" "}
-                        home{" "}
+                        grid_view{" "}
                     </span>
                     <p className="text-xs">Home</p>
                 </Link>
@@ -198,45 +205,6 @@ const SidebarParent = ({
                     <p className="text-xs">Pengaturan</p>
                 </Link>
             </div>
-
-            {/* CONTACT DIALOG */}
-            <dialog
-                className="modal modal-bottom sm:modal-middle"
-                ref={contactModal}
-            >
-                <div className="modal-box rounded-lg p-4">
-                    <h3 className="font-semibold text-lg">Admin Contact</h3>
-                    <p className="pt-4 text-gray-500 text-sm">
-                        If you have a problem with the app, please contact us.
-                    </p>
-                    <p className="text-gray-500 text-sm">
-                        We&apos;ll contact you soon as possible, Our working
-                        hours are from:
-                    </p>
-                    <p className=" italic">Mon - Fri: 9am - 5pm</p>
-
-                    <div className="modal-action">
-                        <form method="dialog">
-                            <button
-                                type="submit"
-                                className="btn py-2 px-3 me-2 text-sm h-fit min-h-fit"
-                            >
-                                Close
-                            </button>
-                            <Link
-                                href="https://wa.me/+6289675984090"
-                                target="_blank"
-                                className="btn btn-primary py-2 px-3 text-sm h-fit min-h-fit !text-white"
-                            >
-                                Whatsapp us
-                            </Link>
-                        </form>
-                    </div>
-                </div>
-                <form method="dialog" className="modal-backdrop">
-                    <button type="submit">close</button>
-                </form>
-            </dialog>
         </>
     );
 };

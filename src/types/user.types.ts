@@ -1,7 +1,7 @@
 import { Teacher } from "./teacher.types";
 
 export type User = {
-    id: number;
+    id: string;
     email: string;
     password?: string;
     createdAt: string;

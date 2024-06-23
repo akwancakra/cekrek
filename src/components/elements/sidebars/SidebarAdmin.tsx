@@ -70,6 +70,32 @@ const SidebarAdmin = ({
                     </li>
                     <li className="group/nav-link relative mx-0 my-2">
                         <Link
+                            href="/a/users"
+                            className={`${
+                                pathname.startsWith("/a/users")
+                                    ? "bg-primary text-white "
+                                    : ""
+                            }flex h-full w-full items-center no-underline transition-all duration-500 ease-in-out rounded-lg group-hover/nav-link:bg-primary group-hover/nav-link:text-white`}
+                        >
+                            <i
+                                className={`${
+                                    pathname.startsWith("/a/users")
+                                        ? "filled "
+                                        : ""
+                                }material-symbols-outlined h-[50px] min-w-[47px] !text-xl text-center !leading-[50px]`}
+                            >
+                                group
+                            </i>
+                            <span className="whitespace-nowrap opacity-0 pointer-events-none text-sm group-[.open]:opacity-100 group-[.open]:pointer-events-auto">
+                                Daftar Akun
+                            </span>
+                        </Link>
+                        <span className="bg-white absolute z-10 shadow-lg rounded text-sm opacity-0 whitespace-nowrap pointer-events-none transition-all duration-500 ease-in-out px-3 py-1.5 left-[calc(100%_+_15px)] -top-5 group-[.open]:hidden group-hover/nav-link:opacity-100 group-hover/nav-link:pointer-events-auto group-hover/nav-link:-translate-y-2/4 group-hover/nav-link:top-2/4">
+                            Daftar Akun
+                        </span>
+                    </li>
+                    <li className="group/nav-link relative mx-0 my-2">
+                        <Link
                             href="/a/students"
                             className={`${
                                 pathname.startsWith("/a/students")
@@ -92,32 +118,6 @@ const SidebarAdmin = ({
                         </Link>
                         <span className="bg-white absolute z-10 shadow-lg rounded text-sm opacity-0 whitespace-nowrap pointer-events-none transition-all duration-500 ease-in-out px-3 py-1.5 left-[calc(100%_+_15px)] -top-5 group-[.open]:hidden group-hover/nav-link:opacity-100 group-hover/nav-link:pointer-events-auto group-hover/nav-link:-translate-y-2/4 group-hover/nav-link:top-2/4">
                             Daftar Murid
-                        </span>
-                    </li>
-                    <li className="group/nav-link relative mx-0 my-2">
-                        <Link
-                            href="/a/assessments"
-                            className={`${
-                                pathname.startsWith("/a/assessments")
-                                    ? "bg-primary text-white "
-                                    : ""
-                            }flex h-full w-full items-center no-underline transition-all duration-500 ease-in-out rounded-lg group-hover/nav-link:bg-primary group-hover/nav-link:text-white`}
-                        >
-                            <i
-                                className={`${
-                                    pathname.startsWith("/a/assessments")
-                                        ? "filled "
-                                        : ""
-                                }material-symbols-outlined h-[50px] min-w-[47px] !text-xl text-center !leading-[50px]`}
-                            >
-                                assignment
-                            </i>
-                            <span className="whitespace-nowrap opacity-0 pointer-events-none text-sm group-[.open]:opacity-100 group-[.open]:pointer-events-auto">
-                                Riwayat Asesmen
-                            </span>
-                        </Link>
-                        <span className="bg-white absolute z-10 shadow-lg rounded text-sm opacity-0 whitespace-nowrap pointer-events-none transition-all duration-500 ease-in-out px-3 py-1.5 left-[calc(100%_+_15px)] -top-5 group-[.open]:hidden group-hover/nav-link:opacity-100 group-hover/nav-link:pointer-events-auto group-hover/nav-link:-translate-y-2/4 group-hover/nav-link:top-2/4">
-                            Riwayat Asesmen
                         </span>
                     </li>
                     <li className="group/nav-link relative mx-0 my-2">
@@ -188,6 +188,22 @@ const SidebarAdmin = ({
                     <p className="text-xs">Home</p>
                 </Link>
                 <Link
+                    href="/a/users"
+                    className={`${
+                        pathname.startsWith("/a/users") ? "text-primary " : ""
+                    }flex flex-col justify-center items-center transition-colors duration-200 ease-in-out  hover:text-primary`}
+                >
+                    <span
+                        className={`${
+                            pathname.startsWith("/a/users") ? "filled " : ""
+                        }material-symbols-outlined`}
+                    >
+                        {" "}
+                        group{" "}
+                    </span>
+                    <p className="text-xs">Akun</p>
+                </Link>
+                <Link
                     href="/a/students"
                     className={`${
                         pathname.startsWith("/a/students")
@@ -204,26 +220,6 @@ const SidebarAdmin = ({
                         contacts{" "}
                     </span>
                     <p className="text-xs">Murid</p>
-                </Link>
-                <Link
-                    href="/a/assessments"
-                    className={`${
-                        pathname.startsWith("/a/assessments")
-                            ? "text-primary "
-                            : ""
-                    }flex flex-col justify-center items-center transition-colors duration-200 ease-in-out  hover:text-primary`}
-                >
-                    <span
-                        className={`${
-                            pathname.startsWith("/a/assessments")
-                                ? "filled "
-                                : ""
-                        }material-symbols-outlined`}
-                    >
-                        {" "}
-                        assignment{" "}
-                    </span>
-                    <p className="text-xs">Asesmen</p>
                 </Link>
                 <Link
                     href="/a/settings"

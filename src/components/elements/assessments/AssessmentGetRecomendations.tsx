@@ -201,7 +201,7 @@ const RecomendationForm = ({
                         </Button>
                         <DrawerClose asChild>
                             <Button variant="outline" className="text-medium">
-                                Cancel
+                                Batal
                             </Button>
                         </DrawerClose>
                     </DrawerFooter>

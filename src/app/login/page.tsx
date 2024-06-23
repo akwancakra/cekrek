@@ -67,12 +67,14 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
             <div className="container mx-auto bg-white p-4 sm:border-gray-300 sm:rounded-lg sm:border sm:w-[400px]">
                 <form onSubmit={formik.handleSubmit}>
                     <div className="mx-auto w-fit mb-3">
-                        <Image
-                            src={"/static/images/logo.png"}
-                            alt="SILAR logo"
-                            width={112}
-                            height={112}
-                        />
+                        <Link href="/">
+                            <Image
+                                src={"/static/images/logo.png"}
+                                alt="CekRek logo"
+                                width={112}
+                                height={112}
+                            />
+                        </Link>
                     </div>
                     <div className="text-center mb-8">
                         <p className="text-header">Hello There</p>

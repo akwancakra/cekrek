@@ -22,6 +22,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import Image from "next/image";
 
 export default function Template({}) {
     const removeChildButton = () => {
@@ -107,6 +108,13 @@ export default function Template({}) {
                 <div className="flex flex-col items-center w-full group-[.open]:w-full lg:group-[.open]:w-1/3 md:w-1/3">
                     <div className="relative rounded-lg bg-gray-400 max-w-xs w-full lg:max-w-none">
                         <AspectRatio ratio={3 / 4}>
+                            <Image
+                                src={"/static/images/user-default.jpg"}
+                                alt="Child Profile"
+                                fill={true}
+                                className="rounded-lg object-cover"
+                                draggable={false}
+                            />
                             <div className="absolute bottom-0 w-full">
                                 <div className="m-2 flex justify-between items-center bg-white rounded-lg p-2 min-h-20">
                                     <Select>
@@ -126,7 +134,17 @@ export default function Template({}) {
                                                         <AspectRatio
                                                             ratio={1 / 1}
                                                         >
-                                                            <p>IMG</p>
+                                                            <Image
+                                                                src={
+                                                                    "/static/images/user-default.jpg"
+                                                                }
+                                                                alt="Child Profile"
+                                                                fill={true}
+                                                                className="rounded-lg object-cover"
+                                                                draggable={
+                                                                    false
+                                                                }
+                                                            />
                                                         </AspectRatio>
                                                     </div>
                                                     <div className="flex flex-col items-start">
@@ -145,7 +163,17 @@ export default function Template({}) {
                                                         <AspectRatio
                                                             ratio={1 / 1}
                                                         >
-                                                            <p>IMG</p>
+                                                            <Image
+                                                                src={
+                                                                    "/static/images/user-default.jpg"
+                                                                }
+                                                                alt="Child Profile"
+                                                                fill={true}
+                                                                className="rounded-lg object-cover"
+                                                                draggable={
+                                                                    false
+                                                                }
+                                                            />
                                                         </AspectRatio>
                                                     </div>
                                                     <div className="flex flex-col items-start">
@@ -180,22 +208,46 @@ export default function Template({}) {
                     <div className="grid grid-cols-4 max-w-xs w-full gap-2 mt-2 lg:max-w-none">
                         <div className="rounded-lg bg-gray-400 w-full">
                             <AspectRatio ratio={1 / 1}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/user-default.jpg"}
+                                    alt="Child Profile"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                         <div className="rounded-lg bg-gray-400 w-full">
                             <AspectRatio ratio={1 / 1}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/user-default.jpg"}
+                                    alt="Child Profile"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                         <div className="rounded-lg bg-gray-400 w-full">
                             <AspectRatio ratio={1 / 1}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/user-default.jpg"}
+                                    alt="Child Profile"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                         <div className="rounded-lg bg-gray-400 w-full">
                             <AspectRatio ratio={1 / 1}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/user-default.jpg"}
+                                    alt="Child Profile"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                     </div>
@@ -207,7 +259,7 @@ export default function Template({}) {
                             <p className="text-header">Dewantara</p>
                         </div>
                         <Button asChild variant={"default"}>
-                            <Link href={"/p/childs/2/recomendations"}>
+                            <Link href={"/p/childs/2/recommendations"}>
                                 Buat asesmen
                                 <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
                                     assignment
