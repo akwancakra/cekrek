@@ -37,7 +37,9 @@ model users {
 model children {
   id                Int       @id @default(autoincrement())
   full_name         String
+  teacher_id        Int?
   nick_name         String?
+  picture           String?
   gender            String
   place_birth       String?
   date_time_birth   DateTime? @db.Date
@@ -52,6 +54,7 @@ model children {
   birth_history        birth_history?
   expert_examination   expert_examination?
   health_status        health_status?
+  child_assesments     child_assesment[]
 }
 
 model birth_history {
@@ -121,15 +124,19 @@ model expert_examination_question {
 // rekomendasi
 // ketika repetisi ada, maka durasi diubah menjadi jumlah hari
 model recommendations {
-  id            Int     @id @default(autoincrement())
-  type          String // Standar, Durasi, Repetisi (Enum)
-  title         String
-  description   String
-  icon          String?
-  duration      Int?
-  duration_type String? // detik, menit, jam, hari, minggu, bulan
-  repetition    Int?
-  risk_category String? // rendah, sedang, tinggi (enum)
+  id               Int     @id @default(autoincrement())
+  assesment_number Int
+  is_main          Boolean @default(false)
+  // type          String // standar, durasi, repetisi (Enum)
+  title            String
+  description      String  @db.Text
+  icon             String?
+  frequency        String? // 2-3 kali sehari, 5-10 detik
+  // duration        Int?
+  // duration_type   String? // detik, menit, jam, hari, minggu, bulan
+  // repetition      Int?
+  // repetition_type String? // detik, menit, jam, hari, minggu, bulan
+  risk_category    String? // rendah, sedang, tinggi (enum)
 
   // children             children               @relation(fields: [children_id], references: [id])
   // child_recommendation child_recommendation[]
@@ -144,6 +151,33 @@ model child_recommendation {
   children_id       Int
   recommendations   recommendations @relation(fields: [recommendation_id], references: [id])
   recommendation_id Int
+}
+
+model monitor_child_recommendation {
+  id                      Int      @id @default(autoincrement())
+  child_recommendation_id Int
+  date_time               DateTime
+  is_done                 Boolean  @default(false)
+}
+
+model assesments {
+  id               Int     @id @default(autoincrement())
+  assesment_number Int
+  question         String  @db.Text
+  picture          String?
+
+  child_assesments child_assesment[]
+}
+
+model child_assesment {
+  id           Int      @id @default(autoincrement())
+  children_id  Int
+  assesment_id Int
+  answer       String
+  date_time    DateTime
+
+  children   children   @relation(fields: [children_id], references: [id])
+  assesments assesments @relation(fields: [assesment_id], references: [id])
 }
 
 // model assesment {
