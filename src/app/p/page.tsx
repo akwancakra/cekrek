@@ -3,6 +3,7 @@ import Alert from "@/components/elements/alerts/Alert";
 import Pill from "@/components/elements/alerts/Pill";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { buttonVariants } from "@/components/ui/button";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function HomeParent({}) {
@@ -59,7 +60,13 @@ export default function HomeParent({}) {
                         <div className="my-2 flex gap-2 items-center flex-col group-[.open]:flex-col sm:flex-row md:group-[.open]:flex-row">
                             <div className="w-24 bg-gray-300 rounded-lg overflow-hidden">
                                 <AspectRatio ratio={1 / 1} className="bg-muted">
-                                    <p>IMG</p>
+                                    <Image
+                                        src={"/static/images/default.jpg"}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
                                 </AspectRatio>
                             </div>
                             <div>
@@ -78,7 +85,13 @@ export default function HomeParent({}) {
                         <div className="my-2 flex gap-2 items-center flex-col group-[.open]:flex-col sm:flex-row md:group-[.open]:flex-row">
                             <div className="w-24 bg-gray-300 rounded-lg overflow-hidden">
                                 <AspectRatio ratio={1 / 1} className="bg-muted">
-                                    <p>IMG</p>
+                                    <Image
+                                        src={"/static/images/default.jpg"}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
                                 </AspectRatio>
                             </div>
                             <div>
@@ -99,7 +112,7 @@ export default function HomeParent({}) {
                     <div className="flex justify-end">
                         <Link
                             className={buttonVariants({ variant: "outline" })}
-                            href={"/p/childs/1/recomendations"}
+                            href={"/p/childs/1/recomendation"}
                         >
                             Lihat detil{" "}
                             <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
@@ -110,7 +123,13 @@ export default function HomeParent({}) {
                 </div>
                 <div className="group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12">
                     <AspectRatio ratio={8 / 9} className="bg-muted">
-                        <p>IMG</p>
+                        <Image
+                            src={"/static/images/default.jpg"}
+                            alt="Recomendation Image"
+                            fill={true}
+                            className="rounded-xl object-cover"
+                            draggable={false}
+                        />
                     </AspectRatio>
                 </div>
                 {/* flex justify-center items-center rounded-lg min-h-44 group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12 */}

@@ -1,16 +1,11 @@
 "use client";
 
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import DeleteAccountDialog from "@/components/elements/alerts/DeleteAccountDialog";
+import DeleteAccountDrawer from "@/components/elements/alerts/DeleteAccountDrawer";
+import EditProfileDialog from "@/components/elements/alerts/EditProfileDialog";
+import EditProfileDrawer from "@/components/elements/alerts/EditProfileDrawer";
+import InfoAccountDialog from "@/components/elements/alerts/InfoAccountDialog";
+import InfoAccountDrawer from "@/components/elements/alerts/InfoAccountDrawer";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -19,8 +14,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { useMediaQuery } from "usehooks-ts";
 
-export default function Template({}) {
+export default function ParentSettings({}) {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+
+    const editAccountButton = () => {
+        console.log("Account Edit Button Clicked!");
+    };
+
     const removeAccountButton = () => {
         console.log("Account Remove Button Clicked!");
     };
@@ -51,6 +53,7 @@ export default function Template({}) {
                                 Tema Terang
                             </SelectItem>
                             <SelectItem value="dark">Tema Gelap</SelectItem>
+                            <SelectItem value="system">Tema Sistem</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
@@ -76,10 +79,10 @@ export default function Template({}) {
                             <SelectValue placeholder="14px Medium (Utama)" />
                         </SelectTrigger>
                         <SelectContent>
-                            <SelectItem value="light">12px Medium</SelectItem>
-                            <SelectItem value="dark">14px Medium</SelectItem>
+                            <SelectItem value="light">12px Small</SelectItem>
+                            <SelectItem value="dark">14px Normal</SelectItem>
                             <SelectItem value="system" defaultChecked={true}>
-                                16px Medium
+                                16px Large
                             </SelectItem>
                         </SelectContent>
                     </Select>
@@ -92,82 +95,61 @@ export default function Template({}) {
                 <div className="divider my-0" />
                 <div className="flex justify-between items-center my-3">
                     <div>
-                        <p className="text-medium">Detail account info</p>
-                        <p className="text-gray-400 text-small">
-                            This will show you about your full account
-                            informations
-                        </p>
-                    </div>
-                    <Button
-                        variant={"default"}
-                        className="bg-primary text-white hover:bg-primary-foreground"
-                    >
-                        Info
-                        <span className="material-symbols-outlined ms-1 !leading-none !text-lg hover:no-underline">
-                            info
-                        </span>
-                    </Button>
-                </div>
-                <div className="flex justify-between items-center my-3">
-                    <div>
-                        <p className="text-medium">Remove my account</p>
+                        <p className="text-medium">Ubah akun</p>
                         <p className="text-gray-400 text-small">
                             This action will remove your account permanently,
                             and can’t undo
                         </p>
                     </div>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                            <Button
-                                variant={"default"}
-                                className="bg-red-500 text-white hover:bg-red-700"
-                            >
-                                Hapus
-                                <span className="material-symbols-outlined ms-1 !leading-none !text-lg hover:no-underline">
-                                    delete
-                                </span>
-                            </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    Apakah kamu yakin?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    Ini akan menghapus data akunmu{" "}
-                                    <span className="font-semibold">
-                                        Dwiky Putra
-                                    </span>{" "}
-                                    dan tidak bisa dikembalikan, dan berikut
-                                    rincian data yang akan dihapus:
-                                    <span className="block mt-1">
-                                        &gt; Data profil orang tua
-                                    </span>
-                                    <span className="block mt-1">
-                                        &gt; Data profil anak
-                                    </span>
-                                    <span className="block">
-                                        &gt; Data riwayat asesmen
-                                    </span>
-                                    <span className="block">
-                                        &gt; Data rekomendasi
-                                    </span>
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Batal</AlertDialogCancel>
-                                <AlertDialogAction asChild>
-                                    <Button
-                                        variant={"destructive"}
-                                        onClick={() => removeAccountButton()}
-                                        className="bg-red-500 text-white hover:bg-red-700"
-                                    >
-                                        Hapus
-                                    </Button>
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </AlertDialog>
+                    {isDesktop ? (
+                        <EditProfileDialog
+                            editAccountButton={editAccountButton}
+                        />
+                    ) : (
+                        <EditProfileDrawer
+                            editAccountButton={editAccountButton}
+                        />
+                    )}
+                </div>
+                <div className="flex justify-between items-center my-3">
+                    <div>
+                        <p className="text-medium">Info detil akun</p>
+                        <p className="text-gray-400 text-small">
+                            This will show you about your full account
+                            informations
+                        </p>
+                    </div>
+                    {isDesktop ? <InfoAccountDialog /> : <InfoAccountDrawer />}
+                </div>
+                <div className="flex justify-between items-center my-3">
+                    <div>
+                        <p className="text-medium">Hapus akun saya</p>
+                        <p className="text-gray-400 text-small">
+                            This action will remove your account permanently,
+                            and can’t undo
+                        </p>
+                    </div>
+                    {isDesktop ? (
+                        <DeleteAccountDialog
+                            removeAccountButton={removeAccountButton}
+                        />
+                    ) : (
+                        <DeleteAccountDrawer
+                            removeAccountButton={removeAccountButton}
+                        />
+                    )}
+                </div>
+                <div className="flex justify-between items-center my-3">
+                    <p className="text-medium">Keluar akun</p>
+                    <Button
+                        variant={"default"}
+                        className="gap-1 bg-red-500 text-white hover:bg-red-600 hover:text-white"
+                    >
+                        <span>Keluar</span>
+                        <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                            logout
+                        </span>
+                    </Button>
                 </div>
             </div>
         </section>

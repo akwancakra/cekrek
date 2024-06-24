@@ -1,12 +1,6 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import Image from "next/image";
 
 export default function AssessmentStepDone() {
     return (
@@ -14,7 +8,13 @@ export default function AssessmentStepDone() {
             <div className="border border-gray-300 rounded-lg p-2 text-center">
                 <div className="w-full bg-gray-400 rounded-lg">
                     <AspectRatio ratio={16 / 9}>
-                        <p>IMG</p>
+                        <Image
+                            src={"/static/images/default.jpg"}
+                            alt="Recomendation Image"
+                            fill={true}
+                            className="rounded-lg object-cover"
+                            draggable={false}
+                        />
                     </AspectRatio>
                 </div>
                 <p className="my-3 text-small">

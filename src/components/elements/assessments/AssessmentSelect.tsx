@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 export default function AssessmentSelect() {
     return (
@@ -28,7 +29,13 @@ export default function AssessmentSelect() {
             </p>
             <div className="bg-gray-400 rounded-lg w-full">
                 <AspectRatio ratio={16 / 9}>
-                    <p>Test</p>
+                    <Image
+                        src={"/static/images/default.jpg"}
+                        alt="Recomendation Image"
+                        fill={true}
+                        className="rounded-lg object-cover"
+                        draggable={false}
+                    />
                 </AspectRatio>
             </div>
             <div className="w-full">

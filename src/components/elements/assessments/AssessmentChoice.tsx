@@ -1,5 +1,6 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 export default function AssessmentChoice() {
     return (
@@ -10,7 +11,13 @@ export default function AssessmentChoice() {
             </p>
             <div className="bg-gray-400 rounded-lg w-full">
                 <AspectRatio ratio={16 / 9}>
-                    <p>Test</p>
+                    <Image
+                        src={"/static/images/default.jpg"}
+                        alt="Recomendation Image"
+                        fill={true}
+                        className="rounded-lg object-cover"
+                        draggable={false}
+                    />
                 </AspectRatio>
             </div>
             <div className="w-full">

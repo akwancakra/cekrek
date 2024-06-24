@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import Image from "next/image";
 
 export default function RecomendationCard({}) {
     return (
@@ -10,7 +11,13 @@ export default function RecomendationCard({}) {
                     <div className="flex items-center gap-2">
                         <div className="bg-gray-300 rounded-lg w-11 overflow-hidden sm:w-16">
                             <AspectRatio ratio={1 / 1}>
-                                <p>IMG</p>
+                                <Image
+                                    src={"/static/images/default.jpg"}
+                                    alt="Recomendation Image"
+                                    fill={true}
+                                    className="rounded-lg object-cover"
+                                    draggable={false}
+                                />
                             </AspectRatio>
                         </div>
                         <div>

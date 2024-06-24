@@ -9,6 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import Image from "next/image";
 
 export default function CreateRecomendationCard() {
     return (
@@ -16,7 +17,13 @@ export default function CreateRecomendationCard() {
             <div className="flex gap-2 items-center">
                 <div className="bg-gray-400 rounded-lg w-14 hidden sm:block sm:w-24">
                     <AspectRatio ratio={1 / 1}>
-                        <p>IMG</p>
+                        <Image
+                            src={"/static/images/default.jpg"}
+                            alt="Recomendation Image"
+                            fill={true}
+                            className="rounded-lg object-cover"
+                            draggable={false}
+                        />
                     </AspectRatio>
                 </div>
                 <div>

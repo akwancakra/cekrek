@@ -7,6 +7,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import Image from "next/image";
 
 export default function AssessmentRadio() {
     return (
@@ -46,7 +47,13 @@ export default function AssessmentRadio() {
                         <div className="flex items-center gap-2 h-fit">
                             <div className="bg-gray-400 rounded-lg w-28">
                                 <AspectRatio ratio={1 / 1}>
-                                    <p>Test</p>
+                                    <Image
+                                        src={"/static/images/default.jpg"}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
                                 </AspectRatio>
                             </div>
                             <div>
@@ -75,7 +82,13 @@ export default function AssessmentRadio() {
                         <div className="flex items-center gap-2 h-fit">
                             <div className="bg-gray-400 rounded-lg w-28">
                                 <AspectRatio ratio={1 / 1}>
-                                    <p>Test</p>
+                                    <Image
+                                        src={"/static/images/default.jpg"}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
                                 </AspectRatio>
                             </div>
                             <div>
@@ -104,7 +117,13 @@ export default function AssessmentRadio() {
                         <div className="flex items-center gap-2 h-fit">
                             <div className="bg-gray-400 rounded-lg w-28">
                                 <AspectRatio ratio={1 / 1}>
-                                    <p>Test</p>
+                                    <Image
+                                        src={"/static/images/default.jpg"}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
                                 </AspectRatio>
                             </div>
                             <div>
