@@ -114,8 +114,8 @@ async function main() {
     },
   });
 
-  // Link recommendation to children through child_recommendation
-  const childRecommendation = await prisma.child_recommendation.create({
+  // Link recommendation to children through child_recommendations
+  const childRecommendation = await prisma.child_recommendations.create({
     data: {
       children: {
         connect: { id: child1.id }, // Connect to the actual child created
@@ -129,8 +129,8 @@ async function main() {
   const monitorChildRecommendation =
     await prisma.monitor_child_recommendation.create({
       data: {
-        child_recommendation: {
-          connect: { id: 1 }, // Reference to the existing child_recommendation by its id
+        child_recommendations: {
+          connect: { id: 1 }, // Reference to the existing child_recommendations by its id
         },
         is_done: false,
         date_time: new Date(),
