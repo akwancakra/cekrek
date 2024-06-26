@@ -17,6 +17,7 @@ CREATE TABLE `users` (
     `created_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) NOT NULL,
 
+
     UNIQUE INDEX `users_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -35,6 +36,7 @@ CREATE TABLE `children` (
     `risk_category` VARCHAR(191) NULL,
     `hearing_test` VARCHAR(191) NULL,
 
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -46,6 +48,7 @@ CREATE TABLE `birth_history` (
     `question` VARCHAR(191) NOT NULL,
     `answer` VARCHAR(191) NULL,
 
+
     UNIQUE INDEX `birth_history_children_id_key`(`children_id`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -55,6 +58,7 @@ CREATE TABLE `health_status` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `type` VARCHAR(191) NOT NULL,
     `question` VARCHAR(191) NOT NULL,
+
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -66,6 +70,7 @@ CREATE TABLE `child_health_status` (
     `health_status_id` INTEGER NOT NULL,
     `answer` VARCHAR(191) NULL,
 
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -73,6 +78,7 @@ CREATE TABLE `child_health_status` (
 CREATE TABLE `expert_examination` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `type` VARCHAR(191) NOT NULL,
+
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -83,6 +89,7 @@ CREATE TABLE `child_expert_examination` (
     `children_id` INTEGER NOT NULL,
     `expert_examination_id` INTEGER NOT NULL,
     `result` VARCHAR(191) NULL,
+
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -99,38 +106,48 @@ CREATE TABLE `recommendation` (
     `repetition` INTEGER NULL,
     `risk_cateogry` VARCHAR(191) NULL,
 
+
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `child_recommendation` (
+CREATE TABLE `child_recommendations` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `children_id` INTEGER NOT NULL,
     `recommendation_id` INTEGER NOT NULL,
+
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `children` ADD CONSTRAINT `children_parent_id_fkey` FOREIGN KEY (`parent_id`) REFERENCES `users`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `children`
+ADD CONSTRAINT `children_parent_id_fkey` FOREIGN KEY (`parent_id`) REFERENCES `users` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `birth_history` ADD CONSTRAINT `birth_history_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `birth_history`
+ADD CONSTRAINT `birth_history_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `child_health_status` ADD CONSTRAINT `child_health_status_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `child_health_status`
+ADD CONSTRAINT `child_health_status_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `child_health_status` ADD CONSTRAINT `child_health_status_health_status_id_fkey` FOREIGN KEY (`health_status_id`) REFERENCES `health_status`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `child_health_status`
+ADD CONSTRAINT `child_health_status_health_status_id_fkey` FOREIGN KEY (`health_status_id`) REFERENCES `health_status` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `child_expert_examination` ADD CONSTRAINT `child_expert_examination_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `child_expert_examination`
+ADD CONSTRAINT `child_expert_examination_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `child_expert_examination` ADD CONSTRAINT `child_expert_examination_expert_examination_id_fkey` FOREIGN KEY (`expert_examination_id`) REFERENCES `expert_examination`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `child_expert_examination`
+ADD CONSTRAINT `child_expert_examination_expert_examination_id_fkey` FOREIGN KEY (`expert_examination_id`) REFERENCES `expert_examination` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `child_recommendation` ADD CONSTRAINT `child_recommendation_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `child_recommendations`
+ADD CONSTRAINT `child_recommendation_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `child_recommendation` ADD CONSTRAINT `child_recommendation_recommendation_id_fkey` FOREIGN KEY (`recommendation_id`) REFERENCES `recommendation`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `child_recommendations`
+ADD CONSTRAINT `child_recommendation_recommendation_id_fkey` FOREIGN KEY (`recommendation_id`) REFERENCES `recommendation` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
