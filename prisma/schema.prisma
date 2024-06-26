@@ -172,11 +172,12 @@ model assesments {
 }
 
 model child_assesment {
-  id           Int      @id @default(autoincrement())
-  children_id  Int
-  assesment_id Int
-  answer       String
-  date_time    DateTime @db.Date
+  id             Int      @id @default(autoincrement())
+  assesment_type String   @default("awal") // awal, follow-up (enum)
+  children_id    Int
+  assesment_id   Int
+  answer         String
+  date_time      DateTime @db.Date
 
   children   children   @relation(fields: [children_id], references: [id])
   assesments assesments @relation(fields: [assesment_id], references: [id])

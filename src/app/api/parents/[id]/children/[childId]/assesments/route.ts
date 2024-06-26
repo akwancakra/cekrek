@@ -34,7 +34,7 @@ export async function POST(req: any, { params }: any) {
   try {
     const childId = parseInt(params.childId);
     const data = await req.json();
-    const { assesment_id, answer, date } = data;
+    const { assesment_id, assesment_type, answer, date } = data;
 
     // if student does not exist
     const student = await prisma.children.findUnique({
@@ -50,6 +50,7 @@ export async function POST(req: any, { params }: any) {
     const child_assesment = await prisma.child_assesment.create({
       data: {
         children_id: childId,
+        assesment_type,
         assesment_id,
         answer,
         date_time: dateResult,
