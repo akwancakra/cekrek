@@ -19,15 +19,23 @@ import ConnectStudentDialog from "../alerts/ConnectStudentDialog";
 
 interface TeacherDashboardHeaderType {
     showType: string;
+    keyword: string;
+    category: string;
+    setCategory: React.Dispatch<React.SetStateAction<string>>;
     setShowType: React.Dispatch<React.SetStateAction<string>>;
+    setKeyword: React.Dispatch<React.SetStateAction<string>>;
+    handleSearch: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 export default function TeacherDashboardHeader({
     showType,
     setShowType,
+    keyword,
+    setKeyword,
+    handleSearch,
+    category,
+    setCategory,
 }: TeacherDashboardHeaderType) {
-    const [childType, setChildType] = useState("low");
-
     const connectStudentButton = () => {
         console.log("Connect Student Button Clicked!");
     };
@@ -87,25 +95,25 @@ export default function TeacherDashboardHeader({
                                 <DropdownMenuPortal>
                                     <DropdownMenuSubContent>
                                         <DropdownMenuRadioGroup
-                                            value={childType}
-                                            onValueChange={setChildType}
+                                            value={category}
+                                            onValueChange={setCategory}
                                         >
                                             <DropdownMenuRadioItem
-                                                value="low"
+                                                value="rendah"
                                                 className="gap-2 items-center"
                                             >
                                                 <span className="badge p-1.5 h-fit bg-yellow-500"></span>
                                                 <span>Autis Rendah</span>
                                             </DropdownMenuRadioItem>
                                             <DropdownMenuRadioItem
-                                                value="medium"
+                                                value="sedang"
                                                 className="gap-2 items-center"
                                             >
                                                 <span className="badge p-1.5 h-fit bg-primary"></span>
                                                 <span>Autis Sedang</span>
                                             </DropdownMenuRadioItem>
                                             <DropdownMenuRadioItem
-                                                value="high"
+                                                value="tinggi"
                                                 className="gap-2 items-center"
                                             >
                                                 <span className="badge p-1.5 h-fit bg-red-500"></span>
@@ -114,9 +122,7 @@ export default function TeacherDashboardHeader({
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem
                                                 className="gap-2 items-center"
-                                                onClick={() =>
-                                                    setChildType("all")
-                                                }
+                                                onClick={() => setCategory("")}
                                             >
                                                 <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                                     mop
@@ -180,25 +186,25 @@ export default function TeacherDashboardHeader({
                                 <DropdownMenuPortal>
                                     <DropdownMenuSubContent>
                                         <DropdownMenuRadioGroup
-                                            value={childType}
-                                            onValueChange={setChildType}
+                                            value={category}
+                                            onValueChange={setCategory}
                                         >
                                             <DropdownMenuRadioItem
-                                                value="low"
+                                                value="rendah"
                                                 className="gap-2 items-center"
                                             >
                                                 <span className="badge p-1.5 h-fit bg-yellow-500"></span>
                                                 <span>Autis Rendah</span>
                                             </DropdownMenuRadioItem>
                                             <DropdownMenuRadioItem
-                                                value="medium"
+                                                value="sedang"
                                                 className="gap-2 items-center"
                                             >
                                                 <span className="badge p-1.5 h-fit bg-primary"></span>
                                                 <span>Autis Sedang</span>
                                             </DropdownMenuRadioItem>
                                             <DropdownMenuRadioItem
-                                                value="high"
+                                                value="tinggi"
                                                 className="gap-2 items-center"
                                             >
                                                 <span className="badge p-1.5 h-fit bg-red-500"></span>
@@ -207,9 +213,7 @@ export default function TeacherDashboardHeader({
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem
                                                 className="gap-2 items-center"
-                                                onClick={() =>
-                                                    setChildType("all")
-                                                }
+                                                onClick={() => setCategory("")}
                                             >
                                                 <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                                     mop
@@ -223,17 +227,20 @@ export default function TeacherDashboardHeader({
                         </DropdownMenuGroup>
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <form className="w-full sm:w-fit">
+                <form className="w-full sm:w-fit" onSubmit={handleSearch}>
                     <label className="input w-full input-bordered rounded-lg flex items-center gap-2 py-2 px-3 text-sm h-fit min-h-fit sm:w-fit group-[.open]:w-full md:group-[.open]:w-fit">
                         <input
                             type="text"
                             className="grow"
                             placeholder="Search"
                             name="keyword"
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
                         />
                         <Button
                             variant={"outline"}
                             className="p-0 border-none h-fit"
+                            type="submit"
                         >
                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                 search

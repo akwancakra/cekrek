@@ -23,60 +23,84 @@ import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuPortal,
-    DropdownMenuSeparator,
-    DropdownMenuSub,
-    DropdownMenuSubContent,
-    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
-import { Student } from "@/types/student.types";
+import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Assessment } from "@/types/assessment.types";
+import { Child } from "@/types/children.types";
+import { ChildAssesment } from "@/types/childAssesment.type";
+import { childs } from "@/utils/tempData";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-const assessments: Assessment[] = [
-    {
-        id: "1",
-        title: "Assessment 1",
-        description: "Assessment 1 Description",
-        category: "Low",
-        createdAt: "2022-01-01",
-    },
-    {
-        id: "2",
-        title: "Assessment 1",
-        description: "Assessment 1 Description",
-        category: "Medium",
-        createdAt: "2022-01-01",
-    },
-    {
-        id: "3",
-        title: "Assessment 1",
-        description: "Assessment 1 Description",
-        category: "High",
-        createdAt: "2022-01-01",
-    },
-    {
-        id: "4",
-        title: "Assessment 1",
-        description: "Assessment 1 Description",
-        category: "High",
-        createdAt: "2022-01-01",
-    },
-    {
-        id: "5",
-        title: "Assessment 1",
-        description: "Assessment 1 Description",
-        category: "High",
-        createdAt: "2022-01-01",
-    },
-];
+type ProcessedAssessment = {
+    id: number;
+    nama: string;
+    score: string;
+    date_time: Date;
+    risk_category: "Rendah" | "Sedang" | "Tinggi";
+};
 
-const columns: ColumnDef<Assessment>[] = [
+interface AssessmentHistoryTableProps {
+    keyword?: string;
+}
+
+const processAssessments = (assessments: Child[]): ProcessedAssessment[] => {
+    return assessments
+        .filter(
+            (child): child is Child & { child_assesments: ChildAssesment[] } =>
+                !!child.child_assesments && child.child_assesments.length > 0
+        )
+        .map((child) => {
+            let totalLulus = 0;
+            let totalGagal = 0;
+            child.child_assesments.forEach((chass) => {
+                totalLulus += chass.assesment.filter(
+                    (assesment) => assesment.answer === "Lulus"
+                ).length;
+                totalGagal += chass.assesment.filter(
+                    (assesment) => assesment.answer === "Gagal"
+                ).length;
+            });
+
+            let risk_category: "Rendah" | "Sedang" | "Tinggi" = "Rendah";
+            if (totalGagal >= 0 && totalGagal <= 2) {
+                risk_category = "Rendah";
+            } else if (totalGagal >= 3 && totalGagal <= 7) {
+                risk_category = "Sedang";
+            } else if (totalGagal >= 8 && totalGagal <= 20) {
+                risk_category = "Tinggi";
+            }
+
+            return {
+                id: child.id,
+                nama: child.full_name,
+                score: `${totalLulus}/${totalGagal}`,
+                date_time: child.child_assesments[0].date_time,
+                risk_category: risk_category,
+            };
+        });
+};
+
+const removeAssessmentButton = (id: number) => {
+    console.log("Assessment Removed!");
+};
+
+// JALANIN FUNGSINYA
+const historyAssessmen = processAssessments(childs);
+
+const columns: ColumnDef<ProcessedAssessment>[] = [
     {
         accessorKey: "id",
         header: ({ column }) => {
@@ -97,7 +121,7 @@ const columns: ColumnDef<Assessment>[] = [
         },
     },
     {
-        accessorKey: "category",
+        accessorKey: "nama",
         header: ({ column }) => {
             return (
                 <Button
@@ -107,7 +131,7 @@ const columns: ColumnDef<Assessment>[] = [
                     }
                     className="gap-1 p-0 px-1"
                 >
-                    <span>Category</span>
+                    <span>Siswa</span>
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         swap_vert
                     </span>
@@ -116,16 +140,52 @@ const columns: ColumnDef<Assessment>[] = [
         },
     },
     {
-        accessorKey: "createdAt",
+        accessorKey: "risk_category",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="gap-1 p-0 px-1"
+                >
+                    <span>Kategori</span>
+                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                        swap_vert
+                    </span>
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "score",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="gap-1 p-0 px-1"
+                >
+                    <span>Lulus/Gagal</span>
+                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                        swap_vert
+                    </span>
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "date_time",
         cell: ({ row }) => {
             const formattedDate = new Date(
-                row.getValue("createdAt")
+                row.getValue("date_time")
             ).toLocaleDateString("id-ID", {
                 year: "2-digit",
                 month: "short",
                 day: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
             });
 
             return <p className="text-sm text-gray-500">{formattedDate}</p>;
@@ -139,7 +199,7 @@ const columns: ColumnDef<Assessment>[] = [
                     }
                     className="gap-1 p-0 px-1"
                 >
-                    <span>Created At</span>
+                    <span>Waktu Asesmen</span>
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         swap_vert
                     </span>
@@ -150,7 +210,7 @@ const columns: ColumnDef<Assessment>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const assessmentId = row.getValue("id");
+            const assessmentId: string = row.getValue("id");
 
             return (
                 <DropdownMenu>
@@ -171,71 +231,66 @@ const columns: ColumnDef<Assessment>[] = [
                                 Lihat detil
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link
-                                href={`/t/assessments/${assessmentId}/recommendation`}
-                            >
-                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    clinical_notes
-                                </span>{" "}
-                                Rekomendasi harian
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuGroup>
-                            <DropdownMenuSub>
-                                <DropdownMenuSubTrigger>
-                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                        assignment
-                                    </span>{" "}
-                                    <span>Unduh asesmen</span>
-                                </DropdownMenuSubTrigger>
-                                <DropdownMenuPortal>
-                                    <DropdownMenuSubContent>
-                                        <DropdownMenuItem className="cursor-pointer gap-1">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="18"
-                                                height="18"
-                                                className="fill-green-500"
-                                                viewBox="0 0 16 16"
+                        <DropdownMenuItem
+                            className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                            asChild
+                        >
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <button
+                                        type="button"
+                                        className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                    >
+                                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
+                                            delete
+                                        </span>
+                                        <span>Hapus siswa</span>
+                                    </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Apakah kamu yakin?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Ini akan menghapus data{" "}
+                                            <span className="font-semibold">
+                                                Dwiky Putra
+                                            </span>{" "}
+                                            dan tidak bisa dikembalikan, dan
+                                            berikut rincian data yang akan
+                                            dihapus:
+                                            <span className="block mt-1">
+                                                &gt; Data profil anak
+                                            </span>
+                                            <span className="block">
+                                                &gt; Data riwayat asesmen
+                                            </span>
+                                            <span className="block">
+                                                &gt; Data rekomendasi
+                                            </span>
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Batal
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction asChild>
+                                            <Button
+                                                variant={"destructive"}
+                                                onClick={() =>
+                                                    removeAssessmentButton(
+                                                        parseInt(assessmentId)
+                                                    )
+                                                }
+                                                className="bg-red-500 text-white hover:bg-red-700"
                                             >
-                                                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0M9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1M5.884 6.68 8 9.219l2.116-2.54a.5.5 0 1 1 .768.641L8.651 10l2.233 2.68a.5.5 0 0 1-.768.64L8 10.781l-2.116 2.54a.5.5 0 0 1-.768-.641L7.349 10 5.116 7.32a.5.5 0 1 1 .768-.64" />
-                                            </svg>
-                                            <span>Unduh excel</span>
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem className="cursor-pointer gap-1">
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                width="18"
-                                                height="18"
-                                                className="fill-red-700"
-                                                viewBox="0 0 16 16"
-                                            >
-                                                <path d="M5.523 12.424q.21-.124.459-.238a8 8 0 0 1-.45.606c-.28.337-.498.516-.635.572l-.035.012a.3.3 0 0 1-.026-.044c-.056-.11-.054-.216.04-.36.106-.165.319-.354.647-.548m2.455-1.647q-.178.037-.356.078a21 21 0 0 0 .5-1.05 12 12 0 0 0 .51.858q-.326.048-.654.114m2.525.939a4 4 0 0 1-.435-.41q.344.007.612.054c.317.057.466.147.518.209a.1.1 0 0 1 .026.064.44.44 0 0 1-.06.2.3.3 0 0 1-.094.124.1.1 0 0 1-.069.015c-.09-.003-.258-.066-.498-.256M8.278 6.97c-.04.244-.108.524-.2.829a5 5 0 0 1-.089-.346c-.076-.353-.087-.63-.046-.822.038-.177.11-.248.196-.283a.5.5 0 0 1 .145-.04c.013.03.028.092.032.198q.008.183-.038.465z" />
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2m5.5 1.5v2a1 1 0 0 0 1 1h2zM4.165 13.668c.09.18.23.343.438.419.207.075.412.04.58-.03.318-.13.635-.436.926-.786.333-.401.683-.927 1.021-1.51a11.7 11.7 0 0 1 1.997-.406c.3.383.61.713.91.95.28.22.603.403.934.417a.86.86 0 0 0 .51-.138c.155-.101.27-.247.354-.416.09-.181.145-.37.138-.563a.84.84 0 0 0-.2-.518c-.226-.27-.596-.4-.96-.465a5.8 5.8 0 0 0-1.335-.05 11 11 0 0 1-.98-1.686c.25-.66.437-1.284.52-1.794.036-.218.055-.426.048-.614a1.24 1.24 0 0 0-.127-.538.7.7 0 0 0-.477-.365c-.202-.043-.41 0-.601.077-.377.15-.576.47-.651.823-.073.34-.04.736.046 1.136.088.406.238.848.43 1.295a20 20 0 0 1-1.062 2.227 7.7 7.7 0 0 0-1.482.645c-.37.22-.699.48-.897.787-.21.326-.275.714-.08 1.103"
-                                                />
-                                            </svg>
-                                            <span>Unduh pdf</span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuSubContent>
-                                </DropdownMenuPortal>
-                            </DropdownMenuSub>
-                        </DropdownMenuGroup>
-                        <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link href={`/t/assessments/${assessmentId}/edit`}>
-                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    edit
-                                </span>{" "}
-                                Ubah asesmen
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600">
-                            <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                delete
-                            </span>{" "}
-                            Hapus asesmen
+                                                Hapus
+                                            </Button>
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
@@ -244,14 +299,23 @@ const columns: ColumnDef<Assessment>[] = [
     },
 ];
 
-export default function AssessmentHistoryTable() {
+export default function AssessmentHistoryTable({
+    keyword,
+}: AssessmentHistoryTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const [showSize, setShowSize] = useState(15);
 
+    const filteredData = useMemo(() => {
+        if (!keyword) return historyAssessmen;
+        return historyAssessmen.filter((item) =>
+            item.nama.toLowerCase().includes(keyword.toLowerCase())
+        );
+    }, [keyword]);
+
     const table = useReactTable({
-        data: assessments,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

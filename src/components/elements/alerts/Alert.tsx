@@ -39,7 +39,7 @@ export default function Alert({
             )}
             {/* TEXT GOES HERE */}
             <div>
-                <p className="text-medium tracking-tighter font-semibold">
+                <p className="text-medium tracking-tight font-semibold">
                     {text}
                 </p>
                 {desc && <p className="text-small">{desc}</p>}

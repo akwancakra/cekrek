@@ -4,11 +4,24 @@ import Clock from "@/components/elements/Clock";
 import TeacherDashboardHeader from "@/components/elements/headers/TeacherDashboardHeader";
 import StudentsGrid from "@/components/elements/tables-and-grids/StudentsGrid";
 import StudentsTable from "@/components/elements/tables-and-grids/StudentsTable";
-
+// import { useQuery } from "@tanstack/react-query";
+// import axios from "axios";
 import { useState } from "react";
 
 export default function HomeTeacher({}) {
     const [showType, setShowType] = useState("grid");
+    const [keyword, setKeyword] = useState("");
+    const [category, setCategory] = useState("");
+
+    // const { data, error, isLoading } = useQuery(['assessments'], fetchAssessments);
+
+    const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        const target = event.target as typeof event.target & {
+            keyword: { value: string };
+        };
+        setKeyword(target.keyword.value);
+    };
 
     return (
         <>
@@ -26,12 +39,35 @@ export default function HomeTeacher({}) {
                 <TeacherDashboardHeader
                     showType={showType}
                     setShowType={setShowType}
+                    keyword={keyword}
+                    setKeyword={setKeyword}
+                    handleSearch={handleSearch}
+                    category={category}
+                    setCategory={setCategory}
                 />
 
                 <span>
-                    {showType === "grid" ? <StudentsGrid /> : <StudentsTable />}
+                    {showType === "grid" ? (
+                        <StudentsGrid keyword={keyword} category={category} />
+                    ) : (
+                        <StudentsTable keyword={keyword} category={category} />
+                    )}
                 </span>
             </section>
         </>
     );
 }
+
+{
+    /* <QueryClientProvider client={queryClient}>
+    <YourMainComponent />
+</QueryClientProvider> */
+}
+
+// const fetchAssessments = async (page = 1, limit = 10) => {
+//     const { data } = await axios.get("/api/assessments", {
+//         params: { page, limit },
+//     });
+
+//     return data;
+// };

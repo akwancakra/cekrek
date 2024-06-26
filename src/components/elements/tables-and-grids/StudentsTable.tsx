@@ -25,52 +25,49 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
-import { Student } from "@/types/student.types";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { Child } from "@/types/children.types";
 
-const students: Student[] = [
+interface StudentsTableProps {
+    keyword: string;
+    category: string;
+}
+
+const students: Child[] = [
     {
-        id: "1",
-        name: "Andreas Nathan",
-        image: "/images/user-default.jpg",
-        category: "Medium",
-        old: 14,
+        id: 1,
+        full_name: "Aulia Rahman",
+        teacher_id: 2,
+        nick_name: "Aul",
+        picture: "default.jpg",
+        gender: "Laki-laki",
+        place_birth: "Jakarta",
+        date_time_birth: new Date("2010-05-12"),
+        religion: "Islam",
+        count_of_siblings: 2,
+        risk_category: "sedang",
+        hearing_test: "pendengaran dalam batas normal",
     },
     {
-        id: "2",
-        name: "Jhony Itu",
-        image: "/images/user-default.jpg",
-        category: "High",
-        old: 12,
-    },
-    {
-        id: "3",
-        name: "Kai Cenat",
-        image: "/images/user-default.jpg",
-        category: "Low",
-        old: 14,
-    },
-    {
-        id: "4",
-        name: "Bianca Cenat",
-        image: "/images/user-default.jpg",
-        category: "High",
-        old: 14,
-    },
-    {
-        id: "5",
-        name: "Doni Sitorus",
-        image: "/images/user-default.jpg",
-        category: "Medium",
-        old: 15,
+        id: 2,
+        full_name: "Padang Bulan",
+        teacher_id: 2,
+        nick_name: "Aul",
+        picture: "default.jpg",
+        gender: "Laki-laki",
+        place_birth: "Jakarta",
+        date_time_birth: new Date("2010-05-12"),
+        religion: "Islam",
+        count_of_siblings: 2,
+        risk_category: "sedang",
+        hearing_test: "pendengaran dalam batas normal",
     },
 ];
 
-const columns: ColumnDef<Student>[] = [
+const columns: ColumnDef<Child>[] = [
     {
         accessorKey: "id",
         header: ({ column }) => {
@@ -91,7 +88,7 @@ const columns: ColumnDef<Student>[] = [
         },
     },
     {
-        accessorKey: "name",
+        accessorKey: "full_name",
         header: ({ column }) => {
             return (
                 <Button
@@ -101,7 +98,7 @@ const columns: ColumnDef<Student>[] = [
                     }
                     className="gap-1 p-0 px-1"
                 >
-                    <span>Name</span>
+                    <span>Nama</span>
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         swap_vert
                     </span>
@@ -115,14 +112,14 @@ const columns: ColumnDef<Student>[] = [
                         href={`/t/students/${row.getValue("id")}`}
                         className="hover:text-primary"
                     >
-                        <span>{row.getValue("name")}</span>
+                        <span>{row.getValue("full_name")}</span>
                     </Link>
                 </div>
             );
         },
     },
     {
-        accessorKey: "category",
+        accessorKey: "risk_category",
         header: ({ column }) => {
             return (
                 <Button
@@ -132,7 +129,7 @@ const columns: ColumnDef<Student>[] = [
                     }
                     className="gap-1 p-0 px-1"
                 >
-                    <span>Category</span>
+                    <span>Kategori</span>
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         swap_vert
                     </span>
@@ -141,7 +138,16 @@ const columns: ColumnDef<Student>[] = [
         },
     },
     {
-        accessorKey: "old",
+        accessorKey: "date_time",
+        cell: ({ row }) => {
+            const formattedDate = new Date().toLocaleDateString("id-ID", {
+                year: "2-digit",
+                month: "short",
+                day: "numeric",
+            });
+
+            return <p className="text-sm text-gray-500">{formattedDate}</p>;
+        },
         header: ({ column }) => {
             return (
                 <Button
@@ -151,18 +157,12 @@ const columns: ColumnDef<Student>[] = [
                     }
                     className="gap-1 p-0 px-1"
                 >
-                    <span>Old</span>
+                    <span>Terakhir Asesmen</span>
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         swap_vert
                     </span>
                 </Button>
             );
-        },
-        cell: ({ row }) => {
-            const old = parseFloat(row.getValue("old"));
-            const formattedOld = old + " Years";
-
-            return formattedOld;
         },
     },
     {
@@ -194,7 +194,7 @@ const columns: ColumnDef<Student>[] = [
                                 <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                     assignment
                                 </span>{" "}
-                                Buat asesmen
+                                Lakukan asesmen
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer" asChild>
@@ -204,7 +204,7 @@ const columns: ColumnDef<Student>[] = [
                                 <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                     clinical_notes
                                 </span>{" "}
-                                Rekomendasi harian
+                                Lakukan monitoring
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer" asChild>
@@ -228,19 +228,36 @@ const columns: ColumnDef<Student>[] = [
     },
 ];
 
-// interface DataTableProps<TData, TValue> {
-//     columns: ColumnDef<TData, TValue>[];
-//     data: TData[];
-// }
-
-export default function StudentsTable() {
+export default function StudentsTable({
+    keyword,
+    category,
+}: StudentsTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const [showSize, setShowSize] = useState(15);
 
+    // const filteredData = useMemo(() => {
+    //     if (!keyword) return students;
+    //     return students.filter((item) =>
+    //         item.full_name.toLowerCase().includes(keyword.toLowerCase())
+    //     );
+    // }, [keyword]);
+
+    const filteredData = useMemo(() => {
+        if (!keyword && !category) return students;
+        return students.filter((item) => {
+            const matchesKeyword = item.full_name
+                .toLowerCase()
+                .includes(keyword.toLowerCase());
+            const matchesCategory =
+                !category || item.risk_category === category;
+            return matchesKeyword && matchesCategory;
+        });
+    }, [keyword, category]);
+
     const table = useReactTable({
-        data: students,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

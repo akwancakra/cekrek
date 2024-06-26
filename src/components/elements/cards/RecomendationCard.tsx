@@ -2,9 +2,17 @@ import { Badge } from "@/components/ui/badge";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import Image from "next/image";
 
-export default function RecomendationCard({}) {
+interface RecomendationCardProps {
+    className?: string;
+    isActive?: boolean;
+}
+
+export default function RecomendationCard({
+    className,
+    isActive = true,
+}: RecomendationCardProps) {
     return (
-        <div className="collapse rounded-lg hover:bg-gray-100">
+        <div className={`collapse rounded-lg hover:bg-gray-100 ${className}`}>
             <input type="checkbox" />
             <div className="collapse-title p-0 min-h-fit">
                 <div className="flex justify-between items-center mb-1">
@@ -29,18 +37,14 @@ export default function RecomendationCard({}) {
                             </p>
                         </div>
                     </div>
-                    <Badge
-                        variant={"outline"}
-                        className="border-primary text-primary"
-                    >
-                        Telah dilakukan
-                    </Badge>
-                    {/* <label className="cursor-pointer px-4 z-10">
-                        <input
-                            type="checkbox"
-                            className="checkbox checkbox-primary checkbox-sm !rounded-lg"
-                        />
-                    </label> */}
+                    {isActive && (
+                        <Badge
+                            variant={"outline"}
+                            className="border-primary text-primary"
+                        >
+                            Telah dilakukan
+                        </Badge>
+                    )}
                 </div>
             </div>
             <div className="collapse-content !p-0">

@@ -7,18 +7,22 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Assessment } from "@/types/assessment.types";
+import { ChildAssesment } from "@/types/childAssesment.type";
+import { getRiskCategory, getScoreAssessments } from "@/utils/converters";
 import { useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
 
 interface ExcelAssessmentStudentProps {
-    assessment: Assessment;
+    date: Date;
+    childAssessment: ChildAssesment[];
 }
 
 export default function ExcelAssessmentStudent({
-    assessment,
+    date,
+    childAssessment,
 }: ExcelAssessmentStudentProps) {
     const tbl = useRef<HTMLTableElement>(null);
+    const tblAssessment = useRef<HTMLTableElement>(null);
 
     const xport = useCallback(() => {
         const wb = XLSX.utils.book_new();
@@ -41,14 +45,24 @@ export default function ExcelAssessmentStudent({
 
         // Convert table to workbook
         const tblData = XLSX.utils.table_to_sheet(tbl.current);
+        const tblAssessmentData = XLSX.utils.table_to_sheet(
+            tblAssessment.current
+        );
 
         // Convert table data to array of arrays
         const tableData = XLSX.utils.sheet_to_json(tblData, {
             header: 1,
         }) as any[][];
+        const tableAssessmentData = XLSX.utils.sheet_to_json(
+            tblAssessmentData,
+            { header: 1 }
+        ) as any[][];
 
-        // Append table data to worksheet starting from row 5
-        XLSX.utils.sheet_add_aoa(ws, tableData, { origin: -1 });
+        // Combine table data and table assessment data
+        const combinedData = [...tableData, ...[[" "]], ...tableAssessmentData];
+
+        // Append combined data to worksheet starting from row 5
+        XLSX.utils.sheet_add_aoa(ws, combinedData, { origin: -1 });
 
         // Calculate column widths
         const colWidths = [
@@ -63,7 +77,7 @@ export default function ExcelAssessmentStudent({
         ws["!cols"] = colWidths;
 
         // Convert date column (index 4, assuming Tanggal Tes is in the 5th column)
-        tableData.forEach((row, index) => {
+        combinedData.forEach((row, index) => {
             if (index > 0 && row[4]) {
                 // Skip header row and check if date exists
                 const date = new Date(row[4]);
@@ -105,34 +119,50 @@ export default function ExcelAssessmentStudent({
             <Table ref={tbl} className="hidden">
                 <TableHeader>
                     <TableRow>
-                        <TableHead>ID</TableHead>
-                        <TableHead>Judul</TableHead>
-                        <TableHead>Deskripsi</TableHead>
+                        <TableHead>Skor</TableHead>
                         <TableHead>Kategori</TableHead>
                         <TableHead>Tanggal Tes</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow key={assessment.id}>
-                        <TableCell className="font-medium">
-                            {assessment.id}
-                        </TableCell>
-                        <TableCell>{assessment.title}</TableCell>
-                        <TableCell>{assessment.description}</TableCell>
-                        <TableCell>{assessment.category}</TableCell>
+                    <TableRow key={childAssessment[0].id}>
                         <TableCell>
-                            {new Date(assessment.createdAt).toLocaleString(
-                                "id-ID",
-                                {
-                                    day: "2-digit",
-                                    month: "2-digit",
-                                    year: "numeric",
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                }
-                            )}
+                            {getScoreAssessments(childAssessment)}
+                        </TableCell>
+                        <TableCell>
+                            {getRiskCategory(childAssessment)}
+                        </TableCell>
+                        <TableCell>
+                            {date.toLocaleString("id-ID", {
+                                day: "2-digit",
+                                month: "2-digit",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                            })}
                         </TableCell>
                     </TableRow>
+                </TableBody>
+            </Table>
+
+            <Table ref={tblAssessment} className="hidden">
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>No</TableHead>
+                        <TableHead>Pertanyaan</TableHead>
+                        <TableHead>Hasil</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {childAssessment.map((chass) => (
+                        <TableRow key={chass.id}>
+                            <TableCell className="font-medium">
+                                {chass.assesments?.assesment_number}
+                            </TableCell>
+                            <TableCell>{chass.assesments?.question}</TableCell>
+                            <TableCell>{chass.answer}</TableCell>
+                        </TableRow>
+                    ))}
                 </TableBody>
             </Table>
         </>

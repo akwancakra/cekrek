@@ -30,11 +30,15 @@ export default function AssessmentResult() {
                                 Skor: 12 Ya, 8 Tidak
                             </p>
                         </div>
-                        <button className="btn btn-circle w-10 h-10 min-h-0 !leading-none">
+                        <Button
+                            variant={"secondary"}
+                            size={"icon"}
+                            className="rounded-full"
+                        >
                             <span className="material-symbols-outlined !text-xl !leading-4">
                                 info
                             </span>
-                        </button>
+                        </Button>
                     </div>
                     <div className="flex justify-between gap-2">
                         <div>
@@ -45,11 +49,15 @@ export default function AssessmentResult() {
                                 Skor: 12 Ya, 8 Tidak
                             </p>
                         </div>
-                        <button className="btn btn-circle w-10 h-10 min-h-0 !leading-none">
+                        <Button
+                            variant={"secondary"}
+                            size={"icon"}
+                            className="rounded-full"
+                        >
                             <span className="material-symbols-outlined !text-xl !leading-4">
                                 info
                             </span>
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>
