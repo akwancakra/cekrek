@@ -17,7 +17,7 @@ export async function GET(req: any, { params }: any) {
         birth_history: true,
         health_status: true,
         expert_examination: true,
-        child_recommendation: {
+        child_recommendations: {
           include: {
             recommendations: true,
             monitors: true,
@@ -25,7 +25,7 @@ export async function GET(req: any, { params }: any) {
         },
         child_assesments: {
           include: {
-            assesments: true,
+            assesment: true,
           },
         },
         parent: true,

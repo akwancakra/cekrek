@@ -7,14 +7,14 @@ export async function GET(req: any, { params }: any) {
   try {
     const recommendationId = parseInt(params.recommendationId);
     const childId = parseInt(params.childId);
-    const child_recommendation = await prisma.child_recommendation.findFirst({
+    const child_recommendations = await prisma.child_recommendations.findFirst({
       where: { children_id: childId, id: recommendationId },
       // include: {
       //   children: true,
       //   recommendations: true,
       //   monitors: {
       //     include: {
-      //       child_recommendation: {
+      //       child_recommendations: {
       //         include: {
       //           recommendations: true,
       //         },
@@ -28,14 +28,14 @@ export async function GET(req: any, { params }: any) {
         monitors: true,
       },
     });
-    if (!child_recommendation) {
+    if (!child_recommendations) {
       return NextResponse.json(
         { status: "error", message: "Recommendation Not Found" },
         { status: 200 }
       );
     }
     return NextResponse.json(
-      { status: "success", child_recommendation },
+      { status: "success", child_recommendations },
       { status: 200 }
     );
   } catch (error: any) {

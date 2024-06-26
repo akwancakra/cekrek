@@ -9,14 +9,14 @@ export async function GET(req: any, { params }: any) {
     const limit = url?.searchParams?.get("limit") || "10";
     const skip = url?.searchParams?.get("skip") || "0";
     const childId = parseInt(params.childId);
-    const child_recommendation = await prisma.child_recommendation.findMany({
+    const child_recommendations = await prisma.child_recommendations.findMany({
       where: { children_id: childId },
       // include: {
       //   children: true,
       //   recommendations: true,
       //   monitors: {
       //     include: {
-      //       child_recommendation: {
+      //       child_recommendations: {
       //         include: {
       //           recommendations: true,
       //         },
@@ -32,13 +32,13 @@ export async function GET(req: any, { params }: any) {
       take: parseInt(limit),
       skip: parseInt(skip),
     });
-    if (child_recommendation.length === 0)
+    if (child_recommendations.length === 0)
       return NextResponse.json(
-        { status: "error", message: "No child_recommendation Found" },
+        { status: "error", message: "No child_recommendations Found" },
         { status: 200 }
       );
     return NextResponse.json(
-      { status: "success", child_recommendation },
+      { status: "success", child_recommendations },
       { status: 200 }
     );
   } catch (error: any) {

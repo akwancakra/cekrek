@@ -49,12 +49,12 @@ model children {
   // Riwayat hasil tes pendengaran. soal no 2 MCHAT
   hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
 
-  parent               users[]
-  child_recommendation child_recommendation[]
-  birth_history        birth_history?
-  expert_examination   expert_examination?
-  health_status        health_status?
-  child_assesments     child_assesment[]
+  parent                users[]
+  child_recommendations child_recommendations[]
+  birth_history         birth_history?
+  expert_examination    expert_examination?
+  health_status         health_status?
+  child_assesments      child_assesment[]
 }
 
 model birth_history {
@@ -139,13 +139,13 @@ model recommendations {
   risk_category    String? // rendah, sedang, tinggi (enum)
 
   // children             children               @relation(fields: [children_id], references: [id])
-  // child_recommendation child_recommendation[]
+  // child_recommendations child_recommendations[]
 
-  children child_recommendation[]
+  children child_recommendations[]
 }
 
 // tabel pivot rekomendasi dan anak
-model child_recommendation {
+model child_recommendations {
   id                Int                            @id @default(autoincrement())
   children          children                       @relation(fields: [children_id], references: [id])
   children_id       Int
@@ -155,11 +155,11 @@ model child_recommendation {
 }
 
 model monitor_child_recommendation {
-  id                      Int                  @id @default(autoincrement())
+  id                      Int                   @id @default(autoincrement())
   child_recommendation_id Int
-  date_time               DateTime             @db.Date
-  is_done                 Boolean              @default(false)
-  child_recommendation    child_recommendation @relation(fields: [child_recommendation_id], references: [id])
+  date_time               DateTime              @db.Date
+  is_done                 Boolean               @default(false)
+  child_recommendations   child_recommendations @relation(fields: [child_recommendation_id], references: [id])
 }
 
 model assesments {
@@ -179,8 +179,8 @@ model child_assesment {
   answer         String
   date_time      DateTime @db.Date
 
-  children   children   @relation(fields: [children_id], references: [id])
-  assesments assesments @relation(fields: [assesment_id], references: [id])
+  children  children   @relation(fields: [children_id], references: [id])
+  assesment assesments @relation(fields: [assesment_id], references: [id])
 }
 
 // model assesment {
