@@ -42,11 +42,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { getRiskCategory, getScoreAssessments } from "@/utils/converters";
-import { formattedDate } from "@/utils/formattedDate";
+import { processChildAssessments } from "@/utils/converters";
+import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 
 export default function StudentDetails({}) {
     const [data, setData] = useState(childs[0]);
+    const historyAssessmen = processChildAssessments(data);
 
     const removeStudentButton = (id: number) => {
         console.log("Student Removed");
@@ -321,6 +322,7 @@ export default function StudentDetails({}) {
                             <Table>
                                 <TableHeader>
                                     <TableRow>
+                                        <TableHead>Tipe</TableHead>
                                         <TableHead>Lulus/Gagal</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Tanggal Tes</TableHead>
@@ -338,84 +340,73 @@ export default function StudentDetails({}) {
                                         </TableRow>
                                     )}
 
-                                    {data.child_assesments?.map(
-                                        (chass, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>
-                                                    {getScoreAssessments(
-                                                        chass.assesment
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {getRiskCategory(
-                                                        chass.assesment
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {formattedDate(
-                                                        chass.date_time.toString()
-                                                    )}
-                                                </TableCell>
-                                                <TableCell>
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
+                                    {historyAssessmen?.map((ass, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>
+                                                Asesmen{" "}
+                                                {capitalizeFirstLetter(
+                                                    ass.type
+                                                )}
+                                            </TableCell>
+                                            <TableCell>{ass.score}</TableCell>
+                                            <TableCell>
+                                                {ass.risk_category}
+                                            </TableCell>
+                                            <TableCell>
+                                                {formattedDate(
+                                                    ass.date_time.toString()
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="w-2 text-center">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="h-8 w-8 p-0"
                                                         >
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="h-8 w-8 p-0"
-                                                            >
-                                                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                                                                    more_horiz
-                                                                </span>
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuLabel>
-                                                                Aksi
-                                                            </DropdownMenuLabel>
-                                                            <DropdownMenuGroup>
-                                                                <DropdownMenuSub>
-                                                                    <DropdownMenuSubTrigger>
-                                                                        <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                                                            assignment
-                                                                        </span>{" "}
-                                                                        <span>
-                                                                            Unduh
-                                                                            asesmen
-                                                                        </span>
-                                                                    </DropdownMenuSubTrigger>
-                                                                    <DropdownMenuPortal>
-                                                                        <DropdownMenuSubContent>
-                                                                            <ExcelAssessmentStudent
-                                                                                date={
-                                                                                    chass.date_time
-                                                                                }
-                                                                                childAssessment={
-                                                                                    chass.assesment
-                                                                                }
-                                                                            />
-                                                                            <PDFAssessmentStudent
-                                                                                child={
-                                                                                    data
-                                                                                }
-                                                                                date={
-                                                                                    chass.date_time
-                                                                                }
-                                                                                childAssessment={
-                                                                                    chass.assesment
-                                                                                }
-                                                                            />
-                                                                        </DropdownMenuSubContent>
-                                                                    </DropdownMenuPortal>
-                                                                </DropdownMenuSub>
-                                                            </DropdownMenuGroup>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                    )}
+                                                            <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                                                                more_horiz
+                                                            </span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>
+                                                            Aksi
+                                                        </DropdownMenuLabel>
+                                                        <DropdownMenuGroup>
+                                                            <DropdownMenuSub>
+                                                                <DropdownMenuSubTrigger>
+                                                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                                                        assignment
+                                                                    </span>{" "}
+                                                                    <span>
+                                                                        Unduh
+                                                                        asesmen
+                                                                    </span>
+                                                                </DropdownMenuSubTrigger>
+                                                                <DropdownMenuPortal>
+                                                                    <DropdownMenuSubContent>
+                                                                        <ExcelAssessmentStudent
+                                                                            data={
+                                                                                data
+                                                                            }
+                                                                        />
+                                                                        <PDFAssessmentStudent
+                                                                            data={
+                                                                                data
+                                                                            }
+                                                                        />
+                                                                    </DropdownMenuSubContent>
+                                                                </DropdownMenuPortal>
+                                                            </DropdownMenuSub>
+                                                        </DropdownMenuGroup>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                                 <TableFooter>
                                     <TableRow>

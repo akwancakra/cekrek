@@ -5,8 +5,6 @@ import {
     CarouselApi,
     CarouselContent,
     CarouselItem,
-    CarouselNext,
-    CarouselPrevious,
 } from "@/components/ui/carousel";
 import Clock from "@/components/elements/Clock";
 import Alert from "@/components/elements/alerts/Alert";
@@ -113,15 +111,16 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                 <div className="flex items-center">
                     <Pill
                         text={`Rekomendasi ${getMonitoredRecToday(
-                            data[0]?.monitoringChildRecommendation || []
-                        )}/${data[0].child_recommendation?.length}`}
+                            data[0]?.monitoringChildRecommendations?.[0]
+                                ?.monitorRecommendations || []
+                        )}/${data[0].child_recommendations?.length}`}
                         icon="assignment"
                         type="secondary"
                         classnew="w-fit"
                     />
                 </div>
 
-                {data[0]?.child_recommendation?.length === 0 ? (
+                {data[0]?.child_recommendations?.length === 0 ? (
                     <div className="my-3 text-center">
                         <p>Tidak ada data rekomendasi anak</p>
                         <p>
@@ -131,7 +130,7 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-1 group-[.open]:grid-cols-2 md:group-[.open]:grid-cols-1">
-                        {data[0]?.child_recommendation
+                        {data[0]?.child_recommendations
                             ?.slice(0, 6)
                             .map((item, index) =>
                                 item.recommendation ? (
@@ -140,7 +139,8 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                                         recommendation={item.recommendation}
                                         monitoringChildRec={
                                             data[0]
-                                                ?.monitoringChildRecommendation
+                                                ?.monitoringChildRecommendations?.[0]
+                                                ?.monitorRecommendations
                                         }
                                     />
                                 ) : null
@@ -166,7 +166,8 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                 <AspectRatio ratio={8 / 9} className="bg-muted">
                     <Image
                         src={`/static/images/${getFirstRecommendationImage(
-                            data[0].monitoringChildRecommendation || []
+                            data[0]?.monitoringChildRecommendations?.[0]
+                                ?.monitorRecommendations || []
                         )}`}
                         alt="Recomendation Image"
                         fill={true}
@@ -226,10 +227,11 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                 <div className="flex items-center">
                                     <Pill
                                         text={`Rekomendasi ${getMonitoredRecToday(
-                                            child?.monitoringChildRecommendation ||
-                                                []
+                                            child
+                                                ?.monitoringChildRecommendations?.[0]
+                                                ?.monitorRecommendations || []
                                         )}/${
-                                            child.child_recommendation?.length
+                                            child.child_recommendations?.length
                                         }`}
                                         icon="assignment"
                                         type="secondary"
@@ -247,7 +249,7 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                         </Link> */}
                                 </div>
 
-                                {child?.child_recommendation?.length === 0 ? (
+                                {child?.child_recommendations?.length === 0 ? (
                                     <div className="my-3 text-center">
                                         <p>Tidak ada data rekomendasi anak</p>
                                         <p>
@@ -257,7 +259,7 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-2 sm:grid-cols-1 group-[.open]:grid-cols-2 md:group-[.open]:grid-cols-1">
-                                        {child?.child_recommendation
+                                        {child?.child_recommendations
                                             ?.slice(0, 6)
                                             .map((item, index) =>
                                                 item.recommendation ? (
@@ -267,7 +269,9 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                                             item.recommendation
                                                         }
                                                         monitoringChildRec={
-                                                            child?.monitoringChildRecommendation
+                                                            child
+                                                                ?.monitoringChildRecommendations?.[0]
+                                                                ?.monitorRecommendations
                                                         }
                                                     />
                                                 ) : null
@@ -293,8 +297,9 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                 <AspectRatio ratio={8 / 9} className="bg-muted">
                                     <Image
                                         src={`/static/images/${getFirstRecommendationImage(
-                                            child.monitoringChildRecommendation ||
-                                                []
+                                            child
+                                                .monitoringChildRecommendations?.[0]
+                                                ?.monitorRecommendations || []
                                         )}`}
                                         alt="Recomendation Image"
                                         fill={true}

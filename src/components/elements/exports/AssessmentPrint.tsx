@@ -45,9 +45,10 @@ const AssessmentPrint = forwardRef<HTMLDivElement, AssessmentPrintProps>(
                                     Skor
                                 </p>
                                 <p className="text-large font-semibold tracking-tight">
-                                    {getScoreAssessments(
-                                        values.childAssessment
-                                    )}
+                                    {getScoreAssessments({
+                                        childAssesment: values.childAssessment,
+                                        type: "awal",
+                                    })}
                                 </p>
                             </div>
                             <div>
@@ -55,7 +56,10 @@ const AssessmentPrint = forwardRef<HTMLDivElement, AssessmentPrintProps>(
                                     Kategori
                                 </p>
                                 <p className="text-large font-semibold tracking-tight">
-                                    {getRiskCategory(values.childAssessment)}
+                                    {getRiskCategory({
+                                        childAssesment: values.childAssessment,
+                                        type: "awal",
+                                    })}
                                 </p>
                             </div>
                             <div>
@@ -85,10 +89,10 @@ const AssessmentPrint = forwardRef<HTMLDivElement, AssessmentPrintProps>(
                                 {values.childAssessment.map((chass) => (
                                     <TableRow key={chass.id}>
                                         <TableCell className="font-medium">
-                                            {chass.assesments?.assesment_number}
+                                            {chass.assesment?.assesment_number}
                                         </TableCell>
                                         <TableCell>
-                                            {chass.assesments?.question}
+                                            {chass.assesment?.question}
                                         </TableCell>
                                         <TableCell>{chass.answer}</TableCell>
                                     </TableRow>

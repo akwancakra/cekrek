@@ -61,14 +61,15 @@ const childRecommendations: ChildRecommendation[] = [
             child_assesments: [
                 {
                     date_time: new Date("2023-01-01"),
-                    assesment: [
+                    assesments: [
                         {
                             id: 1,
                             children_id: 1,
                             assesment_id: 1,
-                            answer: "Lulus",
+                            assesment_type: "awal",
+                            answer: "lulus",
                             date_time: new Date("2024-06-25"),
-                            assesments: {
+                            assesment: {
                                 id: 1,
                                 assesment_number: 1,
                                 question: "Pertanyaan 1",
@@ -101,14 +102,15 @@ const childRecommendations: ChildRecommendation[] = [
             child_assesments: [
                 {
                     date_time: new Date("2023-01-01"),
-                    assesment: [
+                    assesments: [
                         {
                             id: 1,
                             children_id: 1,
                             assesment_id: 1,
-                            answer: "Lulus",
+                            assesment_type: "awal",
+                            answer: "lulus",
                             date_time: new Date("2024-06-25"),
-                            assesments: {
+                            assesment: {
                                 id: 1,
                                 assesment_number: 1,
                                 question: "Pertanyaan 1",
@@ -156,14 +158,15 @@ const childs: Child[] = [
         child_assesments: [
             {
                 date_time: new Date("2024-06-25"),
-                assesment: [
+                assesments: [
                     {
                         id: 1,
                         children_id: 1,
                         assesment_id: 1,
-                        answer: "Lulus",
+                        assesment_type: "awal",
+                        answer: "ya",
                         date_time: new Date("2024-06-25"),
-                        assesments: {
+                        assesment: {
                             id: 1,
                             assesment_number: 1,
                             question: "Pertanyaan 1",
@@ -174,14 +177,15 @@ const childs: Child[] = [
             },
             {
                 date_time: new Date("2024-07-03"),
-                assesment: [
+                assesments: [
                     {
-                        id: 1,
+                        id: 2,
                         children_id: 1,
                         assesment_id: 1,
-                        answer: "Lulus",
+                        assesment_type: "awal",
+                        answer: "ya",
                         date_time: new Date("2024-07-03"),
-                        assesments: {
+                        assesment: {
                             id: 1,
                             assesment_number: 1,
                             question: "Pertanyaan 1 - 2",
@@ -191,22 +195,24 @@ const childs: Child[] = [
                 ],
             },
         ],
-        child_recommendation: [
+        child_recommendations: childRecommendations,
+        monitoringChildRecommendations: [
             {
-                id: 1,
-                children_id: 1,
-                recommendation_id: 1,
-                recommendation: recommendations[0],
-            },
-            {
-                id: 2,
-                children_id: 1,
-                recommendation_id: 2,
-                recommendation: recommendations[1],
+                date_time: new Date("2024-07-03"),
+                monitorRecommendations: monitorChildRecommendation,
             },
         ],
-        monitoringChildRecommendation: monitorChildRecommendation,
     },
+
+    // {
+    //     id: 2,
+    //     children_id: 1,
+    //     recommendation_id: 2,
+    //     recommendation: recommendations[1],
+    //     monitoringChildRecommendations: monitorChildRecommendation,
+    // },
+    // ],
+    // monitoringChildRecommendation: monitorChildRecommendation,
     {
         id: 23,
         full_name: "Fakhri Rahman",
@@ -223,14 +229,15 @@ const childs: Child[] = [
         child_assesments: [
             {
                 date_time: new Date("2024-06-25"),
-                assesment: [
+                assesments: [
                     {
-                        id: 1,
-                        children_id: 1,
+                        id: 3,
+                        children_id: 23,
                         assesment_id: 1,
-                        answer: "Lulus",
+                        assesment_type: "awal",
+                        answer: "tidak",
                         date_time: new Date("2024-06-25"),
-                        assesments: {
+                        assesment: {
                             id: 1,
                             assesment_number: 1,
                             question: "Pertanyaan 1",
@@ -241,14 +248,15 @@ const childs: Child[] = [
             },
             {
                 date_time: new Date("2024-07-03"),
-                assesment: [
+                assesments: [
                     {
-                        id: 1,
-                        children_id: 1,
+                        id: 4,
+                        children_id: 23,
                         assesment_id: 1,
-                        answer: "Lulus",
+                        assesment_type: "follow up",
+                        answer: "gagal",
                         date_time: new Date("2024-07-03"),
-                        assesments: {
+                        assesment: {
                             id: 1,
                             assesment_number: 1,
                             question: "Pertanyaan 1 - 2",
@@ -258,7 +266,7 @@ const childs: Child[] = [
                 ],
             },
         ],
-        child_recommendation: [
+        child_recommendations: [
             {
                 id: 1,
                 children_id: 1,
@@ -272,9 +280,46 @@ const childs: Child[] = [
                 recommendation: recommendations[1],
             },
         ],
-        monitoringChildRecommendation: monitorChildRecommendation,
+        // monitoringChildRecommendation: monitorChildRecommendation,
     },
 ];
+
+// {
+//     child_id: 1;
+//     date_time: "25-04-2024";
+//     assessmentsAnswer: [
+//         {
+//             assessment_id: 1,
+//             answer: "ya",
+//         },
+//         {
+//             assessment_id: 2,
+//             answer: "ya",
+//         },
+//     ];
+//     childRecommendations: [
+//         {
+//             id: null,
+//             assesment_number: 1,
+//             is_main: false,
+//             title: "ini rekomendasi baru",
+//             description: "ini deksripsi",
+//             icon: "picture.jpg",
+//             frequency: "frekuensi kayak biasa",
+//             risk_category: "rendah",
+//         },
+//         {
+//             id: 1,
+//             assesment_number: null,
+//             is_main: null,
+//             title: null,
+//             description: null,
+//             icon: null,
+//             frequency: null,
+//             risk_category: null,
+//         }
+//     ];
+// }
 
 export {
     recommendations,

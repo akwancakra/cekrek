@@ -44,176 +44,23 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Child } from "@/types/children.types";
-import { ChildAssesment } from "@/types/childAssesment.type";
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { formattedDate } from "@/utils/formattedDate";
+import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import ExcelAssessmentStudent from "@/components/elements/exports/ExcelAssessmentStudent";
 import { PDFAssessmentStudent } from "@/components/elements/exports/PDFAssessmentStudent";
-import { getRiskCategory, getScoreAssessments } from "@/utils/converters";
-
-const childs: Child[] = [
-    {
-        id: 1,
-        full_name: "Aulia Rahman",
-        teacher_id: 2,
-        nick_name: "Aul",
-        picture: "default.jpg",
-        gender: "Laki-laki",
-        place_birth: "Jakarta",
-        date_time_birth: new Date("2010-05-12"),
-        religion: "Islam",
-        count_of_siblings: 2,
-        risk_category: "sedang",
-        hearing_test: "pendengaran dalam batas normal",
-        child_assesments: [
-            {
-                date_time: new Date("2024-06-25"),
-                assesment: [
-                    {
-                        id: 1,
-                        children_id: 1,
-                        assesment_id: 1,
-                        answer: "Lulus",
-                        date_time: new Date("2024-06-25"),
-                        assesments: {
-                            id: 1,
-                            assesment_number: 1,
-                            question: "Pertanyaan 1",
-                            picture: "default.jpg",
-                        },
-                    },
-                ],
-            },
-            {
-                date_time: new Date("2024-07-03"),
-                assesment: [
-                    {
-                        id: 1,
-                        children_id: 1,
-                        assesment_id: 1,
-                        answer: "Lulus",
-                        date_time: new Date("2024-07-03"),
-                        assesments: {
-                            id: 1,
-                            assesment_number: 1,
-                            question: "Pertanyaan 1 - 2",
-                            picture: "default.jpg",
-                        },
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        id: 23,
-        full_name: "Fakhri Rahman",
-        teacher_id: 2,
-        nick_name: "Aul",
-        picture: "default.jpg",
-        gender: "Laki-laki",
-        place_birth: "Jakarta",
-        date_time_birth: new Date("2010-05-12"),
-        religion: "Islam",
-        count_of_siblings: 2,
-        risk_category: "sedang",
-        hearing_test: "pendengaran dalam batas normal",
-        child_assesments: [
-            {
-                date_time: new Date("2024-06-25"),
-                assesment: [
-                    {
-                        id: 1,
-                        children_id: 1,
-                        assesment_id: 1,
-                        answer: "Lulus",
-                        date_time: new Date("2024-06-25"),
-                        assesments: {
-                            id: 1,
-                            assesment_number: 1,
-                            question: "Pertanyaan 1",
-                            picture: "default.jpg",
-                        },
-                    },
-                ],
-            },
-            {
-                date_time: new Date("2024-07-03"),
-                assesment: [
-                    {
-                        id: 1,
-                        children_id: 1,
-                        assesment_id: 1,
-                        answer: "Lulus",
-                        date_time: new Date("2024-07-03"),
-                        assesments: {
-                            id: 1,
-                            assesment_number: 1,
-                            question: "Pertanyaan 1 - 2",
-                            picture: "default.jpg",
-                        },
-                    },
-                ],
-            },
-        ],
-    },
-];
+import {
+    getRiskCategory,
+    getScoreAssessments,
+    processChildAssessments,
+} from "@/utils/converters";
+import { childs } from "@/utils/tempData";
 
 export default function Template({}) {
-    const [profile, setProfile] = useState<Child>({
-        id: 1,
-        full_name: "Aulia Rahman",
-        teacher_id: 2,
-        nick_name: "Aul",
-        picture: "default.jpg",
-        gender: "Laki-laki",
-        place_birth: "Jakarta",
-        date_time_birth: new Date("2010-05-12"),
-        religion: "Islam",
-        count_of_siblings: 2,
-        risk_category: "sedang",
-        hearing_test: "pendengaran dalam batas normal",
-        child_assesments: [
-            {
-                date_time: new Date("2024-06-25"),
-                assesment: [
-                    {
-                        id: 1,
-                        children_id: 1,
-                        assesment_id: 1,
-                        answer: "Lulus",
-                        date_time: new Date("2024-06-25"),
-                        assesments: {
-                            id: 1,
-                            assesment_number: 1,
-                            question: "Pertanyaan 1",
-                            picture: "default.jpg",
-                        },
-                    },
-                ],
-            },
-            {
-                date_time: new Date("2024-07-03"),
-                assesment: [
-                    {
-                        id: 1,
-                        children_id: 1,
-                        assesment_id: 1,
-                        answer: "Lulus",
-                        date_time: new Date("2024-07-03"),
-                        assesments: {
-                            id: 1,
-                            assesment_number: 1,
-                            question: "Pertanyaan 1 - 2",
-                            picture: "default.jpg",
-                        },
-                    },
-                ],
-            },
-        ],
-    });
+    const [profile, setProfile] = useState<Child>(childs[0]);
     const [selectedChildId, setSelectedChildId] = useState(`${profile.id}`);
+    const historyAssessmen = processChildAssessments(profile);
 
     const handleChange = (value: any) => {
         setSelectedChildId(value);
@@ -551,6 +398,7 @@ export default function Template({}) {
                                 <TableHeader>
                                     <TableRow>
                                         {/* <TableHead>ID</TableHead> */}
+                                        <TableHead>Tipe</TableHead>
                                         <TableHead>Lulus/Gagal</TableHead>
                                         <TableHead>Kategori</TableHead>
                                         <TableHead>Tanggal Tes</TableHead>
@@ -560,88 +408,81 @@ export default function Template({}) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {profile?.child_assesments?.map(
-                                        (chass, index) => (
-                                            <TableRow key={index}>
-                                                <TableCell>
-                                                    {profile?.child_assesments
-                                                        ? getScoreAssessments(
-                                                              chass.assesment
-                                                          )
-                                                        : "0/0"}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {profile?.child_assesments
-                                                        ? getRiskCategory(
-                                                              chass.assesment
-                                                          )
-                                                        : "Low"}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {formattedDate(
-                                                        chass.date_time.toString()
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="w-2 text-center">
-                                                    <DropdownMenu>
-                                                        <DropdownMenuTrigger
-                                                            asChild
-                                                        >
-                                                            <Button
-                                                                variant="ghost"
-                                                                className="h-8 w-8 p-0"
-                                                            >
-                                                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                                                                    more_horiz
-                                                                </span>
-                                                            </Button>
-                                                        </DropdownMenuTrigger>
-                                                        <DropdownMenuContent align="end">
-                                                            <DropdownMenuLabel>
-                                                                Aksi
-                                                            </DropdownMenuLabel>
-                                                            <DropdownMenuGroup>
-                                                                <DropdownMenuSub>
-                                                                    <DropdownMenuSubTrigger>
-                                                                        <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                                                            assignment
-                                                                        </span>{" "}
-                                                                        <span>
-                                                                            Unduh
-                                                                            asesmen
-                                                                        </span>
-                                                                    </DropdownMenuSubTrigger>
-                                                                    <DropdownMenuPortal>
-                                                                        <DropdownMenuSubContent>
-                                                                            <ExcelAssessmentStudent
-                                                                                date={
-                                                                                    chass.date_time
-                                                                                }
-                                                                                childAssessment={
-                                                                                    chass.assesment
-                                                                                }
-                                                                            />
-                                                                            <PDFAssessmentStudent
-                                                                                child={
-                                                                                    profile
-                                                                                }
-                                                                                date={
-                                                                                    chass.date_time
-                                                                                }
-                                                                                childAssessment={
-                                                                                    chass.assesment
-                                                                                }
-                                                                            />
-                                                                        </DropdownMenuSubContent>
-                                                                    </DropdownMenuPortal>
-                                                                </DropdownMenuSub>
-                                                            </DropdownMenuGroup>
-                                                        </DropdownMenuContent>
-                                                    </DropdownMenu>
-                                                </TableCell>
-                                            </TableRow>
-                                        )
+                                    {historyAssessmen?.length == 0 && (
+                                        <TableRow>
+                                            <TableCell colSpan={4}>
+                                                Belum memiliki riwayat asesmen
+                                            </TableCell>
+                                        </TableRow>
                                     )}
+
+                                    {historyAssessmen?.map((ass, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>
+                                                Asesmen{" "}
+                                                {capitalizeFirstLetter(
+                                                    ass.type
+                                                )}
+                                            </TableCell>
+                                            <TableCell>{ass.score}</TableCell>
+                                            <TableCell>
+                                                {ass.risk_category}
+                                            </TableCell>
+                                            <TableCell>
+                                                {formattedDate(
+                                                    ass.date_time.toString()
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="w-2 text-center">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="h-8 w-8 p-0"
+                                                        >
+                                                            <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                                                                more_horiz
+                                                            </span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>
+                                                            Aksi
+                                                        </DropdownMenuLabel>
+                                                        <DropdownMenuGroup>
+                                                            <DropdownMenuSub>
+                                                                <DropdownMenuSubTrigger>
+                                                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                                                        assignment
+                                                                    </span>{" "}
+                                                                    <span>
+                                                                        Unduh
+                                                                        asesmen
+                                                                    </span>
+                                                                </DropdownMenuSubTrigger>
+                                                                <DropdownMenuPortal>
+                                                                    <DropdownMenuSubContent>
+                                                                        <ExcelAssessmentStudent
+                                                                            data={
+                                                                                profile
+                                                                            }
+                                                                        />
+                                                                        <PDFAssessmentStudent
+                                                                            data={
+                                                                                profile
+                                                                            }
+                                                                        />
+                                                                    </DropdownMenuSubContent>
+                                                                </DropdownMenuPortal>
+                                                            </DropdownMenuSub>
+                                                        </DropdownMenuGroup>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
                                 </TableBody>
                                 <TableFooter>
                                     <TableRow>

@@ -8,28 +8,87 @@ import { Button } from "@/components/ui/button";
 import { ChildAssesment } from "@/types/childAssesment.type";
 import { Child } from "@/types/children.types";
 import { formattedDate } from "@/utils/formattedDate";
-import { childs } from "@/utils/tempData";
 import Image from "next/image";
 import { useState } from "react";
-
-type AssessmentHistory = {
-    title: string;
-    lulus: number;
-    gagal: number;
-    child_assessments?: ChildAssesment[];
-};
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
+import { useRouter } from "next/navigation";
+import { childs } from "@/utils/tempData";
+import { getRiskCategory } from "@/utils/converters";
+import { ChildRecommendation } from "@/types/childRecommendation.type";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuGroup,
+    DropdownMenuLabel,
+    DropdownMenuPortal,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ExcelAssessmentStudent from "@/components/elements/exports/ExcelAssessmentStudent";
+import { PDFAssessmentStudent } from "@/components/elements/exports/PDFAssessmentStudent";
 
 export default function AssessmentDetail({}) {
     const [data, setData] = useState(childs[0]);
-    const [firstAssessment, setFirstAssessment] = useState<AssessmentHistory>();
-    const [followUpAssessment, setFollowUpAssessment] =
-        useState<AssessmentHistory>();
+
+    // const router = useRouter();
+
+    // const {
+    //     data,
+    //     error,
+    //     isLoading,
+    // }: {
+    //     data: { status: string; child: Child };
+    //     error: any;
+    //     isLoading: boolean;
+    // } = useSWR("http://localhost:3000/api/teachers/1/students/1", fetcher);
+
+    // if ((!isLoading && error) || (!isLoading && !data?.child)) {
+    //     router.back();
+    // }
 
     // const initializeData = () => {
     //     data.child_assesments?.map((chass) => {
     //         // chass.
-    //     })
+    //     });
     // };
+
+    // const getTotalChildAssessmentGagal = ({
+    //     childAssessment,
+    //     type,
+    // }: {
+    //     childAssessment: ChildAssesment[];
+    //     type?: "awal" | "follow up";
+    // }) => {};
+
+    const getTotalChildAssessment = ({
+        childAssessment,
+        type,
+        answer,
+    }: {
+        childAssessment: ChildAssesment[];
+        type?: "awal" | "follow up";
+        answer?: "lulus" | "gagal" | "ya" | "tidak";
+    }) => {
+        return childAssessment.filter(
+            (chass) => chass.assesment_type === type && chass.answer === answer
+        ).length;
+    };
+
+    const childAssessmentIsExist = ({
+        childAssessment,
+        type,
+    }: {
+        childAssessment: ChildAssesment[];
+        type?: "awal" | "follow up";
+    }): boolean => {
+        const isExist = childAssessment.some(
+            (chass) => chass.assesment_type === type
+        );
+        return isExist;
+    };
 
     return (
         <>
@@ -65,16 +124,67 @@ export default function AssessmentDetail({}) {
                         {/* PROFILE DATA */}
                         <div className="border border-gray-300 p-2 rounded-lg my-3">
                             <div>
-                                <p className="font-semibold tracking-tight text-large">
-                                    Asesmen{" "}
-                                    {formattedDate(
-                                        data?.child_assesments?.[0]?.date_time?.toString() ||
-                                            new Date().toString()
-                                    )}
-                                </p>
+                                <div className="flex justify-between items-center">
+                                    <p className="font-semibold tracking-tight text-large">
+                                        Asesmen{" "}
+                                        {formattedDate(
+                                            data?.child_assesments?.[0]?.date_time?.toString() ||
+                                                new Date().toString()
+                                        )}
+                                    </p>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger
+                                            asChild
+                                            className="gap-1"
+                                        >
+                                            <Button variant="outline">
+                                                <span>Export</span>{" "}
+                                                <span className="material-symbols-outlined cursor-pointer filled !text-xl !leading-4 opacity-70">
+                                                    more_horiz
+                                                </span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent
+                                            className="w-56"
+                                            align="end"
+                                        >
+                                            <DropdownMenuLabel>
+                                                Aksi
+                                            </DropdownMenuLabel>
+                                            <DropdownMenuGroup>
+                                                <DropdownMenuSub>
+                                                    <DropdownMenuSubTrigger>
+                                                        <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                                            assignment
+                                                        </span>{" "}
+                                                        <span>
+                                                            Unduh asesmen
+                                                        </span>
+                                                    </DropdownMenuSubTrigger>
+                                                    <DropdownMenuPortal>
+                                                        <DropdownMenuSubContent>
+                                                            <ExcelAssessmentStudent
+                                                                data={data}
+                                                            />
+                                                            <PDFAssessmentStudent
+                                                                data={data}
+                                                            />
+                                                        </DropdownMenuSubContent>
+                                                    </DropdownMenuPortal>
+                                                </DropdownMenuSub>
+                                            </DropdownMenuGroup>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </div>
                                 <div className="divider my-1" />
+
                                 <Alert
-                                    text="Kategori Sedang"
+                                    text={`Kategori ${getRiskCategory({
+                                        childAssesment:
+                                            data?.child_assesments?.[0]
+                                                ?.assesments || [],
+                                        type: "awal",
+                                    })}`}
                                     desc="Anak ini termasuk kategori sedang dengan 4 gagal"
                                     icon="info"
                                     type="primary"
@@ -87,7 +197,7 @@ export default function AssessmentDetail({}) {
                                             Nama
                                         </p>
                                         <p className="font-medium tracking-tight text-medium">
-                                            {data.full_name}
+                                            {data?.full_name}
                                         </p>
                                     </div>
                                     <div>
@@ -95,7 +205,7 @@ export default function AssessmentDetail({}) {
                                             Jenis Kelamin
                                         </p>
                                         <p className="font-medium tracking-tight text-medium">
-                                            {data.gender}
+                                            {data?.gender}
                                         </p>
                                     </div>
                                     <div>
@@ -124,7 +234,23 @@ export default function AssessmentDetail({}) {
                                         Asesmen Awal
                                     </p>
                                     <p className="text-gray-400 text-small -mb-1">
-                                        Skor: 12 Ya, 8 Tidak
+                                        {"Skor: " +
+                                            getTotalChildAssessment({
+                                                childAssessment:
+                                                    data?.child_assesments?.[0]
+                                                        ?.assesments || [],
+                                                type: "awal",
+                                                answer: "ya",
+                                            }) +
+                                            " Ya, " +
+                                            getTotalChildAssessment({
+                                                childAssessment:
+                                                    data?.child_assesments?.[0]
+                                                        ?.assesments || [],
+                                                type: "awal",
+                                                answer: "tidak",
+                                            }) +
+                                            " Tidak"}
                                     </p>
                                 </div>
                                 <Button
@@ -143,7 +269,23 @@ export default function AssessmentDetail({}) {
                                         Asesmen Follow Up
                                     </p>
                                     <p className="text-gray-400 text-small -mb-1">
-                                        Skor: 12 Lulus, 8 Gagal
+                                        {"Skor: " +
+                                            getTotalChildAssessment({
+                                                childAssessment:
+                                                    data?.child_assesments?.[0]
+                                                        ?.assesments || [],
+                                                type: "follow up",
+                                                answer: "lulus",
+                                            }) +
+                                            " Lulus, " +
+                                            getTotalChildAssessment({
+                                                childAssessment:
+                                                    data?.child_assesments?.[0]
+                                                        ?.assesments || [],
+                                                type: "awal",
+                                                answer: "gagal",
+                                            }) +
+                                            " Gagal"}
                                     </p>
                                 </div>
                                 <Button
@@ -159,74 +301,63 @@ export default function AssessmentDetail({}) {
                         </div>
 
                         <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
-                            <p className="text-large font-semibold tracking-tight">
-                                Skoring Soal
-                            </p>
+                            <div className="">
+                                <p className="text-small text-gray-400 -mb-1">
+                                    Skoring Soal
+                                </p>
+                                <p className="text-large font-semibold tracking-tight">
+                                    Asesmen Awal
+                                </p>
+                            </div>
                             <div className="divider my-1" />
-                            <div className="flex justify-between gap-2 mb-3">
+                            {!childAssessmentIsExist({
+                                childAssessment:
+                                    data?.child_assesments?.[0]?.assesments ||
+                                    [],
+                                type: "awal",
+                            }) && (
                                 <div>
-                                    <p className="font-medium tracking-tight text-medium">
-                                        Soal 1
-                                    </p>
-                                    <p className="text-gray-400 text-small -mb-1">
-                                        Jika anda menunjuk sesuatu di ruangan,
-                                        apakah $namaAnak melihatnya?
+                                    <p className="text-center text-small">
+                                        Belum ada data asesmen follow up
                                     </p>
                                 </div>
-                                <Pill
-                                    type="primary"
-                                    text="Lulus"
-                                    icon="assignment"
-                                />
+                            )}
+                            {ScoreChildAssessmentCard({
+                                childAssessments:
+                                    data?.child_assesments?.[0]?.assesments ||
+                                    [],
+                                type: "awal",
+                            })}
+                        </div>
+
+                        <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
+                            <div className="">
+                                <p className="text-small text-gray-400 -mb-1">
+                                    Skoring Soal
+                                </p>
+                                <p className="text-large font-semibold tracking-tight">
+                                    Asesmen Follow Up
+                                </p>
                             </div>
-                            <div className="flex justify-between gap-2 mb-3">
+                            <div className="divider my-1" />
+                            {!childAssessmentIsExist({
+                                childAssessment:
+                                    data?.child_assesments?.[0]?.assesments ||
+                                    [],
+                                type: "follow up",
+                            }) && (
                                 <div>
-                                    <p className="font-medium tracking-tight text-medium">
-                                        Soal 2
-                                    </p>
-                                    <p className="text-gray-400 text-small -mb-1">
-                                        Jika anda menunjuk sesuatu di ruangan,
-                                        apakah $namaAnak melihatnya?
+                                    <p className="text-center text-small">
+                                        Belum ada data asesmen follow up
                                     </p>
                                 </div>
-                                <Pill
-                                    type="error"
-                                    text="Gagal"
-                                    icon="assignment"
-                                />
-                            </div>
-                            <div className="flex justify-between gap-2 mb-3">
-                                <div>
-                                    <p className="font-medium tracking-tight text-medium">
-                                        Soal 3
-                                    </p>
-                                    <p className="text-gray-400 text-small -mb-1">
-                                        Jika anda menunjuk sesuatu di ruangan,
-                                        apakah $namaAnak melihatnya?
-                                    </p>
-                                </div>
-                                <Pill
-                                    type="error"
-                                    text="Gagal"
-                                    icon="assignment"
-                                />
-                            </div>
-                            <div className="flex justify-between gap-2 mb-3">
-                                <div>
-                                    <p className="font-medium tracking-tight text-medium">
-                                        Soal 4
-                                    </p>
-                                    <p className="text-gray-400 text-small -mb-1">
-                                        Jika anda menunjuk sesuatu di ruangan,
-                                        apakah $namaAnak melihatnya?
-                                    </p>
-                                </div>
-                                <Pill
-                                    type="error"
-                                    text="Gagal"
-                                    icon="assignment"
-                                />
-                            </div>
+                            )}
+                            {ScoreChildAssessmentCard({
+                                childAssessments:
+                                    data?.child_assesments?.[0]?.assesments ||
+                                    [],
+                                type: "follow up",
+                            })}
                         </div>
 
                         <div className="border border-gray-300 p-2 rounded-lg my-3">
@@ -234,23 +365,20 @@ export default function AssessmentDetail({}) {
                                 Rekomendasi Aktifitas
                             </p>
                             <div className="divider my-1" />
-                            <RecomendationCard
-                                className="mb-2"
-                                isActive={false}
-                            />
-                            <RecomendationCard
-                                className="mb-2"
-                                isActive={false}
-                            />
-                            <RecomendationCard
-                                className="mb-2"
-                                isActive={false}
-                            />
-                            <RecomendationCard
-                                className="mb-2"
-                                isActive={false}
-                            />
-                            <RecomendationCard isActive={false} />
+
+                            {data?.child_recommendations?.length == 0 ? (
+                                <div>
+                                    <p className="text-center text-small">
+                                        Belum ada data asesmen follow up
+                                    </p>
+                                </div>
+                            ) : (
+                                <ChildRecommendationCard
+                                    childRecommendations={
+                                        data?.child_recommendations || []
+                                    }
+                                />
+                            )}
                         </div>
                     </div>
                 </div>
@@ -258,3 +386,67 @@ export default function AssessmentDetail({}) {
         </>
     );
 }
+
+const ScoreChildAssessmentCard = ({
+    childAssessments,
+    type,
+}: {
+    childAssessments: ChildAssesment[];
+    type: "awal" | "follow up";
+}) => {
+    const filteredAssessments: ChildAssesment[] = childAssessments.filter(
+        (chass) => chass.assesment_type === type
+    );
+
+    return (
+        <>
+            {filteredAssessments.map((chass) => (
+                <div
+                    key={chass.id}
+                    className="flex justify-between items-center gap-2 mb-3"
+                >
+                    <div>
+                        <p className="font-medium tracking-tight text-medium">
+                            Soal {chass.assesment?.id || 0}
+                        </p>
+                        <p className="text-gray-400 text-small -mb-1">
+                            {chass.assesment?.question || "Pertanyaan"}
+                        </p>
+                    </div>
+                    <Pill
+                        type={
+                            chass.answer === "ya" || chass.answer == "lulus"
+                                ? "primary"
+                                : "error"
+                        }
+                        text={chass.answer.toUpperCase()}
+                        icon="assignment"
+                    />
+                </div>
+            ))}
+        </>
+    );
+};
+
+const ChildRecommendationCard = ({
+    childRecommendations,
+}: {
+    childRecommendations: ChildRecommendation[];
+}) => {
+    return (
+        <>
+            {childRecommendations.map((chrec) => {
+                if (chrec?.recommendation) {
+                    return (
+                        <RecomendationCard
+                            key={chrec.id}
+                            className={`mb-2`}
+                            isActive={false}
+                            recommendation={chrec.recommendation}
+                        />
+                    );
+                }
+            })}
+        </>
+    );
+};

@@ -23,15 +23,25 @@ export type Child = {
         | "pendengaran di bawah normal"
         | "hasil tidak menyakinkan atau tidak definitif";
     parent?: User[];
-    child_recommendation?: ChildRecommendation[];
-    monitoringChildRecommendation?: MonitorChildRecommendation[];
+    child_recommendations?: ChildRecommendation[];
+    monitoringChildRecommendations?: MonitorRecommendationWrap[];
     birth_history?: BirthHistory;
     expert_examination?: ExpertExamination;
     health_status?: HealthStatus;
     child_assesments?: AssesmentWrap[];
 };
 
-type AssesmentWrap = {
+export type AssesmentWrap = {
     date_time: Date;
-    assesment: ChildAssesment[];
+    assesments: ChildAssesment[];
+};
+
+// type RecommendationWrap = {
+//     date_time: Date;
+//     recommendations: ChildRecommendation[];
+// };
+
+type MonitorRecommendationWrap = {
+    date_time: Date;
+    monitorRecommendations: MonitorChildRecommendation[];
 };

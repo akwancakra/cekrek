@@ -7,7 +7,7 @@ import "./globalsIcons.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Dashboard | CekRek",
+    title: "CekRek | Cek Rekomendasi",
     description: "First page of CekRek",
 };
 

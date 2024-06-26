@@ -136,7 +136,7 @@ CREATE TABLE `expert_examination_question` (
 CREATE TABLE `monitor_child_recommendation` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `child_recommendation_id` INTEGER NOT NULL,
-    `date_time` DATETIME(3) NOT NULL,
+    `date_time` DATE NOT NULL,
     `is_done` BOOLEAN NOT NULL DEFAULT false,
 
     PRIMARY KEY (`id`)
@@ -149,16 +149,18 @@ CREATE TABLE `assesments` (
     `question` TEXT NOT NULL,
     `picture` VARCHAR(191) NULL,
 
+    UNIQUE INDEX `assesments_assesment_number_key`(`assesment_number`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `child_assesment` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `assesment_type` VARCHAR(191) NOT NULL DEFAULT 'awal',
     `children_id` INTEGER NOT NULL,
     `assesment_id` INTEGER NOT NULL,
     `answer` VARCHAR(191) NOT NULL,
-    `date_time` DATETIME(3) NOT NULL,
+    `date_time` DATE NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -189,6 +191,9 @@ ALTER TABLE `expert_examination` ADD CONSTRAINT `expert_examination_child_id_fke
 
 -- AddForeignKey
 ALTER TABLE `health_status` ADD CONSTRAINT `health_status_child_id_fkey` FOREIGN KEY (`child_id`) REFERENCES `children`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `monitor_child_recommendation` ADD CONSTRAINT `monitor_child_recommendation_child_recommendation_id_fkey` FOREIGN KEY (`child_recommendation_id`) REFERENCES `child_recommendation`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `child_assesment` ADD CONSTRAINT `child_assesment_children_id_fkey` FOREIGN KEY (`children_id`) REFERENCES `children`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

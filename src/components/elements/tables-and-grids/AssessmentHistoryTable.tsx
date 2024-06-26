@@ -29,8 +29,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Child } from "@/types/children.types";
-import { ChildAssesment } from "@/types/childAssesment.type";
+import { AssesmentWrap, Child } from "@/types/children.types";
 import { childs } from "@/utils/tempData";
 import {
     AlertDialog,
@@ -43,66 +42,27 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-
-type ProcessedAssessment = {
-    id: number;
-    nama: string;
-    score: string;
-    date_time: Date;
-    risk_category: "Rendah" | "Sedang" | "Tinggi";
-};
+import {
+    capitalizeFirstLetter,
+    formattedDateStrip,
+} from "@/utils/formattedDate";
+import { processMultiChildAssessments } from "@/utils/converters";
+import { ProcessedAssessment } from "@/types/processedAssessments.type";
 
 interface AssessmentHistoryTableProps {
     keyword?: string;
 }
 
-const processAssessments = (assessments: Child[]): ProcessedAssessment[] => {
-    return assessments
-        .filter(
-            (child): child is Child & { child_assesments: ChildAssesment[] } =>
-                !!child.child_assesments && child.child_assesments.length > 0
-        )
-        .map((child) => {
-            let totalLulus = 0;
-            let totalGagal = 0;
-            child.child_assesments.forEach((chass) => {
-                totalLulus += chass.assesment.filter(
-                    (assesment) => assesment.answer === "Lulus"
-                ).length;
-                totalGagal += chass.assesment.filter(
-                    (assesment) => assesment.answer === "Gagal"
-                ).length;
-            });
-
-            let risk_category: "Rendah" | "Sedang" | "Tinggi" = "Rendah";
-            if (totalGagal >= 0 && totalGagal <= 2) {
-                risk_category = "Rendah";
-            } else if (totalGagal >= 3 && totalGagal <= 7) {
-                risk_category = "Sedang";
-            } else if (totalGagal >= 8 && totalGagal <= 20) {
-                risk_category = "Tinggi";
-            }
-
-            return {
-                id: child.id,
-                nama: child.full_name,
-                score: `${totalLulus}/${totalGagal}`,
-                date_time: child.child_assesments[0].date_time,
-                risk_category: risk_category,
-            };
-        });
-};
-
-const removeAssessmentButton = (id: number) => {
+const removeAssessmentButton = (id: number, date: string) => {
     console.log("Assessment Removed!");
 };
 
 // JALANIN FUNGSINYA
-const historyAssessmen = processAssessments(childs);
+const historyAssessmen = processMultiChildAssessments(childs);
 
 const columns: ColumnDef<ProcessedAssessment>[] = [
     {
-        accessorKey: "id",
+        accessorKey: "child_id",
         header: ({ column }) => {
             return (
                 <Button
@@ -113,6 +73,29 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
                     className="gap-1 p-0 px-1"
                 >
                     <span>ID</span>
+                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                        swap_vert
+                    </span>
+                </Button>
+            );
+        },
+    },
+    {
+        accessorKey: "type",
+        cell: ({ row }) => {
+            const type: string = row.getValue("type");
+            return capitalizeFirstLetter(type);
+        },
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === "asc")
+                    }
+                    className="gap-1 p-0 px-1"
+                >
+                    <span>Tipe</span>
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         swap_vert
                     </span>
@@ -210,7 +193,10 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
     {
         id: "actions",
         cell: ({ row }) => {
-            const assessmentId: string = row.getValue("id");
+            // const assessmentId: string = row.getValue("id");
+            const childId: string = row.getValue("child_id");
+            const assessmentDate: string = row.getValue("date_time");
+            const formattedDate: string = formattedDateStrip(assessmentDate);
 
             return (
                 <DropdownMenu>
@@ -224,9 +210,11 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                         <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link href={`/t/assessments/${assessmentId}`}>
+                            <Link
+                                href={`/t/assessments/${childId}?date=${formattedDate}`}
+                            >
                                 <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    contacts
+                                    assignment
                                 </span>{" "}
                                 Lihat detil
                             </Link>
@@ -244,7 +232,7 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
                                         <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                             delete
                                         </span>
-                                        <span>Hapus siswa</span>
+                                        <span>Hapus asesmen</span>
                                     </button>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -280,7 +268,8 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
                                                 variant={"destructive"}
                                                 onClick={() =>
                                                     removeAssessmentButton(
-                                                        parseInt(assessmentId)
+                                                        parseInt(childId),
+                                                        formattedDate
                                                     )
                                                 }
                                                 className="bg-red-500 text-white hover:bg-red-700"

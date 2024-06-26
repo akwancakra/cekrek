@@ -8,19 +8,30 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { ChildAssesment } from "@/types/childAssesment.type";
+import { Child } from "@/types/children.types";
 import { getRiskCategory, getScoreAssessments } from "@/utils/converters";
+import {
+    capitalizeFirstLetter,
+    formattedDateStrip,
+} from "@/utils/formattedDate";
 import { useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
 
 interface ExcelAssessmentStudentProps {
-    date: Date;
-    childAssessment: ChildAssesment[];
+    data: Child;
+    // date: Date;
+    // childAssessment: ChildAssesment[];
 }
 
 export default function ExcelAssessmentStudent({
-    date,
-    childAssessment,
-}: ExcelAssessmentStudentProps) {
+    data,
+}: // date,
+// childAssessment,
+ExcelAssessmentStudentProps) {
+    const date: Date = data?.child_assesments?.[0]?.date_time || new Date();
+    const childAssessment: ChildAssesment[] =
+        data?.child_assesments?.[0]?.assesments || [];
+
     const tbl = useRef<HTMLTableElement>(null);
     const tblAssessment = useRef<HTMLTableElement>(null);
 
@@ -34,9 +45,9 @@ export default function ExcelAssessmentStudent({
 
         // Merge cells for headers
         ws["!merges"] = [
-            { s: { r: 0, c: 0 }, e: { r: 0, c: 4 } },
-            { s: { r: 1, c: 0 }, e: { r: 1, c: 4 } },
-            { s: { r: 2, c: 0 }, e: { r: 2, c: 4 } },
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } },
+            { s: { r: 1, c: 0 }, e: { r: 1, c: 3 } },
+            { s: { r: 2, c: 0 }, e: { r: 2, c: 3 } },
         ];
 
         // Center align header cells
@@ -66,6 +77,7 @@ export default function ExcelAssessmentStudent({
 
         // Calculate column widths
         const colWidths = [
+            { wch: 15 },
             { wch: 5 },
             { wch: 20 },
             { wch: 40 },
@@ -119,6 +131,7 @@ export default function ExcelAssessmentStudent({
             <Table ref={tbl} className="hidden">
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Tipe</TableHead>
                         <TableHead>Skor</TableHead>
                         <TableHead>Kategori</TableHead>
                         <TableHead>Tanggal Tes</TableHead>
@@ -126,20 +139,21 @@ export default function ExcelAssessmentStudent({
                 </TableHeader>
                 <TableBody>
                     <TableRow key={childAssessment[0].id}>
+                        <TableCell>Asesmen Awal</TableCell>
                         <TableCell>
-                            {getScoreAssessments(childAssessment)}
-                        </TableCell>
-                        <TableCell>
-                            {getRiskCategory(childAssessment)}
-                        </TableCell>
-                        <TableCell>
-                            {date.toLocaleString("id-ID", {
-                                day: "2-digit",
-                                month: "2-digit",
-                                year: "numeric",
-                                hour: "2-digit",
-                                minute: "2-digit",
+                            {getScoreAssessments({
+                                childAssesment: childAssessment,
+                                type: "awal",
                             })}
+                        </TableCell>
+                        <TableCell>
+                            {getRiskCategory({
+                                childAssesment: childAssessment,
+                                type: "awal",
+                            })}
+                        </TableCell>
+                        <TableCell>
+                            {formattedDateStrip(date.toDateString())}
                         </TableCell>
                     </TableRow>
                 </TableBody>
@@ -148,6 +162,7 @@ export default function ExcelAssessmentStudent({
             <Table ref={tblAssessment} className="hidden">
                 <TableHeader>
                     <TableRow>
+                        <TableHead>Tipe</TableHead>
                         <TableHead>No</TableHead>
                         <TableHead>Pertanyaan</TableHead>
                         <TableHead>Hasil</TableHead>
@@ -156,11 +171,15 @@ export default function ExcelAssessmentStudent({
                 <TableBody>
                     {childAssessment.map((chass) => (
                         <TableRow key={chass.id}>
-                            <TableCell className="font-medium">
-                                {chass.assesments?.assesment_number}
+                            <TableCell>
+                                Asesmen{" "}
+                                {capitalizeFirstLetter(chass.assesment_type)}
                             </TableCell>
-                            <TableCell>{chass.assesments?.question}</TableCell>
-                            <TableCell>{chass.answer}</TableCell>
+                            <TableCell>{chass.assesment?.id}</TableCell>
+                            <TableCell>{chass.assesment?.question}</TableCell>
+                            <TableCell>
+                                {capitalizeFirstLetter(chass.answer)}
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>

@@ -1,15 +1,20 @@
 import { Badge } from "@/components/ui/badge";
+import { Recommendation } from "@/types/recommendation.type";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import Image from "next/image";
 
 interface RecomendationCardProps {
     className?: string;
     isActive?: boolean;
+    isDone?: boolean;
+    recommendation: Recommendation;
 }
 
 export default function RecomendationCard({
     className,
     isActive = true,
+    isDone = false,
+    recommendation,
 }: RecomendationCardProps) {
     return (
         <div className={`collapse rounded-lg hover:bg-gray-100 ${className}`}>
@@ -30,10 +35,10 @@ export default function RecomendationCard({
                         </div>
                         <div>
                             <p className="font-medium text-medium">
-                                Judul rekomendasi
+                                {recommendation.title}
                             </p>
                             <p className="text-gray-500 text-small">
-                                Tipe: Durasi 30 Detik
+                                Tipe: {recommendation.frequency}
                             </p>
                         </div>
                     </div>
@@ -42,7 +47,7 @@ export default function RecomendationCard({
                             variant={"outline"}
                             className="border-primary text-primary"
                         >
-                            Telah dilakukan
+                            {isDone ? "Selesai" : "Belum"}
                         </Badge>
                     )}
                 </div>
@@ -50,13 +55,7 @@ export default function RecomendationCard({
             <div className="collapse-content !p-0">
                 <p className="font-semibold text-small">Deskripsi</p>
                 <p className="text-sm">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Dicta consectetur dignissimos magnam esse provident corporis
-                    quidem quod nobis, tempore vero iusto facilis, iste
-                    temporibus aliquam veritatis. Error recusandae dicta nisi
-                    temporibus voluptates praesentium tempore dolore nam?
-                    Eveniet laborum hic at animi enim et sint veritatis, minima
-                    cum asperiores, quaerat eius!
+                    {recommendation.description || "Tidak ada deskripsi"}
                 </p>
             </div>
         </div>

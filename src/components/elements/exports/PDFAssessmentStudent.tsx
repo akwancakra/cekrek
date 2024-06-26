@@ -8,16 +8,20 @@ import { ChildAssesment } from "@/types/childAssesment.type";
 import { Child } from "@/types/children.types";
 
 interface PDFAssessmentStudentProps {
-    date: Date;
-    child: Child;
-    childAssessment: ChildAssesment[];
+    data: Child;
+    // date: Date;
+    // childAssessment: ChildAssesment[];
 }
 
 const PDFAssessmentStudent = ({
-    date,
-    child,
-    childAssessment,
-}: PDFAssessmentStudentProps) => {
+    data,
+}: // date,
+// childAssessment,
+PDFAssessmentStudentProps) => {
+    const date = data?.child_assesments?.[0]?.date_time || new Date();
+    const childAssessment: ChildAssesment[] =
+        data?.child_assesments?.[0]?.assesments || [];
+
     const documentRef = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => documentRef.current,
@@ -27,7 +31,7 @@ const PDFAssessmentStudent = ({
 
     const values = {
         date,
-        child,
+        child: data,
         childAssessment,
     };
 
