@@ -10,8 +10,8 @@ export async function GET(req: NextRequest) {
     const limit = url?.searchParams?.get("limit") || "10";
     const skip = url?.searchParams?.get("skip") || "0";
     const name_params = url?.searchParams?.get("name") || "";
-    const parents = await prisma.users.findMany({
-      where: { role: "parent", name: { contains: name_params } },
+    const users = await prisma.users.findMany({
+      where: { name: { contains: name_params } },
       include: {
         children: {
           include: {
@@ -23,23 +23,18 @@ export async function GET(req: NextRequest) {
                 recommendations: true,
               },
             },
-            child_assesments: {
-              include: {
-                assesments: true,
-              },
-            },
           },
         },
       },
       take: parseInt(limit),
       skip: parseInt(skip),
     });
-    if (parents.length === 0)
+    if (users.length === 0)
       return NextResponse.json(
-        { status: "error", message: "No Parents Found" },
+        { status: "error", message: "No Users Found" },
         { status: 200 }
       );
-    return NextResponse.json({ status: "success", parents }, { status: 200 });
+    return NextResponse.json({ status: "success", users }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { status: "error", message: error.message || "Internal Server Error" },
@@ -51,20 +46,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
-    const {
-      email,
-      password,
-      role,
-      name,
-      type,
-      place_birth,
-      date_time_birth,
-      religion,
-      education,
-      job,
-      address,
-      phone,
-    } = data;
+    const { email, password, role, name } = data;
 
     // role should be either "teacher" or "parent"
     if (!["teacher", "parent"].includes(role)) {
@@ -77,30 +59,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // if date time birth is not provided, set it to null
-    if (!date_time_birth) {
-      data.date_time_birth = null;
-    }
-
     // Create user
-    const parent = await prisma.users.create({
+    const user = await prisma.users.create({
       data: {
         name,
         email,
         role,
         password: await bcrypt.hash(password, 10),
-        type,
-        place_birth,
-        date_time_birth: date_time_birth ? new Date(date_time_birth) : null,
-        religion,
-        education,
-        job,
-        address,
-        phone,
       },
     });
 
-    return NextResponse.json({ status: "success", parent }, { status: 201 });
+    return NextResponse.json({ status: "success", user }, { status: 201 });
   } catch (error: any) {
     if (error.code === "P2002") {
       // Unique constraint error

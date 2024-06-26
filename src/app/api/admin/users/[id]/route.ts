@@ -7,8 +7,8 @@ const prisma = new PrismaClient();
 export async function GET(req: any, { params }: any) {
   try {
     const id = parseInt(params.id);
-    const parent = await prisma.users.findUnique({
-      where: { id: id, role: "parent" },
+    const user = await prisma.users.findUnique({
+      where: { id: id },
       include: {
         children: {
           include: {
@@ -20,22 +20,17 @@ export async function GET(req: any, { params }: any) {
                 recommendations: true,
               },
             },
-            child_assesments: {
-              include: {
-                assesments: true,
-              },
-            },
           },
         },
       },
     });
-    if (!parent) {
+    if (!user) {
       return NextResponse.json(
-        { status: "error", message: "Parent Not Found" },
+        { status: "error", message: "User Not Found" },
         { status: 200 }
       );
     }
-    return NextResponse.json({ status: "success", parent }, { status: 200 });
+    return NextResponse.json({ status: "success", user }, { status: 200 });
   } catch (error: any) {
     return NextResponse.json(
       { status: "error", message: error.message || "Internal Server Error" },
@@ -48,20 +43,7 @@ export async function PUT(req: any, { params }: any) {
   try {
     const id = parseInt(params.id);
     const data = await req.json();
-    const {
-      name,
-      email,
-      password,
-      role,
-      type,
-      place_birth,
-      date_time_birth,
-      religion,
-      education,
-      job,
-      address,
-      phone,
-    } = data;
+    const { email, password, role, name } = data;
 
     const userExists = await prisma.users.findUnique({
       where: { id: id },
@@ -69,19 +51,7 @@ export async function PUT(req: any, { params }: any) {
 
     if (!userExists) {
       return NextResponse.json(
-        { status: "error", message: "Parent Not Found" },
-        { status: 200 }
-      );
-    }
-
-    // Check email is unique
-    const emailExist = await prisma.users.findFirst({
-      where: { email: email },
-    });
-
-    if (emailExist && emailExist.id !== id) {
-      return NextResponse.json(
-        { status: "error", message: "Email Already Exist" },
+        { status: "error", message: "User Not Found" },
         { status: 200 }
       );
     }
@@ -93,34 +63,21 @@ export async function PUT(req: any, { params }: any) {
     }
 
     // Update user data
-    const parentData = {
-      name,
+    const userData = {
       email,
+      name,
       role,
-      type,
-      place_birth,
-      date_time_birth:
-        date_time_birth !== undefined
-          ? date_time_birth
-            ? new Date(date_time_birth)
-            : null
-          : userExists.date_time_birth, // Preserve existing date_time_birth if not provided or explicitly set to null
-      religion,
-      education,
-      job,
-      address,
-      phone,
       // Only include hashed password if provided
       ...(hashedPassword && { password: hashedPassword }),
     };
 
-    const parent = await prisma.users.update({
+    const user = await prisma.users.update({
       where: { id: id },
-      data: parentData,
+      data: userData,
     });
 
     return NextResponse.json(
-      { status: "success", message: "Parent Updated Successfully", parent },
+      { status: "success", message: "User Updated Successfully", user },
       { status: 200 }
     );
   } catch (error: any) {
@@ -135,22 +92,22 @@ export async function DELETE(req: any, { params }: any) {
   try {
     const id = parseInt(params.id);
 
-    const teacherExist = await prisma.users.findUnique({
-      where: { id: id, role: "parent" },
+    const userExists = await prisma.users.findUnique({
+      where: { id: id },
     });
 
-    if (!teacherExist) {
+    if (!userExists) {
       return NextResponse.json(
-        { status: "error", message: "Parent Not Found" },
+        { status: "error", message: "User Not Found" },
         { status: 200 }
       );
     }
 
-    const parent = await prisma.users.delete({
-      where: { id: id, role: "parent" },
+    const user = await prisma.users.delete({
+      where: { id: id },
     });
     return NextResponse.json(
-      { status: "success", message: "Parent Deleted Successfully", parent },
+      { status: "success", message: "User Deleted Successfully", user },
       { status: 200 }
     );
   } catch (error: any) {

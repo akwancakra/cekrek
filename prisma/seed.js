@@ -61,6 +61,7 @@ async function main() {
   //   Create children
   const child1 = await prisma.children.create({
     data: {
+      teacher_id: teacher.id,
       full_name: "Muhammad Alif Nashrulloh",
       nick_name: "Alif",
       gender: "laki-laki",
@@ -124,6 +125,17 @@ async function main() {
       },
     },
   });
+
+  const monitorChildRecommendation =
+    await prisma.monitor_child_recommendation.create({
+      data: {
+        child_recommendation: {
+          connect: { id: 1 }, // Reference to the existing child_recommendation by its id
+        },
+        is_done: false,
+        date_time: new Date(),
+      },
+    });
 
   //   console.log({
   //     teacher,
