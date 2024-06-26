@@ -146,23 +146,25 @@ model recommendations {
 
 // tabel pivot rekomendasi dan anak
 model child_recommendation {
-  id                Int             @id @default(autoincrement())
-  children          children        @relation(fields: [children_id], references: [id])
+  id                Int                            @id @default(autoincrement())
+  children          children                       @relation(fields: [children_id], references: [id])
   children_id       Int
-  recommendations   recommendations @relation(fields: [recommendation_id], references: [id])
+  recommendations   recommendations                @relation(fields: [recommendation_id], references: [id])
   recommendation_id Int
+  monitors          monitor_child_recommendation[] // Add this line
 }
 
 model monitor_child_recommendation {
-  id                      Int      @id @default(autoincrement())
+  id                      Int                  @id @default(autoincrement())
   child_recommendation_id Int
-  date_time               DateTime
-  is_done                 Boolean  @default(false)
+  date_time               DateTime             @db.Date
+  is_done                 Boolean              @default(false)
+  child_recommendation    child_recommendation @relation(fields: [child_recommendation_id], references: [id])
 }
 
 model assesments {
   id               Int     @id @default(autoincrement())
-  assesment_number Int
+  assesment_number Int     @unique
   question         String  @db.Text
   picture          String?
 
@@ -170,11 +172,12 @@ model assesments {
 }
 
 model child_assesment {
-  id           Int      @id @default(autoincrement())
-  children_id  Int
-  assesment_id Int
-  answer       String
-  date_time    DateTime
+  id             Int      @id @default(autoincrement())
+  assesment_type String   @default("awal") // awal, follow-up (enum)
+  children_id    Int
+  assesment_id   Int
+  answer         String
+  date_time      DateTime @db.Date
 
   children   children   @relation(fields: [children_id], references: [id])
   assesments assesments @relation(fields: [assesment_id], references: [id])

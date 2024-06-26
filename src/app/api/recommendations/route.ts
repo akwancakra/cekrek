@@ -36,26 +36,22 @@ export async function POST(req: NextRequest) {
   try {
     const data = await req.json();
     const {
-      type,
       title,
+      assesment_number,
       description,
       icon,
-      duration,
-      duration_type,
-      repetition,
+      frequency,
       risk_category,
     } = data;
 
     // Create user
     const recommendation = await prisma.recommendations.create({
       data: {
-        type,
         title,
+        assesment_number,
         description,
         icon,
-        duration,
-        duration_type,
-        repetition,
+        frequency,
         risk_category,
       },
     });

@@ -4,14 +4,15 @@ import bcrypt from "bcrypt";
 
 const prisma = new PrismaClient();
 
-export async function GET(req: NextRequest) {
+export async function GET(req: any, { params }: any) {
   try {
     const url = new URL(req.url);
+    const teacherId = parseInt(params.id);
     const limit = url?.searchParams?.get("limit") || "10";
     const skip = url?.searchParams?.get("skip") || "0";
     const name_params = url?.searchParams?.get("name") || "";
     const children = await prisma.children.findMany({
-      where: { full_name: { contains: name_params } },
+      where: { full_name: { contains: name_params }, teacher_id: teacherId },
       include: {
         birth_history: true,
         health_status: true,
@@ -19,18 +20,47 @@ export async function GET(req: NextRequest) {
         child_recommendation: {
           include: {
             recommendations: true,
+            monitors: true,
           },
         },
+        child_assesments: {
+          include: {
+            assesments: true,
+          },
+        },
+        parent: true,
       },
       take: parseInt(limit),
       skip: parseInt(skip),
     });
-    if (children.length === 0)
-      return NextResponse.json(
-        { status: "error", message: "No Children Found" },
-        { status: 200 }
-      );
-    return NextResponse.json({ status: "success", children }, { status: 200 });
+
+    // Process to add last_assesment_date
+    const childrenWithLastAssesmentDate = await Promise.all(
+      children.map(async (child) => {
+        // Get the latest child_assesment for the current child
+        const lastAssesment = await prisma.child_assesment.findFirst({
+          where: { children_id: child.id },
+          orderBy: { date_time: "desc" }, // order by date_time to get the latest one
+          select: { date_time: true }, // select only the date_time field
+        });
+
+        // Convert date_time to ISO string and extract the date part
+        const lastAssesmentDate = lastAssesment
+          ? lastAssesment.date_time.toISOString().split("T")[0]
+          : null;
+
+        return {
+          ...child,
+          last_assesment: lastAssesmentDate,
+        };
+      })
+    );
+
+    // Return the response
+    return NextResponse.json(
+      { status: "success", children: childrenWithLastAssesmentDate },
+      { status: 200 }
+    );
   } catch (error: any) {
     return NextResponse.json(
       { status: "error", message: error.message || "Internal Server Error" },
@@ -81,6 +111,16 @@ export async function POST(req: NextRequest) {
       first_words_age,
       speaking_fluency_age,
       bedwetting,
+      // Recommendation
+      recommendation_id,
+      recommendation_type,
+      recommendation_title,
+      recommendation_description,
+      recommendation_icon,
+      recommendation_duration,
+      recommendation_duration_type,
+      recommendation_repetition,
+      recommendation_risk_category,
     } = data;
 
     // if date time birth is not provided, set it to null
