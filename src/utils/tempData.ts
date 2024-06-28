@@ -224,7 +224,7 @@ const childs: Child[] = [
         date_time_birth: new Date("2010-05-12"),
         religion: "Islam",
         count_of_siblings: 2,
-        risk_category: "sedang",
+        risk_category: "rendah",
         hearing_test: "pendengaran dalam batas normal",
         child_assesments: [
             {

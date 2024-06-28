@@ -322,7 +322,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -330,7 +330,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                             </div>
@@ -346,7 +346,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -354,7 +354,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -362,7 +362,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -370,7 +370,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -378,7 +378,7 @@ export default function Template({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                             </div>

@@ -27,10 +27,8 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AssesmentWrap, Child } from "@/types/children.types";
-import { childs } from "@/utils/tempData";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -48,6 +46,9 @@ import {
 } from "@/utils/formattedDate";
 import { processMultiChildAssessments } from "@/utils/converters";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import { Child } from "@/types/children.types";
 
 interface AssessmentHistoryTableProps {
     keyword?: string;
@@ -58,8 +59,6 @@ const removeAssessmentButton = (id: number, date: string) => {
 };
 
 // JALANIN FUNGSINYA
-const historyAssessmen = processMultiChildAssessments(childs);
-
 const columns: ColumnDef<ProcessedAssessment>[] = [
     {
         accessorKey: "child_id",
@@ -227,7 +226,7 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
                                 <AlertDialogTrigger asChild>
                                     <button
                                         type="button"
-                                        className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                        className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
                                     >
                                         <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                             delete
@@ -293,15 +292,39 @@ export default function AssessmentHistoryTable({
 }: AssessmentHistoryTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [historyAssessmen, setHistoryAssessmen] = useState<
+        ProcessedAssessment[] | undefined
+    >(undefined);
 
     const [showSize, setShowSize] = useState(15);
 
+    const {
+        data,
+        isLoading,
+    }: {
+        data: { status: string; childrenAssessments: Child[] };
+        isLoading: boolean;
+    } = useSWR(`/api/teachers/${1}/child-assessments`, fetcher);
+
+    useEffect(() => {
+        if (data) {
+            // console.log(data);
+            const history = processMultiChildAssessments(
+                data.childrenAssessments
+            );
+
+            console.log(history);
+
+            setHistoryAssessmen(history);
+        }
+    }, [data]);
+
     const filteredData = useMemo(() => {
-        if (!keyword) return historyAssessmen;
-        return historyAssessmen.filter((item) =>
+        if (!keyword) return historyAssessmen ?? [];
+        return (historyAssessmen ?? []).filter((item: ProcessedAssessment) =>
             item.nama.toLowerCase().includes(keyword.toLowerCase())
         );
-    }, [keyword]);
+    }, [keyword, historyAssessmen]);
 
     const table = useReactTable({
         data: filteredData,
@@ -373,7 +396,7 @@ export default function AssessmentHistoryTable({
                                 colSpan={columns.length}
                                 className="h-24 text-center"
                             >
-                                No results.
+                                Tidak ada data asesmen siswa
                             </TableCell>
                         </TableRow>
                     )}

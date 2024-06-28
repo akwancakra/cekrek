@@ -29,8 +29,7 @@ import {
 import { DropdownMenuPortal } from "@radix-ui/react-dropdown-menu";
 import { PDFAssessmentStudent } from "@/components/elements/exports/PDFAssessmentStudent";
 import ExcelAssessmentStudent from "@/components/elements/exports/ExcelAssessmentStudent";
-import { useState } from "react";
-import { childs } from "@/utils/tempData";
+import { useEffect, useState } from "react";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -42,12 +41,55 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { processChildAssessments } from "@/utils/converters";
+import {
+    generateAssessmentWrap,
+    processChildAssessments,
+} from "@/utils/converters";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import { fetcher } from "@/utils/fetcher";
+import useSWR from "swr";
+import { Child } from "@/types/children.types";
+import { useParams, useRouter } from "next/navigation";
+import { ProcessedAssessment } from "@/types/processedAssessments.type";
 
 export default function StudentDetails({}) {
-    const [data, setData] = useState(childs[0]);
-    const historyAssessmen = processChildAssessments(data);
+    const [data, setData] = useState<Child>();
+    const [historyAssessmen, setHistoryAssessmen] = useState<
+        ProcessedAssessment[]
+    >([]);
+
+    const { id } = useParams();
+    const { back } = useRouter();
+
+    const {
+        data: childData,
+        isLoading,
+    }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
+        `/api/teachers/1/students/${id}`,
+        fetcher
+    );
+
+    useEffect(() => {
+        if (childData) {
+            if (childData.child) {
+                const assessmentWraps = generateAssessmentWrap(childData.child);
+                childData.child = {
+                    ...childData.child,
+                    child_assesments: assessmentWraps,
+                };
+
+                setData(childData.child);
+
+                const history = processChildAssessments(childData.child);
+                console.log(assessmentWraps);
+                setHistoryAssessmen(history);
+            } else {
+                back();
+            }
+        }
+
+        // console.log(childData?.child);
+    }, [isLoading, childData]);
 
     const removeStudentButton = (id: number) => {
         console.log("Student Removed");
@@ -71,7 +113,7 @@ export default function StudentDetails({}) {
                         <AspectRatio ratio={3 / 4}>
                             <Image
                                 src={`/static/images/${
-                                    data.picture || "user-default.jpg"
+                                    data?.picture || "user-default.jpg"
                                 }`}
                                 alt="Student Image"
                                 fill={true}
@@ -86,15 +128,25 @@ export default function StudentDetails({}) {
                         <div>
                             <p className="text-gray-400 text-xs">Profile</p>
                             <div className="flex gap-2">
-                                <p className="text-header">{data.full_name}</p>
+                                <p className="text-header">
+                                    {data?.full_name || "Nama"}
+                                </p>
                                 <Badge variant={"default"}>
-                                    {data.risk_category}
+                                    {data?.risk_category
+                                        ? capitalizeFirstLetter(
+                                              data.risk_category
+                                          )
+                                        : "N/A"}
                                 </Badge>
                             </div>
                         </div>
                         <DropdownMenu>
-                            <DropdownMenuTrigger asChild className="gap-1">
-                                <Button variant="outline">
+                            <DropdownMenuTrigger
+                                disabled={isLoading}
+                                asChild
+                                className="gap-1"
+                            >
+                                <Button variant="outline" disabled={isLoading}>
                                     <span>Menu</span>{" "}
                                     <span className="material-symbols-outlined cursor-pointer filled !text-xl !leading-4 opacity-70">
                                         more_horiz
@@ -110,10 +162,10 @@ export default function StudentDetails({}) {
                                         asChild
                                     >
                                         <Link
-                                            href={`/t/students/${data.id}/assessment`}
+                                            href={`/t/students/${data?.id}/recommendation`}
                                         >
                                             <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                                assignment
+                                                prescriptions
                                             </span>{" "}
                                             Lakukan monitoring
                                         </Link>
@@ -123,33 +175,33 @@ export default function StudentDetails({}) {
                                         asChild
                                     >
                                         <Link
-                                            href={`/t/students/${data.id}/assessment`}
+                                            href={`/t/students/${data?.id}/assessment`}
                                         >
                                             <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                                 assignment
                                             </span>{" "}
-                                            Buat asesmen
+                                            Lakukan asesmen
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem
+                                    {/* <DropdownMenuItem
                                         className="cursor-pointer"
                                         asChild
                                     >
                                         <Link
-                                            href={`/t/students/${data.id}/recommendation`}
+                                            href={`/t/students/${data?.id}/recommendation`}
                                         >
                                             <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                                 clinical_notes
                                             </span>{" "}
                                             Rekomendasi harian
                                         </Link>
-                                    </DropdownMenuItem>
+                                    </DropdownMenuItem> */}
                                     <DropdownMenuItem
                                         className="cursor-pointer"
                                         asChild
                                     >
                                         <Link
-                                            href={`/t/students/${data.id}/edit`}
+                                            href={`/t/students/${data?.id}/edit`}
                                         >
                                             <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                                 edit
@@ -165,7 +217,7 @@ export default function StudentDetails({}) {
                                             <AlertDialogTrigger asChild>
                                                 <button
                                                     type="button"
-                                                    className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                                    className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
                                                 >
                                                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                                         delete
@@ -206,19 +258,21 @@ export default function StudentDetails({}) {
                                                         Batal
                                                     </AlertDialogCancel>
                                                     <AlertDialogAction asChild>
-                                                        <Button
-                                                            variant={
-                                                                "destructive"
-                                                            }
-                                                            onClick={() =>
-                                                                removeStudentButton(
-                                                                    data.id
-                                                                )
-                                                            }
-                                                            className="bg-red-500 text-white hover:bg-red-700"
-                                                        >
-                                                            Hapus
-                                                        </Button>
+                                                        {data && (
+                                                            <Button
+                                                                variant={
+                                                                    "destructive"
+                                                                }
+                                                                onClick={() =>
+                                                                    removeStudentButton(
+                                                                        data.id
+                                                                    )
+                                                                }
+                                                                className="bg-red-500 text-white hover:bg-red-700"
+                                                            >
+                                                                Hapus
+                                                            </Button>
+                                                        )}
                                                     </AlertDialogAction>
                                                 </AlertDialogFooter>
                                             </AlertDialogContent>
@@ -241,7 +295,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -249,7 +303,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -257,7 +311,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                             </div>
@@ -273,7 +327,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -281,7 +335,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -289,7 +343,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -297,7 +351,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                                 <div>
@@ -305,7 +359,7 @@ export default function StudentDetails({}) {
                                         Nama
                                     </p>
                                     <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        Akwan Cakra
+                                        N/A
                                     </p>
                                 </div>
                             </div>
@@ -332,9 +386,12 @@ export default function StudentDetails({}) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {data.child_assesments?.length == 0 && (
+                                    {historyAssessmen?.length == 0 && (
                                         <TableRow>
-                                            <TableCell colSpan={4}>
+                                            <TableCell
+                                                className="text-center"
+                                                colSpan={4}
+                                            >
                                                 Belum memiliki riwayat asesmen
                                             </TableCell>
                                         </TableRow>
@@ -375,33 +432,35 @@ export default function StudentDetails({}) {
                                                         <DropdownMenuLabel>
                                                             Aksi
                                                         </DropdownMenuLabel>
-                                                        <DropdownMenuGroup>
-                                                            <DropdownMenuSub>
-                                                                <DropdownMenuSubTrigger>
-                                                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                                                        assignment
-                                                                    </span>{" "}
-                                                                    <span>
-                                                                        Unduh
-                                                                        asesmen
-                                                                    </span>
-                                                                </DropdownMenuSubTrigger>
-                                                                <DropdownMenuPortal>
-                                                                    <DropdownMenuSubContent>
-                                                                        <ExcelAssessmentStudent
-                                                                            data={
-                                                                                data
-                                                                            }
-                                                                        />
-                                                                        <PDFAssessmentStudent
-                                                                            data={
-                                                                                data
-                                                                            }
-                                                                        />
-                                                                    </DropdownMenuSubContent>
-                                                                </DropdownMenuPortal>
-                                                            </DropdownMenuSub>
-                                                        </DropdownMenuGroup>
+                                                        {data && (
+                                                            <DropdownMenuGroup>
+                                                                <DropdownMenuSub>
+                                                                    <DropdownMenuSubTrigger>
+                                                                        <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                                                            assignment
+                                                                        </span>{" "}
+                                                                        <span>
+                                                                            Unduh
+                                                                            asesmen
+                                                                        </span>
+                                                                    </DropdownMenuSubTrigger>
+                                                                    <DropdownMenuPortal>
+                                                                        <DropdownMenuSubContent>
+                                                                            <ExcelAssessmentStudent
+                                                                                data={
+                                                                                    data
+                                                                                }
+                                                                            />
+                                                                            <PDFAssessmentStudent
+                                                                                data={
+                                                                                    data
+                                                                                }
+                                                                            />
+                                                                        </DropdownMenuSubContent>
+                                                                    </DropdownMenuPortal>
+                                                                </DropdownMenuSub>
+                                                            </DropdownMenuGroup>
+                                                        )}
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </TableCell>
@@ -412,11 +471,11 @@ export default function StudentDetails({}) {
                                     <TableRow>
                                         <TableCell colSpan={2}>Total</TableCell>
                                         <TableCell
-                                            colSpan={2}
+                                            colSpan={3}
                                             className="text-right"
                                         >
-                                            {data?.child_assesments?.length}{" "}
-                                            Assesmen Total
+                                            {historyAssessmen?.length} Assesmen
+                                            Total
                                         </TableCell>
                                     </TableRow>
                                 </TableFooter>

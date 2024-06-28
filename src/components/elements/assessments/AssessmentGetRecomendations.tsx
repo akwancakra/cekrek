@@ -12,11 +12,10 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import Pill from "../alerts/Pill";
 import CreateRecomendationCard from "../cards/CreateRecomendationCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StandardRecomendation from "../forms/StandardRecomendation";
 import DurationRecomendation from "../forms/DurationRecomendation";
 import RepetitionRecomendation from "../forms/RepetitionRecomendation";
@@ -31,17 +30,167 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
+import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
+import { getRiskCategory } from "@/utils/converters";
+import { Child } from "@/types/children.types";
+import axios from "axios";
+import { toast } from "sonner";
+import { Recommendation } from "@/types/recommendation.type";
+import { useRouter } from "next/navigation";
 
-export default function AssessmentGetRecomendations() {
+interface AssessmentGetRecommendationsProps {
+    child: Child;
+    assessmentAnswer: AssessmentAnswer[];
+    handleBackStage: () => void;
+    removeAssessmentAnswer: () => void;
+    isLoading?: boolean;
+}
+
+export default function AssessmentGetRecommendations({
+    child,
+    assessmentAnswer,
+    handleBackStage,
+    removeAssessmentAnswer,
+    isLoading,
+}: AssessmentGetRecommendationsProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const [activeTab, setActiveTab] = useState("standar");
+    const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
+    const [riskCategory, setRiskCategory] = useState<string>("");
+    const [recommendations, setRecommendations] = useState<Recommendation[]>(
+        []
+    );
+
+    const { push } = useRouter();
+
+    const fetchRecommendations = async () => {
+        setIsLoadingPost(true);
+
+        const data = createDataObject(
+            assessmentAnswer.filter(
+                (item) => item.answer === "tidak" || item.answer == "gagal"
+            )
+        );
+
+        await axios
+            .get(`/api/recommendations?data=${JSON.stringify(data)}`)
+            .then((res) => {
+                toast.success("Berhasil mendapatkan rekomendasi!");
+                setRecommendations(res.data?.recommendations || []);
+                removeAssessmentAnswer();
+                console.log(res.data);
+
+                setIsLoadingPost(false);
+            })
+            .catch((err) => {
+                if (err?.response.status === 400) {
+                    toast.error(err?.response?.data?.message);
+                } else if (err?.response.status === 500) {
+                    toast.error("Server Error");
+                } else {
+                    toast.error("Terjadi kesalahan");
+                }
+                setIsLoadingPost(false);
+            });
+    };
+
+    const createDataObject = (inputArray: AssessmentAnswer[]) => {
+        const assesments = inputArray.map((item) => ({
+            assesment_number:
+                item.assesment?.assesment_number || item.assesment_id,
+        }));
+
+        return {
+            risk_category: riskCategory,
+            assesments,
+        };
+    };
+
+    const createDataObjectFinal = () => {
+        const currentDate = new Date();
+
+        const assessmentsAnswer = assessmentAnswer.map((item) => ({
+            assessment_id: item.assesment_id,
+            answer: item.answer,
+        }));
+
+        const childRecommendations = recommendations.map((recommendation) => {
+            if (recommendation.id) {
+                return {
+                    recommendation_id: recommendation.id,
+                    child_id: child?.id || null,
+                };
+            } else {
+                return {
+                    assesment_number: recommendation.assesment_number,
+                    is_main: recommendation.is_main,
+                    title: recommendation.title,
+                    description: recommendation.description,
+                    icon: recommendation.icon,
+                    frequency: recommendation.frequency,
+                    risk_category: recommendation.risk_category,
+                    child_id: child?.id || null,
+                };
+            }
+        });
+
+        return {
+            child_id: child?.id || null,
+            date_time: currentDate,
+            assessmentsAnswer,
+            childRecommendations,
+        };
+    };
+
+    useEffect(() => {
+        const risk = getRiskCategory({
+            childAssesment: assessmentAnswer,
+            type: "awal",
+        });
+        setRiskCategory(risk);
+    });
+
+    useEffect(() => {
+        if (riskCategory) {
+            fetchRecommendations();
+        }
+    }, [riskCategory]);
 
     const onTabChange = (value: string) => {
         setActiveTab(value);
     };
 
-    const addRecomendationButton = () => {
-        console.log("Recomendation Button Clicked!");
+    const addRecommendationButton = () => {
+        // console.log("Recomendation Button Clicked!");
+    };
+
+    const removeRecommendation = (id: string) => {
+        setRecommendations((prevRecommendations) =>
+            prevRecommendations.filter((item) => item.id.toString() !== id)
+        );
+    };
+
+    const handleSubmitRecommendation = async () => {
+        setIsLoadingPost(true);
+
+        const data = createDataObjectFinal();
+        console.log(data);
+
+        try {
+            await axios.post("/api/recommendations", data);
+            toast.success("Berhasil mengirim rekomendasi!");
+            push(`/t/students/${child?.id}`);
+        } catch (err: any) {
+            if (err?.response?.status === 400) {
+                toast.error(err?.response?.data?.message);
+            } else if (err?.response?.status === 500) {
+                toast.error("Server Error");
+            } else {
+                toast.error("Terjadi kesalahan");
+            }
+        } finally {
+            setIsLoadingPost(false);
+        }
     };
 
     return (
@@ -49,10 +198,10 @@ export default function AssessmentGetRecomendations() {
             <div className="w-full border border-gray-300 rounded-lg p-2">
                 <div>
                     <p className="text-gray-400 text-xs">
-                        Rekomendasi Hasil Asesmen Umum
+                        Rekomendasi Hasil Asesmen M-Chart-R/F
                     </p>
                     <p className="text-large tracking-tight font-semibold">
-                        Dewantara
+                        {child?.full_name || "N/A"}
                     </p>
                 </div>
             </div>
@@ -61,39 +210,28 @@ export default function AssessmentGetRecomendations() {
                     <div>
                         <p className="text-xs -mb-1">Kategori</p>
                         <p className="font-semibold tracking-tight text-large">
-                            Medium
-                        </p>
-                        <p className="text-small">
-                            Kategori ini adalah bla bla bla...
+                            {riskCategory || "N/A"}
                         </p>
                     </div>
                 </div>
-
-                {/* <Pill
-                    type="secondary"
-                    text="Rekomendasi Aktifitas"
-                    icon="clinical_notes"
-                    classnew="mt-2 group-[.open]:w-full md:group-[.open]:w-fit"
-                /> */}
-
                 <div className="w-full justify-between items-center my-3 sm:flex group-[.open]:block md:group-[.open]:flex">
                     {isDesktop ? (
                         <RecomendationFormDesktop
                             activeTab={activeTab}
                             onTabChange={onTabChange}
-                            addRecomendationButton={addRecomendationButton}
+                            addRecomendationButton={addRecommendationButton}
                         />
                     ) : (
                         <RecomendationForm
                             activeTab={activeTab}
                             onTabChange={onTabChange}
-                            addRecomendationButton={addRecomendationButton}
+                            addRecomendationButton={addRecommendationButton}
                         />
                     )}
-
                     <Button
                         variant={"default"}
                         className="gap-1 w-full mt-2 sm:w-fit sm:mt-0 group-[.open]:mt-2 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-fit"
+                        disabled={isLoading || isLoadingPost}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -108,20 +246,42 @@ export default function AssessmentGetRecomendations() {
                     </Button>
                 </div>
                 <div className="flex flex-col gap-3">
-                    <CreateRecomendationCard />
-                    <CreateRecomendationCard />
-                    <CreateRecomendationCard />
-                    <CreateRecomendationCard />
+                    {recommendations && recommendations.length === 0 && (
+                        <div>
+                            <p className="text-center text-small">
+                                Tidak ada rekomendasi
+                            </p>
+                        </div>
+                    )}
+                    {recommendations &&
+                        recommendations.length > 0 &&
+                        recommendations.map((recommendation) => (
+                            <CreateRecomendationCard
+                                key={recommendation.id}
+                                recommendation={recommendation}
+                                onDelete={removeRecommendation}
+                            />
+                        ))}
                 </div>
             </div>
             <div className="flex gap-3 w-full mb-3 justify-between sm:justify-end">
-                <Button variant={"outline"} className="gap-1">
+                <Button
+                    variant={"outline"}
+                    className="gap-1"
+                    onClick={handleBackStage}
+                    disabled={isLoading || isLoadingPost}
+                >
                     <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                         chevron_left
                     </span>
                     <span>Kembali</span>
                 </Button>
-                <Button variant={"outline"} className="gap-1">
+                <Button
+                    variant={"outline"}
+                    className="gap-1"
+                    onClick={handleSubmitRecommendation}
+                    disabled={isLoading || isLoadingPost}
+                >
                     <span>Selesai &amp; Kirim</span>
                     <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                         check
@@ -200,7 +360,11 @@ const RecomendationForm = ({
                             Tambah
                         </Button>
                         <DrawerClose asChild>
-                            <Button variant="outline" className="text-medium">
+                            <Button
+                                variant="outline"
+                                className="text-medium"
+                                disabled={true}
+                            >
                                 Batal
                             </Button>
                         </DrawerClose>
@@ -277,6 +441,7 @@ const RecomendationFormDesktop = ({
                             <Button
                                 variant={"default"}
                                 onClick={() => addRecomendationButton()}
+                                disabled={true}
                             >
                                 Tambah
                             </Button>

@@ -1,3 +1,4 @@
+import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
 import { ChildAssesment } from "@/types/childAssesment.type";
 import { AssesmentWrap, Child } from "@/types/children.types";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
@@ -18,7 +19,7 @@ const processMultiChildAssessments = (
             const assessmentsByDate: { [key: string]: AssesmentWrap[] } = {};
 
             childAssessments.forEach((chass) => {
-                const dateKey = chass.date_time.toDateString();
+                const dateKey = chass.date_time.toString();
                 if (!assessmentsByDate[dateKey]) {
                     assessmentsByDate[dateKey] = [];
                 }
@@ -100,7 +101,7 @@ const processChildAssessments = (child: Child): ProcessedAssessment[] => {
         const assessmentsByDate: { [key: string]: AssesmentWrap[] } = {};
 
         childAssessments.forEach((chass) => {
-            const dateKey = chass.date_time.toDateString();
+            const dateKey = chass.date_time.toString();
             if (!assessmentsByDate[dateKey]) {
                 assessmentsByDate[dateKey] = [];
             }
@@ -166,11 +167,34 @@ const processChildAssessments = (child: Child): ProcessedAssessment[] => {
     return processedAssessments;
 };
 
+const generateAssessmentWrap = (child: Child): AssesmentWrap[] => {
+    const assessmentsByDate: { [key: string]: AssesmentWrap[] } = {};
+
+    if (child.child_assesments) {
+        child.child_assesments.forEach((assessment) => {
+            const dateKey = new Date(assessment.date_time)
+                .toISOString()
+                .split("T")[0];
+            if (!assessmentsByDate[dateKey]) {
+                assessmentsByDate[dateKey] = [];
+            }
+            assessmentsByDate[dateKey].push(assessment);
+        });
+
+        return Object.keys(assessmentsByDate).map((date) => ({
+            date_time: new Date(date),
+            assesments: assessmentsByDate[date],
+        }));
+    }
+
+    return [];
+};
+
 const getScoreAssessments = ({
     childAssesment,
     type,
 }: {
-    childAssesment: ChildAssesment[];
+    childAssesment: ChildAssesment[] | AssessmentAnswer[];
     type: "awal" | "follow up";
 }) => {
     const totalLulus = childAssesment.filter(
@@ -188,7 +212,7 @@ const getRiskCategory = ({
     childAssesment,
     type,
 }: {
-    childAssesment: ChildAssesment[];
+    childAssesment: ChildAssesment[] | AssessmentAnswer[];
     type: "awal" | "follow up";
 }) => {
     const totalGagal = childAssesment.filter(
@@ -208,9 +232,33 @@ const getRiskCategory = ({
     return risk_category;
 };
 
+const truncateString = (str: string, maxLength: number = 25): string => {
+    if (str.length <= maxLength) {
+        return str;
+    }
+
+    return str.substring(0, maxLength) + "...";
+};
+
+const getVariant = (category: string) => {
+    switch (category.toLowerCase()) {
+        case "rendah":
+            return "bg-yellow-600 text-white hover:bg-yellow-700";
+        case "sedang":
+            return "bg-primary text-white hover:bg-primary";
+        case "tinggi":
+            return "bg-red-600 text-white hover:bg-red-700";
+        default:
+            return "";
+    }
+};
+
 export {
     getScoreAssessments,
     getRiskCategory,
     processMultiChildAssessments,
     processChildAssessments,
+    generateAssessmentWrap,
+    getVariant,
+    truncateString,
 };

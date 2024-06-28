@@ -17,7 +17,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Bar } from "react-chartjs-2";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -31,6 +31,10 @@ import {
     Tooltip,
     Legend,
 } from "chart.js";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
+import { useParams } from "next/navigation";
+import { ChildRecommendation } from "@/types/childRecommendation.type";
 
 ChartJS.register(
     CategoryScale,
@@ -80,8 +84,27 @@ const datasets1 = [
 ];
 
 export default function RecomendationStudent({}) {
-    // Initialize the date state with today's date
     const [date, setDate] = useState<Date | undefined>(new Date());
+    const [recommendations, setRecommendations] = useState<
+        ChildRecommendation[]
+    >([]);
+
+    const { id } = useParams();
+
+    const {
+        data,
+        isLoading,
+    }: {
+        data: { status: string; child_recommendations: ChildRecommendation[] };
+        isLoading: boolean;
+    } = useSWR(`/api/teachers/${1}/students/${id}/recommendations`, fetcher);
+
+    useEffect(() => {
+        if (data?.child_recommendations) {
+            setRecommendations(data.child_recommendations);
+            console.log(data);
+        }
+    }, [data]);
 
     // Function to handle date selection
     const handleDateSelect = (day: Date | undefined) => {
@@ -93,7 +116,7 @@ export default function RecomendationStudent({}) {
     return (
         <section className="mx-auto max-w-7xl mb-4">
             <Button asChild variant={"outline"} className="mb-3">
-                <Link href={"/t/students"}>
+                <Link href={"/t"}>
                     <span className="material-symbols-outlined me-1 !leading-none !text-lg hover:no-underline">
                         arrow_back
                     </span>
@@ -120,7 +143,7 @@ export default function RecomendationStudent({}) {
                         <p className="text-medium font-medium tracking-tight">
                             Mengikuti Perintah
                         </p>
-                        <Select>
+                        <Select disabled={isLoading}>
                             <SelectTrigger className="w-fit min-w-24">
                                 <SelectValue placeholder="Pilih Minggu" />
                             </SelectTrigger>
@@ -150,7 +173,7 @@ export default function RecomendationStudent({}) {
                 <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60">
                     <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <p className="font-medium tracking-tight">Nama Aspek</p>
-                        <Select>
+                        <Select disabled={isLoading}>
                             <SelectTrigger className="w-fit min-w-24">
                                 <SelectValue placeholder="Pilih Minggu" />
                             </SelectTrigger>
@@ -180,7 +203,7 @@ export default function RecomendationStudent({}) {
                 <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60">
                     <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <p className="font-medium tracking-tight">Nama Aspek</p>
-                        <Select>
+                        <Select disabled={isLoading}>
                             <SelectTrigger className="w-fit min-w-24">
                                 <SelectValue placeholder="Pilih Minggu" />
                             </SelectTrigger>
@@ -275,14 +298,30 @@ export default function RecomendationStudent({}) {
                         Berbicara (2)
                     </p>
                     <div className="flex flex-col gap-2">
-                        <RecomendationCard />
-                        <RecomendationCard />
-                        <RecomendationCard />
+                        {recommendations.length == 0 && (
+                            <div>
+                                <p className="text-center">
+                                    Tidak ada data rekomendasi
+                                </p>
+                            </div>
+                        )}
+
+                        {recommendations.map((recommendation, idx) =>
+                            recommendation?.recommendation ? (
+                                <RecomendationCard
+                                    key={idx}
+                                    recommendation={
+                                        recommendation.recommendation
+                                    }
+                                    isDone={false}
+                                />
+                            ) : null
+                        )}
                     </div>
                 </div>
                 <div className="flex justify-end items-center p-2">
-                    <Button asChild variant={"outline"}>
-                        <Link href={"/t/students/1/assessment"}>
+                    <Button asChild variant={"outline"} disabled={isLoading}>
+                        <Link href={"/t/students/1/monitoring"}>
                             Cek Hari Ini
                             <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                                 chevron_right

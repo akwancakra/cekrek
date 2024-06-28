@@ -16,6 +16,10 @@ export default function RecomendationCard({
     isDone = false,
     recommendation,
 }: RecomendationCardProps) {
+    if (!recommendation) {
+        return null;
+    }
+
     return (
         <div className={`collapse rounded-lg hover:bg-gray-100 ${className}`}>
             <input type="checkbox" />
@@ -35,10 +39,10 @@ export default function RecomendationCard({
                         </div>
                         <div>
                             <p className="font-medium text-medium">
-                                {recommendation.title}
+                                {recommendation?.title || "N/A"}
                             </p>
                             <p className="text-gray-500 text-small">
-                                Tipe: {recommendation.frequency}
+                                Tipe: {recommendation?.frequency || "N/A"}
                             </p>
                         </div>
                     </div>
@@ -55,7 +59,7 @@ export default function RecomendationCard({
             <div className="collapse-content !p-0">
                 <p className="font-semibold text-small">Deskripsi</p>
                 <p className="text-sm">
-                    {recommendation.description || "Tidak ada deskripsi"}
+                    {recommendation?.description || "Tidak ada deskripsi"}
                 </p>
             </div>
         </div>

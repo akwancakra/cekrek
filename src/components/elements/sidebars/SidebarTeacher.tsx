@@ -30,7 +30,7 @@ const SidebarTeacher = ({
                 }bg-white group fixed h-full w-[78px] z-10 transition-all duration-500 ease-in-out px-3.5 py-1.5 left-0 top-0 border border-r border-gray-300 [&.open]:w-[250px] hidden sm:block`}
             >
                 <div className="h-[60px] flex justify-between items-center relative">
-                    <div>
+                    <div className="hidden group-[.open]:block">
                         <Link
                             href="/"
                             className="text-2xl font-semibold opacity-0 transition-all duration-75 ease-in-out group-[.open]:opacity-100"
