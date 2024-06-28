@@ -156,8 +156,18 @@ export async function POST(req: any, { params }: any) {
       data: { risk_category: childRiskCategory },
     });
 
+    const finalChildRecommendations =
+      await prisma.child_recommendations.findMany({
+        where: { children_id: child_id },
+        include: { recommendations: true },
+      });
+
     return NextResponse.json(
-      { status: "success", child_assessments },
+      {
+        status: "success",
+        child_assessments,
+        child_recommendations: finalChildRecommendations,
+      },
       { status: 201 }
     );
   } catch (error: any) {
