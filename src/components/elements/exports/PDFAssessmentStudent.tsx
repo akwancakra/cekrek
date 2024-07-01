@@ -2,21 +2,38 @@
 
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
-import { Assessment } from "@/types/assessment.types";
 import { AssessmentPrint } from "./AssessmentPrint";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { ChildAssesment } from "@/types/childAssesment.type";
+import { Child } from "@/types/children.types";
 
 interface PDFAssessmentStudentProps {
-    assessment: Assessment;
+    data: Child;
+    // date: Date;
+    // childAssessment: ChildAssesment[];
 }
 
-const PDFAssessmentStudent = ({ assessment }: PDFAssessmentStudentProps) => {
+const PDFAssessmentStudent = ({
+    data,
+}: // date,
+// childAssessment,
+PDFAssessmentStudentProps) => {
+    const date = data?.child_assesments?.[0]?.date_time || new Date();
+    const childAssessment: ChildAssesment[] =
+        data?.child_assesments?.[0]?.assesments || [];
+
     const documentRef = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => documentRef.current,
-        documentTitle: `Asesmen-${assessment.title}`,
+        documentTitle: `Asesmen-${date.toLocaleDateString()}`,
         bodyClass: "p-16",
     });
+
+    const values = {
+        date,
+        child: data,
+        childAssessment,
+    };
 
     return (
         <>
@@ -41,7 +58,7 @@ const PDFAssessmentStudent = ({ assessment }: PDFAssessmentStudentProps) => {
                 </svg>
                 <span>Unduh pdf</span>
             </DropdownMenuItem>
-            <AssessmentPrint ref={documentRef} values={assessment} />
+            <AssessmentPrint ref={documentRef} values={values} />
         </>
     );
 };

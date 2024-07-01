@@ -1,10 +1,19 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: [
-            "cdn-icons-png.flaticon.com",
-            "images.unsplash.com",
-            "c5.patreon.com",
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "cdn-icons-png.flaticon.com",
+            },
+            {
+                protocol: "https",
+                hostname: "images.unsplash.com",
+            },
+            {
+                protocol: "https",
+                hostname: "c5.patreon.com",
+            },
         ],
     },
 };

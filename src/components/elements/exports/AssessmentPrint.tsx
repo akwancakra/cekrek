@@ -1,10 +1,27 @@
 "use client";
 
 import { forwardRef } from "react";
-import { Assessment } from "@/types/assessment.types";
+import { ChildAssesment } from "@/types/childAssesment.type";
+import { getRiskCategory, getScoreAssessments } from "@/utils/converters";
+import { formattedDate } from "@/utils/formattedDate";
+import { Child } from "@/types/children.types";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+
+type ValuesAssessment = {
+    date: Date;
+    child: Child;
+    childAssessment: ChildAssesment[];
+};
 
 interface AssessmentPrintProps {
-    values: Assessment;
+    values: ValuesAssessment;
 }
 
 const AssessmentPrint = forwardRef<HTMLDivElement, AssessmentPrintProps>(
@@ -14,44 +31,80 @@ const AssessmentPrint = forwardRef<HTMLDivElement, AssessmentPrintProps>(
                 <div className="hidden h-0 overflow-hidden">
                     <div ref={ref} className="w-full">
                         <div>
-                            <p className="text-small text-gray-400 -mb-1">ID</p>
+                            <p className="text-small text-gray-400 -mb-1">
+                                Nama
+                            </p>
                             <p className="text-large font-semibold tracking-tight">
-                                {values.id}
+                                {values.child.full_name}
                             </p>
                         </div>
+                        <div className="divider my-1"></div>
                         <div className="grid grid-cols-3 gap-2 w-full h-full">
                             <div>
                                 <p className="text-small text-gray-400 -mb-1">
-                                    Title
+                                    Skor
                                 </p>
                                 <p className="text-large font-semibold tracking-tight">
-                                    {values.title}
+                                    {getScoreAssessments({
+                                        childAssesment: values.childAssessment,
+                                        type: "awal",
+                                    })}
                                 </p>
                             </div>
                             <div>
                                 <p className="text-small text-gray-400 -mb-1">
-                                    Description
+                                    Kategori
                                 </p>
                                 <p className="text-large font-semibold tracking-tight">
-                                    {values.description}
+                                    {getRiskCategory({
+                                        childAssesment: values.childAssessment,
+                                        type: "awal",
+                                    })}
                                 </p>
                             </div>
                             <div>
                                 <p className="text-small text-gray-400 -mb-1">
-                                    Category
+                                    Tanggal Tes
                                 </p>
                                 <p className="text-large font-semibold tracking-tight">
-                                    {values.category}
+                                    {formattedDate(values.date.toString())}
                                 </p>
                             </div>
                         </div>
                         <div className="divider my-1"></div>
-                        <div className="page-break"></div>
-                        <div className="mt-[20mm]">
+                        <div>
+                            <p className="text-large font-semibold tracking-tight">
+                                Daftar asesmen
+                            </p>
+                        </div>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>No</TableHead>
+                                    <TableHead>Pertanyaan</TableHead>
+                                    <TableHead>Hasil</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {values.childAssessment.map((chass) => (
+                                    <TableRow key={chass.id}>
+                                        <TableCell className="font-medium">
+                                            {chass.assesment?.assesment_number}
+                                        </TableCell>
+                                        <TableCell>
+                                            {chass.assesment?.question}
+                                        </TableCell>
+                                        <TableCell>{chass.answer}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        {/* <div className="page-break"></div> */}
+                        {/* <div className="mt-[20mm]">
                             <p className="text-large font-semibold tracking-tight">
                                 {values.createdAt}
                             </p>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </>

@@ -1,7 +1,58 @@
-import { Button } from "@/components/ui/button";
 import Pill from "../alerts/Pill";
+import { Button } from "@/components/ui/button";
+import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
+import { ChildRecommendation } from "@/types/childRecommendation.type";
+import { Child } from "@/types/children.types";
+import RecomendationCard from "../cards/RecomendationCard";
+import { Assessment } from "@/types/assessment.types";
+import { Badge } from "@/components/ui/badge";
+import { getRiskCategory, getVariant } from "@/utils/converters";
+import { capitalizeFirstLetter } from "@/utils/formattedDate";
 
-export default function AssessmentResult() {
+interface AssessmentResultProps {
+    child: Child;
+    assessmentAnswer: AssessmentAnswer[];
+    handleNextStage: () => void;
+    handleBackStage: () => void;
+    isLoading?: boolean;
+    // removeAssessmentAnswer: () => void;
+}
+
+export default function AssessmentResult({
+    child,
+    assessmentAnswer,
+    handleNextStage,
+    handleBackStage,
+    isLoading,
+}: // removeAssessmentAnswer,
+AssessmentResultProps) {
+    const getTotalChildAssessment = ({
+        childAssessment,
+        type,
+        answer,
+    }: {
+        childAssessment: AssessmentAnswer[];
+        type?: "awal" | "follow up";
+        answer?: "lulus" | "gagal" | "ya" | "tidak";
+    }) => {
+        return childAssessment.filter(
+            (chass) => chass.assesment_type === type && chass.answer === answer
+        ).length;
+    };
+
+    const childAssessmentIsExist = ({
+        childAssessment,
+        type,
+    }: {
+        childAssessment: AssessmentAnswer[];
+        type?: "awal" | "follow up";
+    }): boolean => {
+        const isExist = childAssessment.some(
+            (chass) => chass.assesment_type === type
+        );
+        return isExist;
+    };
+
     return (
         <section className="mx-auto max-w-7xl flex flex-col justify-center items-center w-full h-full gap-2 p-2">
             <div className="w-full border border-gray-300 rounded-lg p-2">
@@ -10,7 +61,7 @@ export default function AssessmentResult() {
                         Hasil Akhir Asesmen Umum
                     </p>
                     <p className="text-large font-semibold tracking-tight">
-                        Dewantara
+                        {child?.full_name || "N/A"}
                     </p>
                 </div>
             </div>
@@ -27,30 +78,63 @@ export default function AssessmentResult() {
                                 Asesmen Awal
                             </p>
                             <p className="text-gray-400 text-small -mb-1">
-                                Skor: 12 Ya, 8 Tidak
+                                {"Skor: " +
+                                    getTotalChildAssessment({
+                                        childAssessment: assessmentAnswer || [],
+                                        type: "awal",
+                                        answer: "ya",
+                                    }) +
+                                    " Ya, " +
+                                    getTotalChildAssessment({
+                                        childAssessment: assessmentAnswer || [],
+                                        type: "awal",
+                                        answer: "tidak",
+                                    }) +
+                                    " Tidak"}
                             </p>
                         </div>
-                        <button className="btn btn-circle w-10 h-10 min-h-0 !leading-none">
+                        <Button
+                            variant={"secondary"}
+                            size={"icon"}
+                            className="rounded-full"
+                            disabled={isLoading}
+                        >
                             <span className="material-symbols-outlined !text-xl !leading-4">
                                 info
                             </span>
-                        </button>
+                        </Button>
                     </div>
-                    <div className="flex justify-between gap-2">
+                    {/* <div className="flex justify-between gap-2">
                         <div>
                             <p className="font-medium tracking-tight text-medium">
                                 Asesmen Follow Up
                             </p>
                             <p className="text-gray-400 text-small -mb-1">
-                                Skor: 12 Ya, 8 Tidak
+                                {"Skor: " +
+                                    getTotalChildAssessment({
+                                        childAssessment: assessmentAnswer || [],
+                                        type: "follow up",
+                                        answer: "lulus",
+                                    }) +
+                                    " Lulus, " +
+                                    getTotalChildAssessment({
+                                        childAssessment: assessmentAnswer || [],
+                                        type: "follow up",
+                                        answer: "gagal",
+                                    }) +
+                                    " Gagal"}
                             </p>
                         </div>
-                        <button className="btn btn-circle w-10 h-10 min-h-0 !leading-none">
+                        <Button
+                            variant={"secondary"}
+                            size={"icon"}
+                            className="rounded-full"
+                        >
                             <span className="material-symbols-outlined !text-xl !leading-4">
                                 info
                             </span>
-                        </button>
-                    </div>
+                        </Button>
+                    </div> */}
                 </div>
             </div>
             <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden">
@@ -60,64 +144,63 @@ export default function AssessmentResult() {
                     </p>
                 </div>
                 <div className="p-3">
-                    <div className="flex justify-between gap-2 mb-3">
+                    {!childAssessmentIsExist({
+                        childAssessment: assessmentAnswer || [],
+                        type: "awal",
+                    }) && (
                         <div>
-                            <p className="font-medium tracking-tight text-medium">
-                                Soal 1
-                            </p>
-                            <p className="text-gray-400 text-small -mb-1">
-                                Jika anda menunjuk sesuatu di ruangan, apakah
-                                $namaAnak melihatnya?
+                            <p className="text-center text-small">
+                                Belum ada data asesmen follow up
                             </p>
                         </div>
-                        <Pill type="primary" text="Lulus" icon="assignment" />
-                    </div>
-                    <div className="flex justify-between gap-2 mb-3">
-                        <div>
-                            <p className="font-medium tracking-tight text-medium">
-                                Soal 2
-                            </p>
-                            <p className="text-gray-400 text-small -mb-1">
-                                Jika anda menunjuk sesuatu di ruangan, apakah
-                                $namaAnak melihatnya?
-                            </p>
-                        </div>
-                        <Pill type="error" text="Gagal" icon="assignment" />
-                    </div>
-                    <div className="flex justify-between gap-2 mb-3">
-                        <div>
-                            <p className="font-medium tracking-tight text-medium">
-                                Soal 3
-                            </p>
-                            <p className="text-gray-400 text-small -mb-1">
-                                Jika anda menunjuk sesuatu di ruangan, apakah
-                                $namaAnak melihatnya?
-                            </p>
-                        </div>
-                        <Pill type="error" text="Gagal" icon="assignment" />
-                    </div>
-                    <div className="flex justify-between gap-2 mb-3">
-                        <div>
-                            <p className="font-medium tracking-tight text-medium">
-                                Soal 4
-                            </p>
-                            <p className="text-gray-400 text-small -mb-1">
-                                Jika anda menunjuk sesuatu di ruangan, apakah
-                                $namaAnak melihatnya?
-                            </p>
-                        </div>
-                        <Pill type="error" text="Gagal" icon="assignment" />
-                    </div>
+                    )}
+                    {ScoreChildAssessmentCard({
+                        childAssessments: assessmentAnswer || [],
+                        type: "awal",
+                    })}
+                </div>
+            </div>
+            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden">
+                <div className="bg-purple-100 w-full p-3">
+                    <p className="text-large font-semibold tracking-tight">
+                        Hasil
+                    </p>
+
+                    <Badge
+                        variant={"default"}
+                        className={`${getVariant(
+                            getRiskCategory({
+                                childAssesment: assessmentAnswer,
+                                type: "awal",
+                            })
+                        )}`}
+                    >
+                        Kategori{" "}
+                        {getRiskCategory({
+                            childAssesment: assessmentAnswer,
+                            type: "awal",
+                        })}
+                    </Badge>
                 </div>
             </div>
             <div className="flex gap-3 w-full mb-3 justify-between sm:justify-end">
-                <Button variant={"outline"} className="gap-1">
+                <Button
+                    variant={"outline"}
+                    className="gap-1"
+                    onClick={handleBackStage}
+                    disabled={isLoading}
+                >
                     <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                         chevron_left
                     </span>
                     <span>Kembali</span>
                 </Button>
-                <Button variant={"outline"} className="gap-1">
+                <Button
+                    variant={"outline"}
+                    className="gap-1"
+                    onClick={handleNextStage}
+                    disabled={isLoading}
+                >
                     <span>Dapatkan Rekomendasi</span>
                     <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                         check
@@ -127,3 +210,44 @@ export default function AssessmentResult() {
         </section>
     );
 }
+
+const ScoreChildAssessmentCard = ({
+    childAssessments,
+    type,
+}: {
+    childAssessments: AssessmentAnswer[];
+    type: "awal" | "follow up";
+}) => {
+    const filteredAssessments: AssessmentAnswer[] = childAssessments.filter(
+        (chass) => chass.assesment_type === type
+    );
+
+    return (
+        <>
+            {filteredAssessments.map((chass) => (
+                <div
+                    key={chass.assesment_id}
+                    className="flex justify-between items-center gap-2 mb-3"
+                >
+                    <div>
+                        <p className="font-medium tracking-tight text-medium">
+                            Soal {chass.assesment?.id || 0}
+                        </p>
+                        <p className="text-gray-400 text-small -mb-1">
+                            {chass.assesment?.question || "Pertanyaan"}
+                        </p>
+                    </div>
+                    <Pill
+                        type={
+                            chass.answer === "ya" || chass.answer == "lulus"
+                                ? "primary"
+                                : "error"
+                        }
+                        text={capitalizeFirstLetter(chass.answer)}
+                        icon="assignment"
+                    />
+                </div>
+            ))}
+        </>
+    );
+};

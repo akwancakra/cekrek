@@ -1,16 +1,23 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Child } from "@/types/children.types";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ChildCard({}) {
+interface ChildCardProps {
+    child: Child;
+}
+
+export default function ChildCard({ child }: ChildCardProps) {
     return (
         <div className="border border-gray-300 rounded-lg p-2 md:min-w-48">
             <div className="bg-gray-400 w-full rounded-lg overflow-hidden">
                 <AspectRatio ratio={4 / 3} className="bg-muted">
                     <Image
-                        src={"/static/images/user-default.jpg"}
+                        src={`/static/images/${
+                            child?.picture || "user-default.jpg"
+                        }`}
                         alt="Child Profile"
                         fill={true}
                         className="rounded-lg object-cover"
@@ -20,14 +27,17 @@ export default function ChildCard({}) {
             </div>
             <div className="text-center mt-3">
                 <p className="font-semibold tracking-tighter -mb-1 text-large">
-                    Putra Adam
+                    {child.full_name}
                 </p>
                 <Badge variant="outline" className="bg-primary text-white">
-                    Kondisi Menengah
+                    Kondisi {child.risk_category}
                 </Badge>
                 <div className="grid gap-2 grid-cols-1 group-[.open]:grid-cols-1 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                     <Button asChild variant={"outline"} className="text-small">
-                        <Link className="w-full mt-2" href={"/p/childs/2"}>
+                        <Link
+                            className="w-full mt-2"
+                            href={`/p/childs/${child.id}`}
+                        >
                             <span className="hidden me-1 group-[.open]:hidden md:block lg:group-[.open]:block">
                                 Lihat
                             </span>
@@ -40,7 +50,7 @@ export default function ChildCard({}) {
                     <Button asChild variant={"outline"} className="text-small">
                         <Link
                             className="w-full group-[.open]:mt-0 sm:mt-2 md:group-[.open]:mt-2"
-                            href={"/p/childs/2/recommendation"}
+                            href={`/p/childs/${child.id}/recommendation`}
                         >
                             <span className="hidden me-1 group-[.open]:hidden md:block lg:group-[.open]:block">
                                 Lihat

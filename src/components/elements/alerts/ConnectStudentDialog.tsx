@@ -22,224 +22,451 @@ import {
     CommandList,
 } from "@/components/ui/command";
 import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Student } from "@/types/student.types";
+import { Child } from "@/types/children.types";
+import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import axios from "axios";
 import Image from "next/image";
-import { useState } from "react";
-
-const students: Student[] = [
-    {
-        id: "1",
-        name: "Siswa 1",
-        image: "/static/images/user-default.jpg",
-        category: "Low",
-        old: 6,
-    },
-    {
-        id: "2",
-        name: "Siswa 2",
-        image: "/static/images/user-default.jpg",
-        category: "Low",
-        old: 6,
-    },
-    {
-        id: "3",
-        name: "Siswa 3",
-        image: "/static/images/user-default.jpg",
-        category: "High",
-        old: 6,
-    },
-    {
-        id: "4",
-        name: "Siswa 4",
-        image: "/static/images/user-default.jpg",
-        category: "Medium",
-        old: 6,
-    },
-    {
-        id: "5",
-        name: "Siswa 5",
-        image: "/static/images/user-default.jpg",
-        category: "High",
-        old: 6,
-    },
-    {
-        id: "6",
-        name: "Siswa 6",
-        image: "/static/images/user-default.jpg",
-        category: "Low",
-        old: 6,
-    },
-    {
-        id: "7",
-        name: "Siswa 7",
-        image: "/static/images/user-default.jpg",
-        category: "Low",
-        old: 6,
-    },
-];
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useMediaQuery } from "usehooks-ts";
 
 export default function ConnectStudentDialog({
-    connectStudentButton,
     className,
+    students,
+    mutate,
+    children,
 }: {
-    connectStudentButton: () => void;
+    mutate: () => void;
     className?: string;
+    students: Child[];
+    children: React.ReactNode;
 }) {
     const [open, setOpen] = useState(false);
+    const [popoverOpen, setPopoverOpen] = useState(false);
+
     const [value, setValue] = useState("");
     const [search, setSearch] = useState("");
+    const [selectedProfile, setSelectedProfile] = useState<Child | undefined>();
+    const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
+
+    const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const filteredStudents = students.filter(
         (student) =>
-            student.name.toLowerCase().includes(search.toLowerCase()) ||
-            student.category.toLowerCase().includes(search.toLowerCase())
+            student.full_name.toLowerCase().includes(search.toLowerCase()) ||
+            student?.risk_category?.toLowerCase().includes(search.toLowerCase())
     );
 
-    return (
-        <AlertDialog>
-            <AlertDialogTrigger asChild>
-                <Button
-                    variant={"default"}
-                    className={`gap-1 text-small text-white${
-                        className ? ` ${className}` : ""
-                    }`}
-                >
-                    <span>Tambah Siswa</span>
-                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
-                        person_add
-                    </span>
-                </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className="p-0">
-                <ScrollArea className="max-h-[80vh] p-3">
-                    <AlertDialogHeader className="m-1">
-                        <AlertDialogTitle>Tambah Siswa</AlertDialogTitle>
-                        <div className="divider my-1"></div>
-                        <div>
-                            <AspectRatio ratio={12 / 13}>
-                                <Image
-                                    src={"/static/images/user-default.jpg"}
-                                    alt="Child Profile"
-                                    fill={true}
-                                    className="rounded-lg object-cover"
-                                    draggable={false}
-                                />
-                                <div className="absolute bottom-0 w-full">
-                                    <div className="m-2 flex justify-between items-center bg-white rounded-lg p-2 min-h-20">
-                                        <Popover
-                                            open={open}
-                                            onOpenChange={setOpen}
-                                        >
-                                            <PopoverTrigger asChild>
-                                                <Button
-                                                    variant="outline"
-                                                    className="w-full h-fit justify-start"
-                                                >
-                                                    <StudentItem
-                                                        studentId={value}
-                                                    />
-                                                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
-                                                        unfold_more
-                                                    </span>
-                                                </Button>
-                                            </PopoverTrigger>
-                                            <PopoverContent
-                                                className="w-full p-0"
-                                                align="start"
+    const getStudentById = (studentId: string) => {
+        const student: Child | undefined = students.find(
+            (student) => student.id.toString() === studentId
+        );
+
+        setSelectedProfile(student);
+    };
+
+    useEffect(() => {
+        getStudentById(value);
+    }, [value]);
+
+    const connectStudentButton = async () => {
+        setIsLoadingPost(true);
+
+        if (!selectedProfile?.id) {
+            return toast.error("Pilih siswa terlebih dahulu!");
+        }
+
+        const postData = {
+            teacher_id: 1,
+            student_id: selectedProfile?.id,
+        };
+
+        await axios
+            .put(`/api/teachers/${1}/students/add`, postData)
+            .then((res) => {
+                toast.success("Siswa berhasil ditambahkan!");
+                setIsLoadingPost(false);
+
+                setSelectedProfile(undefined);
+                mutate();
+            })
+            .catch((err) => {
+                if (err?.response.status === 400) {
+                    toast.error(err?.response?.data?.message);
+                } else if (err?.response.status === 500) {
+                    toast.error("Server Error");
+                } else {
+                    toast.error("Terjadi kesalahan");
+                }
+                setIsLoadingPost(false);
+            });
+    };
+
+    if (isDesktop) {
+        return (
+            <AlertDialog>
+                <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+                <AlertDialogContent className="p-0">
+                    <ScrollArea className="max-h-[80vh] p-3">
+                        <AlertDialogHeader className="m-1">
+                            <AlertDialogTitle>Tambah Siswa</AlertDialogTitle>
+                            <div className="divider my-1"></div>
+                            <div>
+                                <AspectRatio ratio={12 / 13}>
+                                    <Image
+                                        src={`/static/images/${
+                                            selectedProfile?.picture ||
+                                            "user-default.jpg"
+                                        }`}
+                                        alt="Child Profile"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
+                                    <div className="absolute bottom-0 w-full">
+                                        <div className="m-2 flex justify-between items-center bg-white rounded-lg p-2 min-h-20">
+                                            <Popover
+                                                open={open}
+                                                onOpenChange={setOpen}
                                             >
-                                                <Command className="w-96">
-                                                    <div className="p-2">
-                                                        <input
-                                                            type="text"
-                                                            placeholder="Cari siswa..."
-                                                            value={search}
-                                                            onChange={(e) =>
-                                                                setSearch(
-                                                                    e.target
-                                                                        .value
-                                                                )
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="w-full h-fit justify-start"
+                                                    >
+                                                        <StudentItem
+                                                            student={
+                                                                selectedProfile
                                                             }
-                                                            className="w-full p-2 border-b border-gray-300 text-small"
                                                         />
-                                                    </div>
-                                                    <CommandList>
-                                                        <CommandEmpty>
-                                                            No results found.
-                                                        </CommandEmpty>
-                                                        <CommandGroup>
-                                                            {filteredStudents.map(
-                                                                (student) => (
-                                                                    <CommandItem
-                                                                        key={
-                                                                            student.id
-                                                                        }
-                                                                        value={
-                                                                            student.id
-                                                                        }
-                                                                        onSelect={(
-                                                                            value
-                                                                        ) => {
-                                                                            setValue(
-                                                                                value
-                                                                            );
-                                                                            setOpen(
-                                                                                false
-                                                                            );
-                                                                        }}
-                                                                    >
-                                                                        <StudentItem
-                                                                            studentId={
+                                                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                                                            unfold_more
+                                                        </span>
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-full p-0"
+                                                    align="start"
+                                                >
+                                                    <Command className="w-96">
+                                                        <div className="p-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Cari siswa..."
+                                                                value={search}
+                                                                onChange={(e) =>
+                                                                    setSearch(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                                className="w-full p-2 border-b border-gray-300 text-small"
+                                                            />
+                                                        </div>
+                                                        <CommandList>
+                                                            <CommandEmpty>
+                                                                No results
+                                                                found.
+                                                            </CommandEmpty>
+                                                            <CommandGroup>
+                                                                {filteredStudents.map(
+                                                                    (
+                                                                        student
+                                                                    ) => (
+                                                                        <CommandItem
+                                                                            key={
                                                                                 student.id
                                                                             }
-                                                                        />
-                                                                    </CommandItem>
-                                                                )
-                                                            )}
-                                                        </CommandGroup>
-                                                    </CommandList>
-                                                </Command>
-                                            </PopoverContent>
-                                        </Popover>
+                                                                            value={student.id.toString()}
+                                                                            onSelect={(
+                                                                                value
+                                                                            ) => {
+                                                                                setValue(
+                                                                                    value
+                                                                                );
+                                                                                setOpen(
+                                                                                    false
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <StudentItem
+                                                                                student={
+                                                                                    student
+                                                                                }
+                                                                            />
+                                                                        </CommandItem>
+                                                                    )
+                                                                )}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
                                     </div>
+                                </AspectRatio>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Nama
+                                    </p>
+                                    <p>{selectedProfile?.full_name || "N/A"}</p>
                                 </div>
-                            </AspectRatio>
-                        </div>
-                        <AlertDialogDescription />
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Batal</AlertDialogCancel>
-                        <AlertDialogAction asChild>
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Kategori
+                                    </p>
+                                    <p>
+                                        {selectedProfile?.risk_category
+                                            ? capitalizeFirstLetter(
+                                                  selectedProfile?.risk_category
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Jenis Kelamin
+                                    </p>
+                                    <p>
+                                        {selectedProfile?.gender
+                                            ? capitalizeFirstLetter(
+                                                  selectedProfile?.gender
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Tanggal Lahir
+                                    </p>
+                                    <p>
+                                        {selectedProfile?.date_time_birth
+                                            ? formattedDate(
+                                                  selectedProfile.date_time_birth.toString()
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                            </div>
+                            <AlertDialogDescription />
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
+                            <AlertDialogAction asChild>
+                                <Button
+                                    variant={"default"}
+                                    onClick={() => connectStudentButton()}
+                                    disabled={!selectedProfile}
+                                >
+                                    Tambah
+                                </Button>
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </ScrollArea>
+                </AlertDialogContent>
+            </AlertDialog>
+        );
+    } else {
+        return (
+            <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>{children}</DrawerTrigger>
+                <DrawerContent className="p-0">
+                    <ScrollArea className="p-0">
+                        <DrawerHeader className="text-left">
+                            <DrawerTitle>Tambah Siswa</DrawerTitle>
+                            <div className="divider my-1"></div>
+                            <div>
+                                <AspectRatio ratio={12 / 13}>
+                                    <Image
+                                        src={`/static/images/${
+                                            selectedProfile?.picture ||
+                                            "user-default.jpg"
+                                        }`}
+                                        alt="Child Profile"
+                                        fill={true}
+                                        className="rounded-lg object-cover"
+                                        draggable={false}
+                                    />
+                                    <div className="absolute bottom-0 w-full">
+                                        <div className="m-2 flex justify-between items-center bg-white rounded-lg p-2 min-h-20">
+                                            <Popover
+                                                open={popoverOpen}
+                                                onOpenChange={setPopoverOpen}
+                                            >
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        className="w-full h-fit justify-start"
+                                                    >
+                                                        <StudentItem
+                                                            student={
+                                                                selectedProfile
+                                                            }
+                                                        />
+                                                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                                                            unfold_more
+                                                        </span>
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent
+                                                    className="w-full p-0"
+                                                    align="start"
+                                                >
+                                                    <Command className="w-80">
+                                                        <div className="p-2">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Cari siswa..."
+                                                                value={search}
+                                                                onChange={(e) =>
+                                                                    setSearch(
+                                                                        e.target
+                                                                            .value
+                                                                    )
+                                                                }
+                                                                className="w-full p-2 border-b border-gray-300 text-small"
+                                                            />
+                                                        </div>
+                                                        <CommandList>
+                                                            <CommandEmpty>
+                                                                No results
+                                                                found.
+                                                            </CommandEmpty>
+                                                            <CommandGroup>
+                                                                {filteredStudents.map(
+                                                                    (
+                                                                        student
+                                                                    ) => (
+                                                                        <CommandItem
+                                                                            key={
+                                                                                student.id
+                                                                            }
+                                                                            value={student.id.toString()}
+                                                                            onSelect={(
+                                                                                value
+                                                                            ) => {
+                                                                                setValue(
+                                                                                    value
+                                                                                );
+                                                                                setPopoverOpen(
+                                                                                    false
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            <StudentItem
+                                                                                student={
+                                                                                    student
+                                                                                }
+                                                                            />
+                                                                        </CommandItem>
+                                                                    )
+                                                                )}
+                                                            </CommandGroup>
+                                                        </CommandList>
+                                                    </Command>
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
+                                    </div>
+                                </AspectRatio>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 mt-2">
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Nama
+                                    </p>
+                                    <p>{selectedProfile?.full_name || "N/A"}</p>
+                                </div>
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Kategori
+                                    </p>
+                                    <p>
+                                        {selectedProfile?.risk_category
+                                            ? capitalizeFirstLetter(
+                                                  selectedProfile?.risk_category
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Jenis Kelamin
+                                    </p>
+                                    <p>
+                                        {selectedProfile?.gender
+                                            ? capitalizeFirstLetter(
+                                                  selectedProfile?.gender
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-small text-gray-400 -mb-1">
+                                        Tanggal Lahir
+                                    </p>
+                                    <p>
+                                        {selectedProfile?.date_time_birth
+                                            ? formattedDate(
+                                                  selectedProfile.date_time_birth.toString()
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                            </div>
+                            <DrawerDescription />
+                        </DrawerHeader>
+                        <DrawerFooter className="pt-2">
                             <Button
                                 variant={"default"}
                                 onClick={() => connectStudentButton()}
+                                disabled={!selectedProfile}
                             >
                                 Tambah
                             </Button>
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </ScrollArea>
-            </AlertDialogContent>
-        </AlertDialog>
-    );
+                            <DrawerClose asChild>
+                                <Button
+                                    variant="outline"
+                                    className="text-medium"
+                                >
+                                    Batal
+                                </Button>
+                            </DrawerClose>
+                        </DrawerFooter>
+                    </ScrollArea>
+                </DrawerContent>
+            </Drawer>
+        );
+    }
 }
 
-const StudentItem = ({ studentId }: { studentId: string }) => {
-    const student: Student | undefined = students.find(
-        (student) => student.id === studentId
-    );
-
+const StudentItem = ({ student }: { student?: Child }) => {
     return (
         <div className="w-full flex items-center gap-2 cursor-pointer">
             <div className="min-w-16 max-w-20 bg-gray-300 rounded-lg ">
                 <AspectRatio ratio={1 / 1}>
                     <Image
                         src={
-                            student?.image || "/static/images/user-default.jpg"
+                            student?.picture ||
+                            "/static/images/user-default.jpg"
                         }
                         alt="Child Profile"
                         fill={true}
@@ -249,9 +476,11 @@ const StudentItem = ({ studentId }: { studentId: string }) => {
                 </AspectRatio>
             </div>
             <div className="flex flex-col items-start">
-                <p>{student?.name || "Siswa"}</p>
+                <p>{student?.full_name || "Siswa"}</p>
                 <Badge variant={"default"}>
-                    {student?.category || "Kategori"}
+                    {student?.risk_category
+                        ? capitalizeFirstLetter(student.risk_category)
+                        : "N/A"}
                 </Badge>
             </div>
         </div>

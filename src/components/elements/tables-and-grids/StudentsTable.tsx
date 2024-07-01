@@ -25,222 +25,296 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useState } from "react";
-import { Student } from "@/types/student.types";
+import { useMemo, useState } from "react";
 import Link from "next/link";
+import { Child } from "@/types/children.types";
+import { capitalizeFirstLetter } from "@/utils/formattedDate";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-const students: Student[] = [
-    {
-        id: "1",
-        name: "Andreas Nathan",
-        image: "/images/user-default.jpg",
-        category: "Medium",
-        old: 14,
-    },
-    {
-        id: "2",
-        name: "Jhony Itu",
-        image: "/images/user-default.jpg",
-        category: "High",
-        old: 12,
-    },
-    {
-        id: "3",
-        name: "Kai Cenat",
-        image: "/images/user-default.jpg",
-        category: "Low",
-        old: 14,
-    },
-    {
-        id: "4",
-        name: "Bianca Cenat",
-        image: "/images/user-default.jpg",
-        category: "High",
-        old: 14,
-    },
-    {
-        id: "5",
-        name: "Doni Sitorus",
-        image: "/images/user-default.jpg",
-        category: "Medium",
-        old: 15,
-    },
-];
+interface StudentsTableProps {
+    students: Child[];
+    keyword: string;
+    category: string;
+    removeStudent: (id: string) => void;
+}
 
-const columns: ColumnDef<Student>[] = [
-    {
-        accessorKey: "id",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="gap-1 p-0 px-1"
-                >
-                    <span>ID</span>
-                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                        swap_vert
-                    </span>
-                </Button>
-            );
-        },
-    },
-    {
-        accessorKey: "name",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="gap-1 p-0 px-1"
-                >
-                    <span>Name</span>
-                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                        swap_vert
-                    </span>
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <Link
-                        href={`/t/students/${row.getValue("id")}`}
-                        className="hover:text-primary"
-                    >
-                        <span>{row.getValue("name")}</span>
-                    </Link>
-                </div>
-            );
-        },
-    },
-    {
-        accessorKey: "category",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="gap-1 p-0 px-1"
-                >
-                    <span>Category</span>
-                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                        swap_vert
-                    </span>
-                </Button>
-            );
-        },
-    },
-    {
-        accessorKey: "old",
-        header: ({ column }) => {
-            return (
-                <Button
-                    variant="ghost"
-                    onClick={() =>
-                        column.toggleSorting(column.getIsSorted() === "asc")
-                    }
-                    className="gap-1 p-0 px-1"
-                >
-                    <span>Old</span>
-                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                        swap_vert
-                    </span>
-                </Button>
-            );
-        },
-        cell: ({ row }) => {
-            const old = parseFloat(row.getValue("old"));
-            const formattedOld = old + " Years";
-
-            return formattedOld;
-        },
-    },
-    {
-        id: "actions",
-        cell: ({ row }) => {
-            const studentId = row.getValue("id");
-
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
-                                more_horiz
-                            </span>
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Aksi</DropdownMenuLabel>
-                        <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link href={`/t/students/${studentId}`}>
-                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    contacts
-                                </span>{" "}
-                                Lihat detil
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link href={`/t/students/${studentId}/assessment`}>
-                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    assignment
-                                </span>{" "}
-                                Buat asesmen
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link
-                                href={`/t/students/${studentId}/recommendation`}
-                            >
-                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    clinical_notes
-                                </span>{" "}
-                                Rekomendasi harian
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer" asChild>
-                            <Link href={`/t/students/${studentId}/edit`}>
-                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                    edit
-                                </span>{" "}
-                                Ubah siswa
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600">
-                            <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                delete
-                            </span>{" "}
-                            Hapus siswa
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        },
-    },
-];
-
-// interface DataTableProps<TData, TValue> {
-//     columns: ColumnDef<TData, TValue>[];
-//     data: TData[];
-// }
-
-export default function StudentsTable() {
+export default function StudentsTable({
+    students,
+    keyword,
+    category,
+    removeStudent,
+}: StudentsTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
     const [showSize, setShowSize] = useState(15);
 
+    const columns: ColumnDef<Child>[] = [
+        {
+            accessorKey: "id",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                        className="gap-1 p-0 px-1"
+                    >
+                        <span>ID</span>
+                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                            swap_vert
+                        </span>
+                    </Button>
+                );
+            },
+        },
+        {
+            accessorKey: "full_name",
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                        className="gap-1 p-0 px-1"
+                    >
+                        <span>Nama</span>
+                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                            swap_vert
+                        </span>
+                    </Button>
+                );
+            },
+            cell: ({ row }) => {
+                return (
+                    <div className="flex items-center gap-2">
+                        <Link
+                            href={`/t/students/${row.getValue("id")}`}
+                            className="hover:text-primary"
+                        >
+                            <span>{row.getValue("full_name")}</span>
+                        </Link>
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: "risk_category",
+            cell: ({ row }) => {
+                const category: string = row.getValue("risk_category");
+
+                return capitalizeFirstLetter(category);
+            },
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                        className="gap-1 p-0 px-1"
+                    >
+                        <span>Kategori</span>
+                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                            swap_vert
+                        </span>
+                    </Button>
+                );
+            },
+        },
+        {
+            accessorKey: "last_assesment",
+            cell: ({ row }) => {
+                const lastAssessment: string = row.getValue("last_assesment");
+                const formattedDate = new Date(
+                    lastAssessment
+                ).toLocaleDateString("id-ID", {
+                    year: "2-digit",
+                    month: "short",
+                    day: "numeric",
+                });
+
+                return <p className="text-sm text-gray-500">{formattedDate}</p>;
+            },
+            header: ({ column }) => {
+                return (
+                    <Button
+                        variant="ghost"
+                        onClick={() =>
+                            column.toggleSorting(column.getIsSorted() === "asc")
+                        }
+                        className="gap-1 p-0 px-1"
+                    >
+                        <span>Terakhir Asesmen</span>
+                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                            swap_vert
+                        </span>
+                    </Button>
+                );
+            },
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const studentId: string = row.getValue("id");
+
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                                    more_horiz
+                                </span>
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                asChild
+                            >
+                                <Link href={`/t/students/${studentId}`}>
+                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                        contacts
+                                    </span>{" "}
+                                    Lihat detil
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                asChild
+                            >
+                                <Link
+                                    href={`/t/students/${studentId}/assessment`}
+                                >
+                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                        assignment
+                                    </span>{" "}
+                                    Lakukan asesmen
+                                </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                asChild
+                            >
+                                <Link
+                                    href={`/t/students/${studentId}/recommendation`}
+                                >
+                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                        clinical_notes
+                                    </span>{" "}
+                                    Lakukan monitoring
+                                </Link>
+                            </DropdownMenuItem>
+                            {/* <DropdownMenuItem className="cursor-pointer" asChild>
+                                <Link href={`/t/students/${studentId}/edit`}>
+                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                        edit
+                                    </span>{" "}
+                                    Ubah siswa
+                                </Link>
+                            </DropdownMenuItem> */}
+                            <DropdownMenuItem
+                                className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                asChild
+                            >
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <button
+                                            type="button"
+                                            className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                        >
+                                            <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
+                                                delete
+                                            </span>
+                                            <span>Hapus siswa</span>
+                                        </button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>
+                                                Apakah kamu yakin?
+                                            </AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Ini akan menghapus data{" "}
+                                                <span className="font-semibold">
+                                                    Dwiky Putra
+                                                </span>{" "}
+                                                dan tidak bisa dikembalikan, dan
+                                                berikut rincian data yang akan
+                                                dihapus:
+                                                <span className="block mt-1">
+                                                    &gt; Data profil anak
+                                                </span>
+                                                <span className="block">
+                                                    &gt; Data riwayat asesmen
+                                                </span>
+                                                <span className="block">
+                                                    &gt; Data rekomendasi
+                                                </span>
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Batal
+                                            </AlertDialogCancel>
+                                            <AlertDialogAction asChild>
+                                                <Button
+                                                    variant={"destructive"}
+                                                    onClick={() =>
+                                                        removeStudent(studentId)
+                                                    }
+                                                    className="bg-red-500 text-white hover:bg-red-700"
+                                                >
+                                                    Hapus siswa
+                                                </Button>
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
+
+    // const filteredData = useMemo(() => {
+    //     if (!keyword) return students;
+    //     return students.filter((item) =>
+    //         item.full_name.toLowerCase().includes(keyword.toLowerCase())
+    //     );
+    // }, [keyword]);
+
+    const filteredData = useMemo(() => {
+        if (!keyword && !category) return students;
+        return students.filter((item) => {
+            const matchesKeyword = item.full_name
+                .toLowerCase()
+                .includes(keyword.toLowerCase());
+            const matchesCategory =
+                !category || item.risk_category === category;
+            return matchesKeyword && matchesCategory;
+        });
+    }, [students, keyword, category]);
+
     const table = useReactTable({
-        data: students,
+        data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

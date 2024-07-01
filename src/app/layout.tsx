@@ -3,11 +3,12 @@ import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import "./globalsIcons.css";
+import "react-day-picker/dist/style.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Dashboard | CekRek",
+    title: "CekRek | Cek Rekomendasi",
     description: "First page of CekRek",
 };
 

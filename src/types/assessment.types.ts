@@ -1,7 +1,9 @@
+import { ChildAssesment } from "./childAssesment.type";
+
 export type Assessment = {
-    id: string;
-    title: string;
-    description: string;
-    category: "Low" | "Medium" | "High";
-    createdAt: string;
+    id: number;
+    assesment_number: number;
+    question: string;
+    picture?: string;
+    child_assesments?: ChildAssesment[];
 };
