@@ -141,7 +141,7 @@ export default function TeacherDashboardHeader({
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                         <ConnectStudentDialog
-                            students={students}
+                            students={studentsFull}
                             mutate={mutate}
                         >
                             <button
@@ -260,7 +260,7 @@ export default function TeacherDashboardHeader({
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                         <ConnectStudentDialog
-                            students={students}
+                            students={studentsFull}
                             mutate={mutate}
                         >
                             <button

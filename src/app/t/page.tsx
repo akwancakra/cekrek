@@ -42,7 +42,7 @@ export default function HomeTeacher({}) {
     const removeStudent = async (studentId: string) => {
         await axios
             .put(`/api/teachers/${1}/students/${studentId}/delete`)
-            .then((res) => {
+            .then(() => {
                 toast.success("Siswa berhasil dihapus!");
                 setIsLoadingPost(false);
 

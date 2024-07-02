@@ -157,11 +157,83 @@ export default function CreateRecomendationCard({
                     <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
-                        <DropdownMenuItem className="cursor-pointer">
-                            <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                assignment
-                            </span>{" "}
-                            Lihat detil
+                        <DropdownMenuItem className="cursor-pointer" asChild>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <button
+                                        type="button"
+                                        className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer mb-1 hover:!bg-gray-100"
+                                    >
+                                        <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                            assignment
+                                        </span>{" "}
+                                        Lihat detil
+                                    </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent className="p-0">
+                                    <ScrollArea className="max-h-[80vh] p-3">
+                                        <AlertDialogHeader className="m-1">
+                                            <AlertDialogTitle>
+                                                Detil Rekomendasi
+                                            </AlertDialogTitle>
+                                            <div className="divider my-1"></div>
+                                            <div>
+                                                <div className="bg-gray-300 rounded-lg overflow-hidden">
+                                                    <AspectRatio ratio={1 / 1}>
+                                                        <Image
+                                                            src={`/static/images/${
+                                                                recommendation?.icon ||
+                                                                "default.jpg"
+                                                            }`}
+                                                            alt="Recomendation Image"
+                                                            fill={true}
+                                                            className="rounded-lg object-cover"
+                                                            draggable={false}
+                                                        />
+                                                    </AspectRatio>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 mt-3">
+                                                    <div>
+                                                        <p className="text-small text-gray-400 -mb-1">
+                                                            Judul
+                                                        </p>
+                                                        <p>
+                                                            {recommendation?.title ||
+                                                                "N/A"}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-small text-gray-400 -mb-1">
+                                                            Kategori
+                                                        </p>
+                                                        <p>
+                                                            {recommendation?.risk_category
+                                                                ? "Untuk kategori: " +
+                                                                  recommendation.risk_category
+                                                                : "Untuk semua kategori"}
+                                                        </p>
+                                                    </div>
+                                                    <div className="col-span-2">
+                                                        <p className="text-small text-gray-400 -mb-1">
+                                                            Deskripsi
+                                                        </p>
+                                                        <p>
+                                                            {recommendation?.description ||
+                                                                "N/A"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <AlertDialogDescription />
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>
+                                                Batal
+                                            </AlertDialogCancel>
+                                        </AlertDialogFooter>
+                                    </ScrollArea>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </DropdownMenuItem>
                         <DropdownMenuItem className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600">
                             <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">

@@ -38,10 +38,11 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Child } from "@/types/children.types";
+import { getChildrenImage } from "@/utils/fetcher";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import axios from "axios";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
@@ -130,10 +131,13 @@ export default function ConnectStudentDialog({
                             <div>
                                 <AspectRatio ratio={12 / 13}>
                                     <Image
-                                        src={`/static/images/${
-                                            selectedProfile?.picture ||
-                                            "user-default.jpg"
-                                        }`}
+                                        src={
+                                            selectedProfile?.picture
+                                                ? getChildrenImage(
+                                                      selectedProfile.picture
+                                                  )
+                                                : "/static/images/user-default.jpg"
+                                        }
                                         alt="Child Profile"
                                         fill={true}
                                         className="rounded-lg object-cover"
@@ -266,6 +270,21 @@ export default function ConnectStudentDialog({
                                     </p>
                                 </div>
                             </div>
+                            {selectedProfile?.id && (
+                                <Button
+                                    variant={"outline"}
+                                    className="w-full"
+                                    asChild
+                                >
+                                    <Link
+                                        href={`/t/students/${selectedProfile?.id}`}
+                                        target="_blank"
+                                    >
+                                        Lihat detil
+                                    </Link>
+                                </Button>
+                            )}
+                            <div className="divider my-1"></div>
                             <AlertDialogDescription />
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -296,10 +315,13 @@ export default function ConnectStudentDialog({
                             <div>
                                 <AspectRatio ratio={12 / 13}>
                                     <Image
-                                        src={`/static/images/${
-                                            selectedProfile?.picture ||
-                                            "user-default.jpg"
-                                        }`}
+                                        src={
+                                            selectedProfile?.picture
+                                                ? getChildrenImage(
+                                                      selectedProfile.picture
+                                                  )
+                                                : "/static/images/user-default.jpg"
+                                        }
                                         alt="Child Profile"
                                         fill={true}
                                         className="rounded-lg object-cover"
@@ -465,8 +487,9 @@ const StudentItem = ({ student }: { student?: Child }) => {
                 <AspectRatio ratio={1 / 1}>
                     <Image
                         src={
-                            student?.picture ||
-                            "/static/images/user-default.jpg"
+                            student?.picture
+                                ? getChildrenImage(student.picture)
+                                : "/static/images/user-default.jpg"
                         }
                         alt="Child Profile"
                         fill={true}

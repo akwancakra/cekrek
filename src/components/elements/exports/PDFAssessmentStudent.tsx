@@ -18,14 +18,14 @@ const PDFAssessmentStudent = ({
 }: // date,
 // childAssessment,
 PDFAssessmentStudentProps) => {
-    const date = data?.child_assesments?.[0]?.date_time || new Date();
+    const date = new Date(data?.child_assesments?.[0]?.date_time) || new Date();
     const childAssessment: ChildAssesment[] =
         data?.child_assesments?.[0]?.assesments || [];
 
     const documentRef = useRef(null);
     const handlePrint = useReactToPrint({
         content: () => documentRef.current,
-        documentTitle: `Asesmen-${date.toLocaleDateString()}`,
+        documentTitle: `Asesmen-${date?.toDateString()}`,
         bodyClass: "p-16",
     });
 

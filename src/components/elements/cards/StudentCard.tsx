@@ -21,33 +21,60 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Child } from "@/types/children.types";
 import { getVariant, truncateString } from "@/utils/converters";
+import { getChildrenImage } from "@/utils/fetcher";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import Image from "next/image";
 import Link from "next/link";
+import { forwardRef } from "react";
 
 interface StudentCardProps {
     student: Child;
     removeStudent: (id: string) => void;
 }
 
+const AlertDialogTriggerForwarded = forwardRef<
+    HTMLButtonElement,
+    { children?: React.ReactNode }
+>(function AlertDialogTriggerForwarded(props, ref) {
+    return (
+        <AlertDialogTrigger asChild>
+            <button ref={ref} {...props}>
+                {props.children}
+            </button>
+        </AlertDialogTrigger>
+    );
+});
+
+const AlertDialogActionForwarded = forwardRef<
+    HTMLButtonElement,
+    { children?: React.ReactNode }
+>(function AlertDialogActionForwarded(props, ref) {
+    return (
+        <AlertDialogAction asChild>
+            <Button ref={ref} {...props}>
+                {props.children}
+            </Button>
+        </AlertDialogAction>
+    );
+});
+
 export default function StudentCard({
     student,
     removeStudent,
 }: StudentCardProps) {
-    console.log(student?.risk_category && getVariant(student.risk_category));
-    console.log(student?.risk_category);
-
     return (
         <div className="w-full flex flex-col gap-2 border border-gray-300 p-2 rounded-lg">
             <div className="w-full h-1/2 bg-gray-300 rounded-lg overflow-hidden">
                 <AspectRatio ratio={1 / 1}>
                     <Image
-                        src={`/static/images/${
-                            student?.picture || "user-default.jpg"
-                        }`}
+                        src={
+                            student?.picture
+                                ? getChildrenImage(student.picture)
+                                : "/static/images/user-default.jpg"
+                        }
                         alt="Student Profile"
                         fill={true}
-                        className="rounded-lg"
+                        className="rounded-lg object-cover"
                         draggable={false}
                     />
                 </AspectRatio>
@@ -190,7 +217,7 @@ export default function StudentCard({
                                             <AlertDialogCancel>
                                                 Batal
                                             </AlertDialogCancel>
-                                            <AlertDialogAction asChild>
+                                            {/* <AlertDialogActionForwarded>
                                                 <Button
                                                     variant={"destructive"}
                                                     onClick={() =>
@@ -198,6 +225,21 @@ export default function StudentCard({
                                                             student.id.toString()
                                                         )
                                                     }
+                                                    className="bg-red-500 text-white hover:bg-red-700"
+                                                >
+                                                    Hapus siswa
+                                                </Button>
+                                            </AlertDialogActionForwarded> */}
+                                            <AlertDialogAction
+                                                onClick={() =>
+                                                    removeStudent(
+                                                        student.id.toString()
+                                                    )
+                                                }
+                                                asChild
+                                            >
+                                                <Button
+                                                    variant={"destructive"}
                                                     className="bg-red-500 text-white hover:bg-red-700"
                                                 >
                                                     Hapus siswa

@@ -137,11 +137,14 @@ export default function Home() {
                                 </span>
                             </h1>
                             <p className="mt-8 text-small text-gray-700 dark:text-gray-300">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Odio incidunt nam itaque sed
-                                eius modi error totam sit illum. Voluptas
-                                doloribus asperiores quaerat aperiam. Quidem
-                                harum omnis beatae ipsum soluta!
+                                Cekrek adalah aplikasi pemantauan dan evaluasi
+                                perkembangan siswa. Menggunakan asesmen awal dan
+                                tindak lanjut, aplikasi ini menyimpan dan
+                                memproses data siswa, menentukan kategori
+                                risiko, dan menampilkan informasi secara
+                                terstruktur. Dengan teknologi modern seperti
+                                Prisma, Cekrek menyediakan antarmuka intuitif
+                                untuk manajemen dan analisis data siswa.
                             </p>
                             <div className="mt-16 flex flex-wrap justify-center gap-y-4 gap-x-6">
                                 <Button
@@ -170,26 +173,26 @@ export default function Home() {
                             <div className="hidden py-8 mt-16 border-y border-gray-100 dark:border-gray-800 sm:flex justify-between">
                                 <div className="text-left">
                                     <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
-                                        Mudah digunakan
+                                        Integrasi
                                     </h6>
                                     <p className="mt-2 text-gray-500">
-                                        Some text here
+                                        Integrasi antara guru dan orang tua
                                     </p>
                                 </div>
                                 <div className="text-left">
                                     <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
-                                        Cepat dan andal
+                                        Kesesuaian
                                     </h6>
                                     <p className="mt-2 text-gray-500">
-                                        Some text here
+                                        Rekomendasi yang otomatis dan sesuai
                                     </p>
                                 </div>
                                 <div className="text-left">
                                     <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
-                                        Hasil yang tepat
+                                        Mudah
                                     </h6>
                                     <p className="mt-2 text-gray-500">
-                                        Some text here
+                                        Tampilan yang mudah untuk digunakan
                                     </p>
                                 </div>
                             </div>

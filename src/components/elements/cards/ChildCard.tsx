@@ -1,7 +1,9 @@
+import { getImageUrl } from "@/app/t/students/[id]/edit/page";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Child } from "@/types/children.types";
+import { capitalizeFirstLetter } from "@/utils/formattedDate";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -15,9 +17,7 @@ export default function ChildCard({ child }: ChildCardProps) {
             <div className="bg-gray-400 w-full rounded-lg overflow-hidden">
                 <AspectRatio ratio={4 / 3} className="bg-muted">
                     <Image
-                        src={`/static/images/${
-                            child?.picture || "user-default.jpg"
-                        }`}
+                        src={getImageUrl(child?.picture)}
                         alt="Child Profile"
                         fill={true}
                         className="rounded-lg object-cover"
@@ -29,8 +29,11 @@ export default function ChildCard({ child }: ChildCardProps) {
                 <p className="font-semibold tracking-tighter -mb-1 text-large">
                     {child.full_name}
                 </p>
-                <Badge variant="outline" className="bg-primary text-white">
-                    Kondisi {child.risk_category}
+                <Badge variant="outline" className={`bg-primary text-white`}>
+                    Kondisi{" "}
+                    {(child?.risk_category &&
+                        capitalizeFirstLetter(child.risk_category)) ||
+                        "N/A"}
                 </Badge>
                 <div className="grid gap-2 grid-cols-1 group-[.open]:grid-cols-1 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                     <Button asChild variant={"outline"} className="text-small">

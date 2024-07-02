@@ -14,17 +14,23 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
 export default function ParentSettings({}) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
+    const { push } = useRouter();
+
     const editAccountButton = () => {
-        console.log("Account Edit Button Clicked!");
+        toast.success("Akun berhasil diubah!");
     };
 
     const removeAccountButton = () => {
-        console.log("Account Remove Button Clicked!");
+        toast.success("Akun berhasil dihapus!");
+        push("/");
     };
 
     return (
@@ -95,6 +101,23 @@ export default function ParentSettings({}) {
                 <div className="divider my-0" />
                 <div className="flex justify-between items-center my-3">
                     <div>
+                        <p className="text-medium">Info detil akun</p>
+                        <p className="text-gray-400 text-small">
+                            This will show you about your full account
+                            informations
+                        </p>
+                    </div>
+                    <Button variant={"default"} asChild>
+                        <Link href={"/p/settings/profile"}>
+                            Detil{" "}
+                            <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                                person
+                            </span>
+                        </Link>
+                    </Button>
+                </div>
+                <div className="flex justify-between items-center my-3">
+                    <div>
                         <p className="text-medium">Ubah akun</p>
                         <p className="text-gray-400 text-small">
                             This action will remove your account permanently,
@@ -111,7 +134,7 @@ export default function ParentSettings({}) {
                         />
                     )}
                 </div>
-                <div className="flex justify-between items-center my-3">
+                {/* <div className="flex justify-between items-center my-3">
                     <div>
                         <p className="text-medium">Info detil akun</p>
                         <p className="text-gray-400 text-small">
@@ -120,7 +143,7 @@ export default function ParentSettings({}) {
                         </p>
                     </div>
                     {isDesktop ? <InfoAccountDialog /> : <InfoAccountDrawer />}
-                </div>
+                </div> */}
                 <div className="flex justify-between items-center my-3">
                     <div>
                         <p className="text-medium">Hapus akun saya</p>

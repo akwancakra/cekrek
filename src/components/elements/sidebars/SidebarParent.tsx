@@ -168,7 +168,7 @@ const SidebarParent = ({
                         {" "}
                         grid_view{" "}
                     </span>
-                    <p className="text-xs">Home</p>
+                    <p className="text-xs">Dasbor</p>
                 </Link>
                 <Link
                     href="/p/childs"

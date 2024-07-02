@@ -25,6 +25,12 @@ export default function AssessmentPage() {
         "assessment-answer",
         []
     );
+    const stages = [
+        "assessment-choose",
+        "assessment-choice",
+        "results",
+        "recomendations",
+    ];
 
     const { id } = useParams();
     const { back } = useRouter();
@@ -113,7 +119,8 @@ export default function AssessmentPage() {
             return isExistingValue ? updatedValue : [...prevValue, newAnswer];
         });
 
-        console.log(newAnswer, assessmentAnswers);
+        console.log("NEW: " + newAnswer);
+        console.log("FULL: " + assessmentAnswers);
     };
 
     const removeAssessmentAnswer = () => {

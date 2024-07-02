@@ -7,6 +7,6 @@ export type ChildRecommendation = {
     children_id: number;
     recommendation_id: number;
     children?: Child;
-    recommendation?: Recommendation;
+    recommendations?: Recommendation;
     monitoringChildRecommendations?: MonitorChildRecommendation[];
 };

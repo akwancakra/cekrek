@@ -1,10 +1,7 @@
 import Pill from "../alerts/Pill";
 import { Button } from "@/components/ui/button";
 import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
-import { ChildRecommendation } from "@/types/childRecommendation.type";
 import { Child } from "@/types/children.types";
-import RecomendationCard from "../cards/RecomendationCard";
-import { Assessment } from "@/types/assessment.types";
 import { Badge } from "@/components/ui/badge";
 import { getRiskCategory, getVariant } from "@/utils/converters";
 import { capitalizeFirstLetter } from "@/utils/formattedDate";

@@ -28,7 +28,7 @@ export default function ExcelAssessmentStudent({
 }: // date,
 // childAssessment,
 ExcelAssessmentStudentProps) {
-    const date: Date = data?.child_assesments?.[0]?.date_time || new Date();
+    const date = new Date(data?.child_assesments?.[0]?.date_time) || new Date();
     const childAssessment: ChildAssesment[] =
         data?.child_assesments?.[0]?.assesments || [];
 
@@ -110,7 +110,7 @@ ExcelAssessmentStudentProps) {
         XLSX.utils.book_append_sheet(wb, ws, "Asesmen Siswa");
 
         // Write workbook to file
-        XLSX.writeFile(wb, "Asesmen-Siswa-Udin.xlsx");
+        XLSX.writeFile(wb, `Asesmen-Siswa${"-" + data?.full_name}.xlsx`);
     }, []);
 
     return (
@@ -138,7 +138,7 @@ ExcelAssessmentStudentProps) {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <TableRow key={childAssessment[0].id}>
+                    <TableRow key={childAssessment[0]?.id}>
                         <TableCell>Asesmen Awal</TableCell>
                         <TableCell>
                             {getScoreAssessments({
@@ -153,7 +153,9 @@ ExcelAssessmentStudentProps) {
                             })}
                         </TableCell>
                         <TableCell>
-                            {formattedDateStrip(date.toDateString())}
+                            {date?.toDateString()
+                                ? formattedDateStrip(date.toDateString())
+                                : ""}
                         </TableCell>
                     </TableRow>
                 </TableBody>

@@ -33,8 +33,10 @@ import {
 } from "chart.js";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
-import { useParams } from "next/navigation";
-import { ChildRecommendation } from "@/types/childRecommendation.type";
+import { useParams, useSearchParams } from "next/navigation";
+import { getVariant } from "@/utils/converters";
+import { formattedDateStripYearFirst } from "@/utils/formattedDate";
+import { Recommendation } from "@/types/recommendation.type";
 
 ChartJS.register(
     CategoryScale,
@@ -44,6 +46,40 @@ ChartJS.register(
     Tooltip,
     Legend
 );
+
+type ChildRecommendation = {
+    id: number;
+    children_id: number;
+    recommendation_id: number;
+    recommendations: Recommendation;
+    isFinished: boolean;
+};
+
+type Child = {
+    id: number;
+    full_name: string;
+    teacher_id: number;
+    nick_name: string | null;
+    picture: string | null;
+    gender: string;
+    place_birth: string;
+    date_time_birth: string;
+    religion: string;
+    count_of_siblings: number;
+    risk_category: string;
+    hearing_test: string;
+    child_recommendations: ChildRecommendation[];
+    monitor_child_recommendations: {
+        id: number;
+        child_recommendation_id: number;
+        date_time: string;
+        is_done: boolean;
+        child_recommendations: ChildRecommendation;
+        recommendations: Recommendation;
+    }[];
+    unfinishedRecommendations: number;
+    finishedRecommendations: number;
+};
 
 const labels = ["Apr - M-1", "Apr - M-2", "Apr - M-3", "Apr - M-4"];
 
@@ -84,39 +120,48 @@ const datasets1 = [
 ];
 
 export default function RecomendationStudent({}) {
-    const [date, setDate] = useState<Date | undefined>(new Date());
-    const [recommendations, setRecommendations] = useState<
-        ChildRecommendation[]
-    >([]);
+    const [date, setDate] = useState<Date>(new Date());
+    // const [recommendations, setRecommendations] = useState<
+    //     ChildRecommendation[]
+    // >([]);
+
+    const searchParams = useSearchParams();
+    const paramDate = searchParams.get("date");
+
+    const [student, setStudent] = useState<Child>();
+    const today = formattedDateStripYearFirst(new Date().toString());
 
     const { id } = useParams();
 
-    const {
-        data,
-        isLoading,
-    }: {
-        data: { status: string; child_recommendations: ChildRecommendation[] };
-        isLoading: boolean;
-    } = useSWR(`/api/teachers/${1}/students/${id}/recommendations`, fetcher);
+    const { data, isLoading } = useSWR<{ status: string; child: Child }>(
+        `/api/teachers/${1}/students/${id}/recommendations?date=${formattedDateStripYearFirst(
+            date.toString()
+        )}`,
+        fetcher
+    );
 
-    useEffect(() => {
-        if (data?.child_recommendations) {
-            setRecommendations(data.child_recommendations);
-            console.log(data);
-        }
-    }, [data]);
-
-    // Function to handle date selection
     const handleDateSelect = (day: Date | undefined) => {
         if (day) {
             setDate(day);
         }
     };
 
+    useEffect(() => {
+        if (paramDate) {
+            setDate(new Date(paramDate));
+        }
+    }, [paramDate]);
+
+    useEffect(() => {
+        if (data?.child) {
+            setStudent(data?.child);
+        }
+    }, [data]);
+
     return (
         <section className="mx-auto max-w-7xl mb-4">
             <Button asChild variant={"outline"} className="mb-3">
-                <Link href={"/t"}>
+                <Link href={`/t/students/${id}`}>
                     <span className="material-symbols-outlined me-1 !leading-none !text-lg hover:no-underline">
                         arrow_back
                     </span>
@@ -126,14 +171,18 @@ export default function RecomendationStudent({}) {
             <div className="w-full border border-gray-300 rounded-lg p-2 mb-3">
                 <div>
                     <p className="text-gray-400 text-small">
-                        Monitoring Asesmen Umum
+                        Monitoring Asesmen M-Chart-R/F
                     </p>
-                    <p className="text-header">Dewantara</p>
+                    <p className="text-header">{student?.full_name || "N/A"}</p>
                     <Badge
                         variant={"default"}
-                        className="bg-primary hover:bg-primary"
+                        className={`${
+                            (student?.risk_category &&
+                                getVariant(student.risk_category)) ||
+                            "bg-primary hover:bg-primary-foreground"
+                        }`}
                     >
-                        Tingkat Medium
+                        Tingkat {student?.risk_category || "N/A"}
                     </Badge>
                 </div>
             </div>
@@ -284,21 +333,21 @@ export default function RecomendationStudent({}) {
                                 Aktifitas belum dilakukan
                             </p>
                             <p className="font-semibold tracking-tight text-3xl sm:text-5xl">
-                                2
+                                {student?.unfinishedRecommendations || "0"}
                             </p>
                         </div>
                         <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                             <p className="text-small">Aktifitas selesai</p>
                             <p className="font-semibold tracking-tight text-3xl sm:text-5xl">
-                                12
+                                {student?.finishedRecommendations || "0"}
                             </p>
                         </div>
                     </div>
-                    <p className="font-semibold tracking-tight text-medium mb-2">
+                    {/* <p className="font-semibold tracking-tight text-medium mb-2">
                         Berbicara (2)
-                    </p>
+                    </p> */}
                     <div className="flex flex-col gap-2">
-                        {recommendations.length == 0 && (
+                        {student?.child_recommendations?.length == 0 && (
                             <div>
                                 <p className="text-center">
                                     Tidak ada data rekomendasi
@@ -306,14 +355,12 @@ export default function RecomendationStudent({}) {
                             </div>
                         )}
 
-                        {recommendations.map((recommendation, idx) =>
-                            recommendation?.recommendation ? (
+                        {student?.child_recommendations?.map((rec, idx) =>
+                            rec?.recommendations ? (
                                 <RecomendationCard
                                     key={idx}
-                                    recommendation={
-                                        recommendation.recommendation
-                                    }
-                                    isDone={false}
+                                    recommendation={rec.recommendations}
+                                    isDone={rec.isFinished}
                                 />
                             ) : null
                         )}
@@ -321,12 +368,19 @@ export default function RecomendationStudent({}) {
                 </div>
                 <div className="flex justify-end items-center p-2">
                     <Button asChild variant={"outline"} disabled={isLoading}>
-                        <Link href={"/t/students/1/monitoring"}>
-                            Cek Hari Ini
-                            <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                                chevron_right
-                            </span>
-                        </Link>
+                        {today ==
+                            formattedDateStripYearFirst(date.toString()) && (
+                            <Link
+                                href={`/t/students/${id}/monitoring?date=${formattedDateStripYearFirst(
+                                    date.toString()
+                                )}`}
+                            >
+                                Cek Hari Ini
+                                <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                                    chevron_right
+                                </span>
+                            </Link>
+                        )}
                     </Button>
                 </div>
             </div>
