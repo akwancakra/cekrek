@@ -117,7 +117,10 @@ export default function StudentsTable({
             cell: ({ row }) => {
                 const category: string = row.getValue("risk_category");
 
-                return capitalizeFirstLetter(category);
+                if (category) {
+                    return capitalizeFirstLetter(category);
+                }
+                return "N/A";
             },
             header: ({ column }) => {
                 return (

@@ -14,11 +14,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import CreateRecomendationCard from "../cards/CreateRecomendationCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useEffect, useState } from "react";
-import StandardRecomendation from "../forms/StandardRecomendation";
-import DurationRecomendation from "../forms/DurationRecomendation";
-import RepetitionRecomendation from "../forms/RepetitionRecomendation";
 import { useMediaQuery } from "usehooks-ts";
 import {
     Drawer,
@@ -36,7 +32,10 @@ import { Child } from "@/types/children.types";
 import axios from "axios";
 import { toast } from "sonner";
 import { Recommendation } from "@/types/recommendation.type";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { AddRecomendationForm } from "../forms/AddRecomendationForm";
+import * as Yup from "yup";
+import { FormikProps, useFormik } from "formik";
 
 interface AssessmentGetRecommendationsProps {
     child: Child;
@@ -46,6 +45,30 @@ interface AssessmentGetRecommendationsProps {
     isLoading?: boolean;
 }
 
+type RecomendationAdd = {
+    title: string;
+    description: string;
+    icon?: string;
+    frequency?: string;
+    risk_category?: "other" | "rendah" | "sedang" | "tinggi";
+};
+
+const formSchema = Yup.object().shape({
+    title: Yup.string().required("Judul wajib diisi"),
+    description: Yup.string(), //.required("Deskripsi wajib diisi")
+    icon: Yup.string(),
+    frequency: Yup.string().required("Frekuensi wajib diisi"),
+    risk_category: Yup.string().required("Kategori risiko wajib diisi"),
+});
+
+const initialValues: RecomendationAdd = {
+    title: "",
+    description: "",
+    frequency: "",
+    icon: "",
+    risk_category: "other",
+};
+
 export default function AssessmentGetRecommendations({
     child,
     assessmentAnswer,
@@ -54,13 +77,17 @@ export default function AssessmentGetRecommendations({
     isLoading,
 }: AssessmentGetRecommendationsProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
-    const [activeTab, setActiveTab] = useState("standar");
+    const [isSubmit, setIsSubmit] = useState(false);
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
     const [riskCategory, setRiskCategory] = useState<string>("");
+    const [newRecommendations, setNewRecommendations] = useState<
+        RecomendationAdd[]
+    >([]);
     const [recommendations, setRecommendations] = useState<Recommendation[]>(
         []
     );
 
+    const { id } = useParams();
     const { push } = useRouter();
 
     const fetchRecommendations = async () => {
@@ -77,7 +104,6 @@ export default function AssessmentGetRecommendations({
             .then((res) => {
                 toast.success("Berhasil mendapatkan rekomendasi!");
                 setRecommendations(res.data?.recommendations || []);
-                removeAssessmentAnswer();
                 console.log(res.data);
 
                 setIsLoadingPost(false);
@@ -142,6 +168,125 @@ export default function AssessmentGetRecommendations({
         };
     };
 
+    // const transformRecomendationAdd = (data: RecomendationAdd[]) => {
+    //     return data.map((recommendation) => ({
+    //         title: recommendation.title,
+    //         description: recommendation.description,
+    //         icon: recommendation.icon,
+    //         frequency: recommendation.frequency,
+    //         risk_category:
+    //             recommendation.risk_category === "other"
+    //                 ? undefined
+    //                 : recommendation.risk_category,
+    //     }));
+    // };
+
+    const removeRecommendation = (id: string) => {
+        setRecommendations((prevRecommendations) =>
+            prevRecommendations.filter((item) => item.id.toString() !== id)
+        );
+    };
+
+    const handleSubmitRecommendation = async () => {
+        setIsLoadingPost(true);
+
+        const data = createDataObjectFinal();
+        let finalData = {
+            child_id: data.child_id,
+            date_time: data.date_time,
+            assessmentsAnswer: data.assessmentsAnswer,
+            childRecommendations: [
+                ...data.childRecommendations,
+                ...newRecommendations,
+            ],
+        };
+
+        const submitPromise = new Promise<void>(async (resolve, reject) => {
+            try {
+                await axios.post("/api/recommendations", finalData);
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
+
+        try {
+            toast.promise(submitPromise, {
+                loading: "Mengirim rekomendasi...",
+                success: () => {
+                    push(`/t/students/${id}`);
+                    return "Berhasil mengirim rekomendasi!";
+                },
+                error: (err) => {
+                    if (err?.response?.status === 400) {
+                        return (
+                            err?.response?.data?.message ||
+                            "Gagal mengirim rekomendasi"
+                        );
+                    } else if (err?.response?.status === 500) {
+                        return "Server Error";
+                    } else {
+                        return "Terjadi kesalahan";
+                    }
+                },
+            });
+
+            removeAssessmentAnswer();
+            push(`/t/students/${child?.id}`);
+        } catch (error: any) {
+            console.error("Error sending recommendation:", error.message);
+        } finally {
+            setIsLoadingPost(false);
+        }
+    };
+
+    // const handleSubmitRecommendation = async () => {
+    //     setIsLoadingPost(true);
+
+    //     const data = createDataObjectFinal();
+    //     let finalData = {
+    //         child_id: data.child_id,
+    //         date_time: data.date_time,
+    //         assessmentsAnswer: data.assessmentsAnswer,
+    //         childRecommendations: [
+    //             ...data.childRecommendations,
+    //             ...newRecommendations,
+    //         ],
+    //     };
+    //     console.log(finalData);
+
+    //     try {
+    //         // setIsLoadingPost(false);
+    //         await axios.post("/api/recommendations", finalData);
+    //         toast.success("Berhasil mengirim rekomendasi!");
+    //         removeAssessmentAnswer();
+    //         push(`/t/students/${child?.id}`);
+    //     } catch (err: any) {
+    //         if (err?.response?.status === 400) {
+    //             toast.error(err?.response?.data?.message);
+    //         } else if (err?.response?.status === 500) {
+    //             toast.error("Server Error");
+    //         } else {
+    //             toast.error("Terjadi kesalahan");
+    //         }
+    //     } finally {
+    //         setIsLoadingPost(false);
+    //     }
+    // };
+
+    const formik = useFormik({
+        initialValues,
+        validationSchema: formSchema,
+        onSubmit: async (values) => {
+            setNewRecommendations([...newRecommendations, values]);
+            // const data = createDataObjectFinal();
+            // const transformRecomendationAdd
+            // console.log([...newRecommendations, values]);
+
+            formik.resetForm();
+        },
+    });
+
     useEffect(() => {
         const risk = getRiskCategory({
             childAssesment: assessmentAnswer,
@@ -155,43 +300,6 @@ export default function AssessmentGetRecommendations({
             fetchRecommendations();
         }
     }, [riskCategory]);
-
-    const onTabChange = (value: string) => {
-        setActiveTab(value);
-    };
-
-    const addRecommendationButton = () => {
-        // console.log("Recomendation Button Clicked!");
-    };
-
-    const removeRecommendation = (id: string) => {
-        setRecommendations((prevRecommendations) =>
-            prevRecommendations.filter((item) => item.id.toString() !== id)
-        );
-    };
-
-    const handleSubmitRecommendation = async () => {
-        setIsLoadingPost(true);
-
-        const data = createDataObjectFinal();
-        console.log(data);
-
-        try {
-            await axios.post("/api/recommendations", data);
-            toast.success("Berhasil mengirim rekomendasi!");
-            push(`/t/students/${child?.id}`);
-        } catch (err: any) {
-            if (err?.response?.status === 400) {
-                toast.error(err?.response?.data?.message);
-            } else if (err?.response?.status === 500) {
-                toast.error("Server Error");
-            } else {
-                toast.error("Terjadi kesalahan");
-            }
-        } finally {
-            setIsLoadingPost(false);
-        }
-    };
 
     return (
         <section className="mx-auto max-w-7xl flex flex-col justify-center items-center w-full h-full gap-2 p-2">
@@ -217,21 +325,20 @@ export default function AssessmentGetRecommendations({
                 <div className="w-full justify-between items-center my-3 sm:flex group-[.open]:block md:group-[.open]:flex">
                     {isDesktop ? (
                         <RecomendationFormDesktop
-                            activeTab={activeTab}
-                            onTabChange={onTabChange}
-                            addRecomendationButton={addRecommendationButton}
+                            formik={formik}
+                            isSubmit={isSubmit || isLoadingPost || isLoading}
                         />
                     ) : (
                         <RecomendationForm
-                            activeTab={activeTab}
-                            onTabChange={onTabChange}
-                            addRecomendationButton={addRecommendationButton}
+                            formik={formik}
+                            isSubmit={isSubmit || isLoadingPost || isLoading}
                         />
                     )}
                     <Button
                         variant={"default"}
                         className="gap-1 w-full mt-2 sm:w-fit sm:mt-0 group-[.open]:mt-2 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-fit"
-                        disabled={isLoading || isLoadingPost}
+                        disabled={true}
+                        // disabled={isLoading || isLoadingPost}
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -246,6 +353,14 @@ export default function AssessmentGetRecommendations({
                     </Button>
                 </div>
                 <div className="flex flex-col gap-3">
+                    {isLoading && (
+                        <>
+                            <div className="skeleton rounded-lg h-28 w-full"></div>
+                            <div className="skeleton rounded-lg h-28 w-full"></div>
+                            <div className="skeleton rounded-lg h-28 w-full"></div>
+                        </>
+                    )}
+
                     {recommendations && recommendations.length === 0 && (
                         <div>
                             <p className="text-center text-small">
@@ -253,7 +368,9 @@ export default function AssessmentGetRecommendations({
                             </p>
                         </div>
                     )}
-                    {recommendations &&
+
+                    {!isLoading &&
+                        recommendations &&
                         recommendations.length > 0 &&
                         recommendations.map((recommendation) => (
                             <CreateRecomendationCard
@@ -293,13 +410,11 @@ export default function AssessmentGetRecommendations({
 }
 
 const RecomendationForm = ({
-    activeTab,
-    onTabChange,
-    addRecomendationButton,
+    formik,
+    isSubmit,
 }: {
-    activeTab: string;
-    onTabChange: (value: string) => void;
-    addRecomendationButton: () => void;
+    formik: FormikProps<RecomendationAdd>;
+    isSubmit: boolean;
 }) => {
     const [open, setOpen] = useState(false);
 
@@ -317,45 +432,20 @@ const RecomendationForm = ({
                 </Button>
             </DrawerTrigger>
             <DrawerContent className="p-0">
-                <ScrollArea className="max-h-[70vh] p-0">
+                <ScrollArea className="p-0 max-h-svh overflow-auto">
                     <DrawerHeader className="text-left">
                         <DrawerTitle>Edit profile</DrawerTitle>
                         <DrawerDescription>
                             <div>
-                                <p className="text-sm mb-1">Tipe</p>
-                                <Tabs
-                                    defaultValue="standar"
-                                    value={activeTab}
-                                    onValueChange={onTabChange}
-                                >
-                                    <TabsList>
-                                        <TabsTrigger value="standar">
-                                            Standar
-                                        </TabsTrigger>
-                                        <TabsTrigger value="durasi">
-                                            Durasi
-                                        </TabsTrigger>
-                                        <TabsTrigger value="repetisi">
-                                            Repetisi
-                                        </TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="standar">
-                                        <StandardRecomendation />
-                                    </TabsContent>
-                                    <TabsContent value="durasi">
-                                        <DurationRecomendation />
-                                    </TabsContent>
-                                    <TabsContent value="repetisi">
-                                        <RepetitionRecomendation />
-                                    </TabsContent>
-                                </Tabs>
+                                <AddRecomendationForm formik={formik} />
                             </div>
                         </DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter className="pt-2">
                         <Button
                             variant={"default"}
-                            onClick={() => addRecomendationButton()}
+                            onClick={formik.submitForm}
+                            disabled={isSubmit}
                         >
                             Tambah
                         </Button>
@@ -363,7 +453,7 @@ const RecomendationForm = ({
                             <Button
                                 variant="outline"
                                 className="text-medium"
-                                disabled={true}
+                                disabled={isSubmit}
                             >
                                 Batal
                             </Button>
@@ -376,13 +466,11 @@ const RecomendationForm = ({
 };
 
 const RecomendationFormDesktop = ({
-    activeTab,
-    onTabChange,
-    addRecomendationButton,
+    formik,
+    isSubmit,
 }: {
-    activeTab: string;
-    onTabChange: (value: string) => void;
-    addRecomendationButton: () => void;
+    formik: FormikProps<RecomendationAdd>;
+    isSubmit: boolean;
 }) => {
     return (
         <AlertDialog>
@@ -402,46 +490,16 @@ const RecomendationFormDesktop = ({
                     <AlertDialogHeader className="m-1">
                         <AlertDialogTitle>Tambah Rekomendasi</AlertDialogTitle>
                         <div className="divider my-1"></div>
-                        <AlertDialogDescription>
-                            <div>
-                                <p className="text-sm mb-1">Tipe</p>
-                                <Tabs
-                                    defaultValue="standar"
-                                    // className="w-[400px]"
-                                    value={activeTab}
-                                    onValueChange={onTabChange}
-                                >
-                                    <TabsList>
-                                        <TabsTrigger value="standar">
-                                            Standar
-                                        </TabsTrigger>
-                                        <TabsTrigger value="durasi">
-                                            Durasi
-                                        </TabsTrigger>
-                                        <TabsTrigger value="repetisi">
-                                            Repetisi
-                                        </TabsTrigger>
-                                    </TabsList>
-                                    <TabsContent value="standar">
-                                        <StandardRecomendation />
-                                    </TabsContent>
-                                    <TabsContent value="durasi">
-                                        <DurationRecomendation />
-                                    </TabsContent>
-                                    <TabsContent value="repetisi">
-                                        <RepetitionRecomendation />
-                                    </TabsContent>
-                                </Tabs>
-                            </div>
-                        </AlertDialogDescription>
+                        <AddRecomendationForm formik={formik} />
+                        <AlertDialogDescription></AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
                         <AlertDialogAction asChild>
                             <Button
                                 variant={"default"}
-                                onClick={() => addRecomendationButton()}
-                                disabled={true}
+                                onClick={formik.submitForm}
+                                disabled={isSubmit}
                             >
                                 Tambah
                             </Button>

@@ -67,7 +67,9 @@ const AssessmentPrint = forwardRef<HTMLDivElement, AssessmentPrintProps>(
                                     Tanggal Tes
                                 </p>
                                 <p className="text-large font-semibold tracking-tight">
-                                    {formattedDate(values.date.toString())}
+                                    {values?.date?.toString()
+                                        ? formattedDate(values.date.toString())
+                                        : ""}
                                 </p>
                             </div>
                         </div>

@@ -42,7 +42,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
     capitalizeFirstLetter,
-    formattedDateStrip,
+    formattedDateStripYearFirst,
 } from "@/utils/formattedDate";
 import { processMultiChildAssessments } from "@/utils/converters";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
@@ -195,7 +195,8 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
             // const assessmentId: string = row.getValue("id");
             const childId: string = row.getValue("child_id");
             const assessmentDate: string = row.getValue("date_time");
-            const formattedDate: string = formattedDateStrip(assessmentDate);
+            const formattedDate: string =
+                formattedDateStripYearFirst(assessmentDate);
 
             return (
                 <DropdownMenu>
@@ -313,8 +314,6 @@ export default function AssessmentHistoryTable({
                 data.childrenAssessments
             );
 
-            console.log(history);
-
             setHistoryAssessmen(history);
         }
     }, [data]);
@@ -374,11 +373,22 @@ export default function AssessmentHistoryTable({
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length ? (
+                    {isLoading ? (
+                        <TableRow>
+                            <TableCell
+                                colSpan={columns.length}
+                                className="h-24 text-center"
+                            >
+                                Mendapatkan data...
+                            </TableCell>
+                        </TableRow>
+                    ) : table.getRowModel().rows?.length ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow
                                 key={row.id}
-                                data-state={row.getIsSelected() && "selected"}
+                                data-state={
+                                    row.getIsSelected() ? "selected" : undefined
+                                }
                             >
                                 {row.getVisibleCells().map((cell) => (
                                     <TableCell key={cell.id}>

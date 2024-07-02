@@ -1,10 +1,10 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Ubah Siswa | CekRek",
+    title: "Tambah Siswa | CekRek",
 };
 
-export default function StudentEditLayout({
+export default function StudentAddLayout({
     children,
 }: {
     children: React.ReactNode;

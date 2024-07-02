@@ -14,7 +14,7 @@ export type Child = {
     picture?: string;
     gender: string;
     place_birth?: string;
-    date_time_birth?: Date;
+    date_time_birth?: Date | string;
     religion?: string;
     count_of_siblings?: number;
     risk_category?: "rendah" | "sedang" | "tinggi";
@@ -33,7 +33,7 @@ export type Child = {
 };
 
 export type AssesmentWrap = {
-    date_time: Date;
+    date_time: Date | string;
     assesments: ChildAssesment[];
 };
 
@@ -42,7 +42,7 @@ export type AssesmentWrap = {
 //     recommendations: ChildRecommendation[];
 // };
 
-type MonitorRecommendationWrap = {
+export type MonitorRecommendationWrap = {
     date_time: Date;
     monitorRecommendations: MonitorChildRecommendation[];
 };

@@ -23,8 +23,10 @@ export function DatePicker({ initialDate, date, setDate }: Props) {
     );
     const [errorMessage, setErrorMessage] = useState<string>("");
 
+    // console.log(format(initialDate, "PPP"), date);
+
     return (
-        <Popover key={date?.getDate()}>
+        <Popover key={date instanceof Date ? date.getDate() : "no-date"}>
             <div className="relative rounded-lg">
                 <input
                     type="string"

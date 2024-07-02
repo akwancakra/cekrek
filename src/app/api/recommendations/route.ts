@@ -94,7 +94,6 @@ export async function POST(req: NextRequest) {
             const createdRecommendations = [];
 
             // Create or link recommendations and child_recommendations
-            console.log("AMAN 0");
             for (const recommendation of childRecommendations) {
                 if (recommendation.recommendation_id) {
                     // Create child_recommendations only
@@ -107,7 +106,6 @@ export async function POST(req: NextRequest) {
                             },
                         });
                     createdRecommendations.push(childRecommendation);
-                    console.log("AMAN 0.5");
                 } else {
                     // Create new recommendation and corresponding child_recommendations
                     const newRecommendation =
@@ -116,10 +114,12 @@ export async function POST(req: NextRequest) {
                                 title: recommendation.title,
                                 assesment_number:
                                     recommendation.assesment_number,
-                                description: recommendation.description,
-                                icon: recommendation.icon,
+                                description: recommendation.description || null,
+                                icon: recommendation.icon || null,
                                 frequency: recommendation.frequency,
-                                risk_category: recommendation.risk_category,
+                                risk_category:
+                                    recommendation.risk_category || null,
+                                is_main: false,
                             },
                         });
 
@@ -133,7 +133,6 @@ export async function POST(req: NextRequest) {
                     createdRecommendations.push(childRecommendation);
                 }
             }
-            console.log("AMAN 1");
 
             // Create child_assessments
             for (const assessment of assessmentsAnswer) {
@@ -148,7 +147,6 @@ export async function POST(req: NextRequest) {
                     },
                 });
             }
-            console.log("AMAN 2");
 
             return createdRecommendations;
         });

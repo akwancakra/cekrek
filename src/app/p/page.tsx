@@ -13,11 +13,12 @@ import RecommendationIndexCard from "@/components/elements/cards/RecommendationI
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { MonitorChildRecommendation } from "@/types/monitorChildRecommendation.type";
-import { childs } from "@/utils/tempData";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Child } from "@/types/children.types";
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
 
 const getMonitoredRecToday = (
     monitorChildRec: MonitorChildRecommendation[]
@@ -48,7 +49,20 @@ const getFirstRecommendationImage = (
 };
 
 export default function HomeParent({}) {
-    const [data, setData] = useState(childs);
+    const [childs, setChilds] = useState<Child[]>();
+
+    const {
+        data,
+        isLoading,
+    }: { data: { status: string; children: Child[] }; isLoading: boolean } =
+        useSWR(`/api/parents/${2}/children`, fetcher);
+
+    useEffect(() => {
+        if (data?.children) {
+            setChilds(data.children);
+            // console.log(data.children);
+        }
+    }, [data]);
 
     return (
         <>
@@ -56,34 +70,47 @@ export default function HomeParent({}) {
                 <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
                     <p className="text-primary -mb-1">Good Morning</p>
                     <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
-                        Nama Kamu
+                        Suyastika
                     </p>
                 </div>
                 <Clock />
             </section>
 
-            {data.length == 0 ? (
-                <section className="mx-auto max-w-7xl">
-                    <Alert
-                        text="Anda belum memiliki data anak"
-                        desc="Tambah data anak sekarang"
-                        icon="info"
-                        type="primary"
-                        classnew="my-2"
-                    />
-                    <Button variant={"default"} asChild>
-                        <Link href={"/p/childs/add"} className="gap-1">
-                            <span>Tambah anak</span>
-                            <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                                person_add
-                            </span>
-                        </Link>
-                    </Button>
-                </section>
-            ) : data.length == 1 ? (
-                <SingleChildCard data={data} />
+            {isLoading ? (
+                <>
+                    <div className="mx-auto max-w-7xl">
+                        <div className="skeleton w-full h-96 rounded-lg"></div>
+                        <div className="flex gap-2 mt-3">
+                            <div className="skeleton w-24 h-9 rounded-lg"></div>
+                            <div className="skeleton w-24 h-9 rounded-lg"></div>
+                        </div>
+                    </div>
+                </>
             ) : (
-                <MultipleChildCard data={data} />
+                childs?.length == 0 && (
+                    <section className="mx-auto max-w-7xl">
+                        <Alert
+                            text="Anda belum memiliki data anak"
+                            desc="Tambah data anak sekarang"
+                            icon="info"
+                            type="primary"
+                            classnew="my-2"
+                        />
+                        <Button variant={"default"} asChild>
+                            <Link href={"/p/childs/add"} className="gap-1">
+                                <span>Tambah anak</span>
+                                <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                                    person_add
+                                </span>
+                            </Link>
+                        </Button>
+                    </section>
+                )
+            )}
+
+            {childs && childs?.length == 1 && <SingleChildCard data={childs} />}
+            {childs && childs?.length > 1 && (
+                <MultipleChildCard data={childs} />
             )}
         </>
     );
@@ -121,7 +148,7 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                 </div>
 
                 {data[0]?.child_recommendations?.length === 0 ? (
-                    <div className="my-3 text-center">
+                    <div className="my-6 text-center text-small">
                         <p>Tidak ada data rekomendasi anak</p>
                         <p>
                             Lakukan asesmen terlebih dahulu, anda dapat
@@ -226,12 +253,10 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
 
                                 <div className="flex items-center">
                                     <Pill
-                                        text={`Rekomendasi ${getMonitoredRecToday(
-                                            child
-                                                ?.monitoringChildRecommendations?.[0]
-                                                ?.monitorRecommendations || []
-                                        )}/${
-                                            child.child_recommendations?.length
+                                        text={`Rekomendasi ${
+                                            child?.finishedRecommendations +
+                                            "/" +
+                                            child?.unfinishedRecommendations
                                         }`}
                                         icon="assignment"
                                         type="secondary"
@@ -250,7 +275,7 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                 </div>
 
                                 {child?.child_recommendations?.length === 0 ? (
-                                    <div className="my-3 text-center">
+                                    <div className="my-6 text-center text-small">
                                         <p>Tidak ada data rekomendasi anak</p>
                                         <p>
                                             Lakukan asesmen terlebih dahulu,
@@ -262,11 +287,11 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                         {child?.child_recommendations
                                             ?.slice(0, 6)
                                             .map((item, index) =>
-                                                item.recommendation ? (
+                                                item.recommendations ? (
                                                     <RecommendationIndexCard
                                                         key={index}
                                                         recommendation={
-                                                            item.recommendation
+                                                            item.recommendations
                                                         }
                                                         monitoringChildRec={
                                                             child
@@ -279,19 +304,23 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                     </div>
                                 )}
 
-                                <div className="flex justify-end">
-                                    <Link
-                                        className={buttonVariants({
-                                            variant: "outline",
-                                        })}
-                                        href={`/p/childs/${child.id}/recommendation`}
-                                    >
-                                        Lihat detil{" "}
-                                        <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
-                                            folder_open
-                                        </span>
-                                    </Link>
-                                </div>
+                                {child?.child_recommendations &&
+                                    child?.child_recommendations?.length >
+                                        0 && (
+                                        <div className="flex justify-end">
+                                            <Link
+                                                className={buttonVariants({
+                                                    variant: "outline",
+                                                })}
+                                                href={`/p/childs/${child.id}/recommendation`}
+                                            >
+                                                Lihat detil{" "}
+                                                <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
+                                                    folder_open
+                                                </span>
+                                            </Link>
+                                        </div>
+                                    )}
                             </div>
                             <div className="group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12">
                                 <AspectRatio ratio={8 / 9} className="bg-muted">
@@ -319,14 +348,14 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                 <Button
                     variant={"outline"}
                     onClick={() => api?.scrollPrev()}
-                    disabled={!api}
+                    disabled={count === 0 || !api}
                 >
                     Sebelumnya
                 </Button>
                 <Button
                     variant={"outline"}
                     onClick={() => api?.scrollNext()}
-                    disabled={!api}
+                    disabled={count === current || !api}
                 >
                     Selanjutnya
                 </Button>

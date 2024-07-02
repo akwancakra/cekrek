@@ -253,6 +253,39 @@ const getVariant = (category: string) => {
     }
 };
 
+const removeLeadingZeros = (input: string) => {
+    let result = input;
+    while (result.length > 1 && result[0] === "0") {
+        result = result.substring(1);
+    }
+    return result;
+};
+
+const questionsBirthHealth = [
+    "healthy_pregnancy",
+    "pregnancy_illness",
+    "gestation_details",
+    "birthplace",
+    "birth_assistance",
+    "delivery_process",
+    "congenital_anomalies",
+    "first_food",
+    "formula_milk",
+    "immunization",
+];
+
+const getSubCurrentStage = (birthHistory) => {
+    for (let i = 0; i < questionsBirthHealth.length; i++) {
+        if (
+            !birthHistory[questionsBirthHealth[i]] ||
+            birthHistory[questionsBirthHealth[i]] === ""
+        ) {
+            return i + 1;
+        }
+    }
+    return questionsBirthHealth.length;
+};
+
 export {
     getScoreAssessments,
     getRiskCategory,
@@ -261,4 +294,7 @@ export {
     generateAssessmentWrap,
     getVariant,
     truncateString,
+    removeLeadingZeros,
+    getSubCurrentStage,
+    questionsBirthHealth,
 };

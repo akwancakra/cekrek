@@ -43,56 +43,136 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
     generateAssessmentWrap,
+    getVariant,
     processChildAssessments,
 } from "@/utils/converters";
-import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
-import { fetcher } from "@/utils/fetcher";
+import {
+    capitalizeFirstLetter,
+    formattedDate,
+    formattedDateStripYearFirst,
+} from "@/utils/formattedDate";
+import { fetcher, getChildrenImage } from "@/utils/fetcher";
 import useSWR from "swr";
-import { Child } from "@/types/children.types";
 import { useParams, useRouter } from "next/navigation";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
+import axios from "axios";
+import { toast } from "sonner";
+import { Recommendation } from "@/types/recommendation.type";
+import {
+    AssesmentWrap,
+    MonitorRecommendationWrap,
+} from "@/types/children.types";
+import { BirthHistory } from "@/types/birthHistory.type";
+import { ExpertExamination } from "@/types/expertExamination.type";
+import { HealthStatus } from "@/types/healthStatus.type";
+import { User } from "@/types/user.types";
+
+type ChildRecommendation = {
+    id: number;
+    children_id: number;
+    recommendation_id: number;
+    recommendations: Recommendation;
+    isFinished: boolean;
+};
+
+type MonitorTableData = {
+    date: string;
+    finishedActivities: number;
+    unfinishedActivities: number;
+};
+
+type Child = {
+    id: number;
+    full_name: string;
+    teacher_id: number;
+    nick_name: string | null;
+    picture: string | null;
+    gender: string;
+    place_birth: string;
+    date_time_birth: string;
+    religion: string;
+    count_of_siblings: number;
+    risk_category: string;
+    hearing_test: string;
+    child_recommendations?: ChildRecommendation[];
+    last_assesment?: string;
+    parent?: User[];
+    monitoringChildRecommendations?: MonitorRecommendationWrap[];
+    birth_history?: BirthHistory;
+    expert_examination?: ExpertExamination;
+    health_status?: HealthStatus;
+    child_assesments?: AssesmentWrap[];
+    monitor_child_recommendations: {
+        id: number;
+        child_recommendation_id: number;
+        date_time: string;
+        is_done: boolean;
+        child_recommendations: ChildRecommendation;
+        recommendations: Recommendation;
+    }[];
+    unfinishedRecommendations: number;
+    finishedRecommendations: number;
+    monitor_table_data: MonitorTableData[];
+};
 
 export default function StudentDetails({}) {
     const [data, setData] = useState<Child>();
+    const [isSubmit, setIsSubmit] = useState(false);
     const [historyAssessmen, setHistoryAssessmen] = useState<
         ProcessedAssessment[]
     >([]);
 
     const { id } = useParams();
-    const { back } = useRouter();
+    const { push } = useRouter();
 
     const {
         data: childData,
         isLoading,
     }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
-        `/api/teachers/1/students/${id}`,
+        `/api/teachers/${1}/students/${id}`,
         fetcher
     );
 
     useEffect(() => {
-        if (childData) {
-            if (childData.child) {
-                const assessmentWraps = generateAssessmentWrap(childData.child);
-                childData.child = {
-                    ...childData.child,
-                    child_assesments: assessmentWraps,
-                };
+        if (!isLoading) {
+            if (childData && childData.child) {
+                // const assessmentWraps = generateAssessmentWrap(childData.child);
+
+                // childData.child = {
+                //     ...childData.child,
+                //     child_assesments: assessmentWraps,
+                // };
 
                 setData(childData.child);
 
                 const history = processChildAssessments(childData.child);
-                console.log(assessmentWraps);
                 setHistoryAssessmen(history);
             } else {
-                back();
+                push("/t");
             }
         }
+    }, [childData, isLoading]);
 
-        // console.log(childData?.child);
-    }, [isLoading, childData]);
-
-    const removeStudentButton = (id: number) => {
-        console.log("Student Removed");
+    const removeStudentButton = async () => {
+        if (childData?.child?.id) {
+            await axios
+                .put(`/api/teachers/${1}/students/${childData.child.id}/delete`)
+                .then(() => {
+                    toast.success("Siswa berhasil dihapus!");
+                    setIsSubmit(false);
+                    push("/t");
+                })
+                .catch((err) => {
+                    if (err?.response.status === 400) {
+                        toast.error(err?.response?.data?.message);
+                    } else if (err?.response.status === 500) {
+                        toast.error("Server Error");
+                    } else {
+                        toast.error("Terjadi kesalahan");
+                    }
+                    setIsSubmit(false);
+                });
+        }
     };
 
     return (
@@ -112,9 +192,11 @@ export default function StudentDetails({}) {
                     <div className="relative rounded-lg bg-gray-400 max-w-xs w-full lg:max-w-none">
                         <AspectRatio ratio={3 / 4}>
                             <Image
-                                src={`/static/images/${
-                                    data?.picture || "user-default.jpg"
-                                }`}
+                                src={
+                                    data?.picture
+                                        ? getChildrenImage(data.picture)
+                                        : "/static/images/user-default.jpg"
+                                }
                                 alt="Student Image"
                                 fill={true}
                                 className="rounded-lg object-cover"
@@ -131,7 +213,13 @@ export default function StudentDetails({}) {
                                 <p className="text-header">
                                     {data?.full_name || "Nama"}
                                 </p>
-                                <Badge variant={"default"}>
+                                <Badge
+                                    variant={"default"}
+                                    className={`${
+                                        data?.risk_category &&
+                                        getVariant(data.risk_category)
+                                    }`}
+                                >
                                     {data?.risk_category
                                         ? capitalizeFirstLetter(
                                               data.risk_category
@@ -218,6 +306,7 @@ export default function StudentDetails({}) {
                                                 <button
                                                     type="button"
                                                     className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                                    disabled={isSubmit}
                                                 >
                                                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                                         delete
@@ -264,11 +353,12 @@ export default function StudentDetails({}) {
                                                                     "destructive"
                                                                 }
                                                                 onClick={() =>
-                                                                    removeStudentButton(
-                                                                        data.id
-                                                                    )
+                                                                    removeStudentButton()
                                                                 }
                                                                 className="bg-red-500 text-white hover:bg-red-700"
+                                                                disabled={
+                                                                    isSubmit
+                                                                }
                                                             >
                                                                 Hapus
                                                             </Button>
@@ -286,82 +376,270 @@ export default function StudentDetails({}) {
                     <div className="border border-gray-300 p-2 rounded-lg my-3">
                         <div>
                             <p className="font-semibold tracking-tight text-lg">
-                                Kategori
+                                Biodata
                             </p>
                             <div className="divider my-1" />
                             <div className="w-full grid grid-cols-3 gap-2">
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
-                                    </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">Nama</p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.full_name || "N/A"}
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">
+                                        Nama Panggilan
                                     </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
+                                    <p className="text-medium font-semibold">
+                                        {data?.nick_name || "N/A"}
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">
+                                        Jenis Kelamin
                                     </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
+                                    <p className="text-medium font-semibold">
+                                        {data?.gender
+                                            ? capitalizeFirstLetter(data.gender)
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">Agama</p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.religion
+                                            ? capitalizeFirstLetter(
+                                                  data.religion
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">
+                                        Tempat Lahir
+                                    </p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.place_birth || "N/A"}
+                                    </p>
+                                </div>
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">
+                                        Tanggal Lahir
+                                    </p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.date_time_birth
+                                            ? formattedDate(
+                                                  data.date_time_birth.toString()
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">
+                                        Pendengaran
+                                    </p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.hearing_test
+                                            ? capitalizeFirstLetter(
+                                                  data.hearing_test
+                                              )
+                                            : "N/A"}
+                                    </p>
+                                </div>
+                                <div className="my-1">
+                                    <p className="text-xs to-gray-400">
+                                        Jumlah Saudara
+                                    </p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.count_of_siblings || "N/A"}
                                     </p>
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-3">
+                    </div>
+
+                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                        <div>
                             <p className="font-semibold tracking-tight text-lg">
-                                Kategori
+                                Riwayat Kehamilan/Kelahiran
                             </p>
                             <div className="divider my-1" />
                             <div className="w-full grid grid-cols-3 gap-2">
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
-                                    </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
-                                    </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
-                                    </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
-                                    </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-400 text-sm -mb-1">
-                                        Nama
-                                    </p>
-                                    <p className="font-medium tracking-tight text-sm sm:text-base">
-                                        N/A
-                                    </p>
-                                </div>
+                                {!data?.birth_history && (
+                                    <div className="col-span-3 text-center py-3 text-small">
+                                        <p>Tidak ada riwayat</p>
+                                    </div>
+                                )}
+                                {Object.entries(data?.birth_history || {}).map(
+                                    ([key, value]) => {
+                                        if (
+                                            key === "id" ||
+                                            key === "child_id"
+                                        ) {
+                                            return null;
+                                        }
+
+                                        const translatedKey =
+                                            {
+                                                healthy_pregnancy:
+                                                    "Kehamilan Sehat",
+                                                pregnancy_illness:
+                                                    "Penyakit Kehamilan",
+                                                gestation_details:
+                                                    "Rincian Kehamilan",
+                                                birthplace: "Tempat Lahir",
+                                                birth_assistance:
+                                                    "Pertolongan Persalinan",
+                                                delivery_process:
+                                                    "Proses Persalinan",
+                                                congenital_anomalies:
+                                                    "Kelainan Bawaan",
+                                                first_food: "Makanan Pertama",
+                                                formula_milk: "Susu Formula",
+                                                immunization: "Imunisasi",
+                                            }[key] || key;
+
+                                        return (
+                                            <div key={key} className="my-1">
+                                                <p className="text-xs to-gray-400">
+                                                    {translatedKey.replace(
+                                                        "_",
+                                                        " "
+                                                    )}
+                                                </p>
+                                                <p className="text-medium font-semibold">
+                                                    {value
+                                                        ? capitalizeFirstLetter(
+                                                              value
+                                                          )
+                                                        : "N/A"}
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                        <div>
+                            <p className="font-semibold tracking-tight text-lg">
+                                Hasil Pemeriksaan Ahli
+                            </p>
+                            <div className="divider my-1" />
+                            <div className="w-full grid grid-cols-3 gap-2">
+                                {!data?.expert_examination && (
+                                    <div className="col-span-3 text-center py-3 text-small">
+                                        <p>Tidak ada riwayat</p>
+                                    </div>
+                                )}
+                                {Object.entries(
+                                    data?.expert_examination || {}
+                                ).map(([key, value]) => {
+                                    // Skip printing if key is 'id' or 'child_id'
+                                    if (key === "id" || key === "child_id") {
+                                        return null;
+                                    }
+
+                                    // Translating keys for better understanding
+                                    const translatedKey =
+                                        {
+                                            pediatrician: "Pediatrician",
+                                            rehabilitation: "Rehabilitasi",
+                                            psychologist: "Psikolog",
+                                            therapist: "Terapis",
+                                        }[key] || key;
+
+                                    return (
+                                        <div key={key} className="my-1">
+                                            <p className="text-xs to-gray-400">
+                                                {translatedKey.replace(
+                                                    "_",
+                                                    " "
+                                                )}
+                                            </p>
+                                            <p className="text-medium font-semibold">
+                                                {value
+                                                    ? capitalizeFirstLetter(
+                                                          value
+                                                      )
+                                                    : "N/A"}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                        <div>
+                            <p className="font-semibold tracking-tight text-lg">
+                                Kesehatan
+                            </p>
+                            <div className="divider my-1" />
+                            <div className="w-full grid grid-cols-3 gap-2">
+                                {!data?.health_status && (
+                                    <div className="col-span-3 text-center py-3 text-small">
+                                        <p>Tidak ada riwayat</p>
+                                    </div>
+                                )}
+                                {Object.entries(data?.health_status || {}).map(
+                                    ([key, value]) => {
+                                        // Skip printing if key is 'id' or 'child_id'
+                                        if (
+                                            key === "id" ||
+                                            key === "child_id"
+                                        ) {
+                                            return null;
+                                        }
+
+                                        // Translating keys for better understanding
+                                        const translatedKeyHealth =
+                                            {
+                                                serious_illness:
+                                                    "Penyakit Serius",
+                                                current_diseases:
+                                                    "Penyakit Saat Ini",
+                                                treatment_location:
+                                                    "Lokasi Pengobatan",
+                                                treatment_duration:
+                                                    "Durasi Pengobatan",
+                                                general_comparison:
+                                                    "Perbandingan Umum",
+                                                crawling_development:
+                                                    "Perkembangan Merangkak",
+                                                sitting_development:
+                                                    "Perkembangan Duduk",
+                                                walking_development:
+                                                    "Perkembangan Berjalan",
+                                                first_words_age:
+                                                    "Usia Berkata Pertama",
+                                                speaking_fluency_age:
+                                                    "Usia Bicara Lancar",
+                                                bedwetting: "Mengompol",
+                                            }[key] || key;
+
+                                        return (
+                                            <div key={key} className="my-1">
+                                                <p className="text-xs to-gray-400">
+                                                    {translatedKeyHealth.replace(
+                                                        "_",
+                                                        " "
+                                                    )}
+                                                </p>
+                                                <p className="text-medium font-semibold">
+                                                    {value
+                                                        ? capitalizeFirstLetter(
+                                                              value
+                                                          )
+                                                        : "N/A"}
+                                                </p>
+                                            </div>
+                                        );
+                                    }
+                                )}
                             </div>
                         </div>
                     </div>
@@ -481,6 +759,107 @@ export default function StudentDetails({}) {
                                 </TableFooter>
                             </Table>
                         </div>
+                    </div>
+
+                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                        <p className="font-semibold tracking-tight text-lg">
+                            Monitoring rekomendasi
+                        </p>
+                        <div className="divider my-1" />
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>Selesai</TableHead>
+                                    <TableHead>Belum Selesai</TableHead>
+                                    <TableHead>Tanggal Monitor</TableHead>
+                                    <TableHead className="w-2 text-center">
+                                        #
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {childData?.child?.monitor_table_data?.length ==
+                                    0 && (
+                                    <TableRow>
+                                        <TableCell
+                                            className="text-center"
+                                            colSpan={4}
+                                        >
+                                            Belum memiliki riwayat monitoring
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+
+                                {childData?.child?.monitor_table_data?.map(
+                                    (monitor, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell>
+                                                {monitor.finishedActivities}{" "}
+                                                Rekomendasi
+                                            </TableCell>
+                                            <TableCell>
+                                                {monitor.unfinishedActivities}{" "}
+                                                Rekomendasi
+                                            </TableCell>
+                                            <TableCell>
+                                                {formattedDate(monitor.date)}
+                                            </TableCell>
+                                            <TableCell className="w-2 text-center">
+                                                <DropdownMenu>
+                                                    <DropdownMenuTrigger
+                                                        asChild
+                                                    >
+                                                        <Button
+                                                            variant="ghost"
+                                                            className="h-8 w-8 p-0"
+                                                        >
+                                                            <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
+                                                                more_horiz
+                                                            </span>
+                                                        </Button>
+                                                    </DropdownMenuTrigger>
+                                                    <DropdownMenuContent align="end">
+                                                        <DropdownMenuItem
+                                                            className="cursor-pointer"
+                                                            asChild
+                                                        >
+                                                            <Link
+                                                                href={`/t/students/${id}/recommendation?date=${formattedDateStripYearFirst(
+                                                                    monitor.date
+                                                                )}`}
+                                                            >
+                                                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                                                    assignment
+                                                                </span>{" "}
+                                                                <span>
+                                                                    Lihat hasil
+                                                                    monitoring
+                                                                </span>
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                    </DropdownMenuContent>
+                                                </DropdownMenu>
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                )}
+                            </TableBody>
+                            <TableFooter>
+                                <TableRow>
+                                    <TableCell colSpan={2}>Total</TableCell>
+                                    <TableCell
+                                        colSpan={3}
+                                        className="text-right"
+                                    >
+                                        {
+                                            childData?.child?.monitor_table_data
+                                                ?.length
+                                        }{" "}
+                                        Monitor Total
+                                    </TableCell>
+                                </TableRow>
+                            </TableFooter>
+                        </Table>
                     </div>
                 </div>
             </div>

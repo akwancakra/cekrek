@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
+import { useCounter } from "usehooks-ts";
 
 interface AssessmentChoiceProps {
     isLoading?: boolean;
@@ -40,8 +41,10 @@ export default function AssessmentChoice({
     handleNextStage,
     isLoading,
 }: AssessmentChoiceProps) {
+    // BUAT NYIMPEN SEMUA HASIL JAWABAN CHOICE
     const [assessments, setAssessments] = useState<Assessment[]>([]);
-    const [number, setNumber] = useState(1);
+    // const [number, setNumber] = useState(1);
+    const { count, setCount, increment, decrement, reset } = useCounter(1);
 
     const {
         data,
@@ -60,46 +63,71 @@ export default function AssessmentChoice({
 
     useEffect(() => {
         if (assessmentAnswers.length != 20) {
-            setNumber(assessmentAnswers.length + 1);
+            setCount(assessmentAnswers.length + 1);
             console.log(assessmentAnswers);
         } else {
-            setNumber(assessmentAnswers.length);
+            setCount(assessmentAnswers.length);
         }
         // else {
         //     setNumber();
         // }
     }, [assessments]);
 
-    const incrementNumber = () => {
-        setNumber((prevNumber) =>
-            prevNumber < assessments.length ? prevNumber + 1 : prevNumber
-        );
+    const handleIncrement = () => {
+        if (count < assessments.length) {
+            increment();
+        }
     };
 
-    const decrementNumber = () => {
-        setNumber((prevNumber) =>
-            prevNumber > 1 ? prevNumber - 1 : prevNumber
-        );
+    const isActiveButton = (
+        index: number,
+        answer: string
+    ): "default" | "outline" => {
+        let isActive: "default" | "outline" = "outline";
+        assessmentAnswers.forEach((item) => {
+            if (item.assesment_id == assessments[index].id.toString()) {
+                if (item.answer == answer) {
+                    isActive = "default";
+                }
+            }
+        });
+
+        return isActive;
     };
+
+    // const incrementNumber = () => {
+    //     setNumber((prevNumber) =>
+    //         prevNumber < assessments.length ? prevNumber + 1 : prevNumber
+    //     );
+    // };
+
+    // const decrementNumber = () => {
+    //     setNumber((prevNumber) =>
+    //         prevNumber > 1 ? prevNumber - 1 : prevNumber
+    //     );
+    // };
 
     return (
         <>
-            {isLoading ? (
-                <div className="flex min-h-screen justify-center items-center">
-                    <div className="flex items-center gap-1">
-                        <span className="loading loading-spinner loading-sm"></span>
-                        <span>Memuat data...</span>
+            {isLoading || isLoadingData ? (
+                <div className="mx-auto max-w-lg flex flex-col justify-center items-center min-h-svh h-full gap-2 p-2">
+                    <div className="skeleton h-8 w-1/3 rounded-lg"></div>
+                    <div className="skeleton w-full">
+                        <AspectRatio ratio={16 / 9}></AspectRatio>
                     </div>
+                    <div className="skeleton h-8 w-1/2 rounded-lg"></div>
+                    <div className="skeleton h-8 w-full rounded-lg"></div>
+                    <div className="skeleton h-8 w-3/4 rounded-lg"></div>
                 </div>
             ) : (
                 <section
-                    key={assessments[number - 1]?.id}
+                    key={assessments[count - 1]?.id}
                     className="mx-auto max-w-lg flex flex-col justify-center items-center min-h-svh h-full gap-2 p-2"
                 >
-                    {/* <div className="badge badge-outline badge-neutral">1/20</div> */}
                     <Select
-                        value={number.toString()}
-                        onValueChange={(e) => setNumber(parseInt(e))}
+                        value={count.toString()}
+                        defaultValue={count.toString()}
+                        onValueChange={(e) => setCount(parseInt(e))}
                         disabled={isLoading || isLoadingData}
                     >
                         <SelectTrigger className="w-fit min-w-24">
@@ -117,13 +145,13 @@ export default function AssessmentChoice({
                         </SelectContent>
                     </Select>
                     <p className="text-gray-500 text-center text-small">
-                        {assessments[number - 1]?.question}
+                        {assessments[count - 1]?.question}
                     </p>
                     <div className="bg-gray-400 rounded-lg w-full overflow-hidden">
                         <AspectRatio ratio={16 / 9}>
                             <Image
                                 src={`/static/images/${
-                                    assessments[number - 1]?.picture ||
+                                    assessments[count - 1]?.picture ||
                                     "default.jpg"
                                 }`}
                                 alt="Assessment Image"
@@ -140,17 +168,21 @@ export default function AssessmentChoice({
                             {assessments?.length > 0 && (
                                 <>
                                     <Button
-                                        variant={"outline"}
+                                        variant={isActiveButton(
+                                            count - 1,
+                                            "ya"
+                                        )}
                                         onClick={() => {
                                             saveNewAnswer({
                                                 assessmentId:
                                                     assessments?.[
-                                                        number - 1
+                                                        count - 1
                                                     ]?.id.toString(),
                                                 answer: "ya",
                                                 assesmentType: "awal",
                                             });
-                                            incrementNumber();
+                                            handleIncrement();
+                                            // incrementNumber();
                                         }}
                                         disabled={isLoading || isLoadingData}
                                     >
@@ -160,17 +192,21 @@ export default function AssessmentChoice({
                                         Ya
                                     </Button>
                                     <Button
-                                        variant={"outline"}
+                                        variant={isActiveButton(
+                                            count - 1,
+                                            "tidak"
+                                        )}
                                         onClick={() => {
                                             saveNewAnswer({
                                                 assessmentId:
                                                     assessments?.[
-                                                        number - 1
+                                                        count - 1
                                                     ]?.id.toString(),
                                                 answer: "tidak",
                                                 assesmentType: "awal",
                                             });
-                                            incrementNumber();
+                                            handleIncrement();
+                                            // incrementNumber();
                                         }}
                                         disabled={isLoading || isLoadingData}
                                     >

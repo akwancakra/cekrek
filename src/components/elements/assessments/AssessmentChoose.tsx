@@ -1,6 +1,7 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Child } from "@/types/children.types";
+import { getChildrenImage } from "@/utils/fetcher";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,9 +25,11 @@ export default function AssessmentChoose({
                         <div className="bg-gray-400 w-24 rounded-lg">
                             <AspectRatio ratio={1 / 1}>
                                 <Image
-                                    src={`/static/images/${
-                                        student?.picture || "user-default.jpg"
-                                    }`}
+                                    src={
+                                        student?.picture
+                                            ? getChildrenImage(student.picture)
+                                            : "/static/images/user-default.jpg"
+                                    }
                                     alt="Student Profile"
                                     fill={true}
                                     className="rounded-lg"
