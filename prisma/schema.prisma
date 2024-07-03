@@ -125,7 +125,8 @@ model expert_examination_question {
 // ketika repetisi ada, maka durasi diubah menjadi jumlah hari
 model recommendations {
   id               Int     @id @default(autoincrement())
-  assesment_number Int
+  assesment_number Int?
+  teacher_id       Int?
   is_main          Boolean @default(false)
   // type          String // standar, durasi, repetisi (Enum)
   title            String
@@ -159,6 +160,7 @@ model monitor_child_recommendation {
   child_recommendation_id Int
   date_time               DateTime              @db.Date
   is_done                 Boolean               @default(false)
+  with_whom               String? // Dengan siapa? (orang tua, guru)
   child_recommendations   child_recommendations @relation(fields: [child_recommendation_id], references: [id])
 }
 
