@@ -32,7 +32,7 @@ export default function AssessmentChoose({
                                     }
                                     alt="Student Profile"
                                     fill={true}
-                                    className="rounded-lg"
+                                    className="rounded-lg object-cover"
                                     draggable={false}
                                 />
                             </AspectRatio>

@@ -70,7 +70,6 @@ export default function PreviewData({
         setIsSubmit(true);
 
         const finalData = {
-            teacher_id: 1,
             ...data?.biodata,
             ...data?.birthHistory,
             ...data?.expertExamination,

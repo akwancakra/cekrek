@@ -35,24 +35,27 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
             setIsLoading(true);
             setShowPassword(false);
             try {
-                console.log(values);
-                // const res = await signIn("credentials", {
-                //     callbackUrl,
-                //     redirect: false,
-                //     email: values.email,
-                //     password: values.password,
-                // });
+                // console.log(values);
+                const res = await signIn("credentials", {
+                    callbackUrl,
+                    redirect: false,
+                    email: values.email,
+                    password: values.password,
+                });
 
-                // if (!res?.error) {
-                //     toast.success("Log In successfully");
-                //     push(callbackUrl);
-                // } else {
-                //     if (res?.status === 401) {
-                //         toast.error("Email or password is incorrect");
-                //     } else {
-                //         toast.error("Something went wrong");
-                //     }
-                // }
+                if (!res?.error) {
+                    toast.success("Berhasil masuk", {
+                        duration: 1000,
+                        dismissible: true,
+                    });
+                    push(callbackUrl);
+                } else {
+                    if (res?.status === 401) {
+                        toast.error("Email or password is incorrect");
+                    } else {
+                        toast.error("Something went wrong");
+                    }
+                }
             } catch (error) {
                 console.error(error);
                 toast.error("Something went wrong");

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import NextAuthProvider from "@/utils/NextAuthProvider";
 import DashboardTeacher from "@/components/layouts/DashboardTeacher";
 
 export const metadata: Metadata = {
@@ -12,9 +11,5 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <NextAuthProvider>
-            <DashboardTeacher>{children}</DashboardTeacher>
-        </NextAuthProvider>
-    );
+    return <DashboardTeacher>{children}</DashboardTeacher>;
 }

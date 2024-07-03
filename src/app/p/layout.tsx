@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import NextAuthProvider from "@/utils/NextAuthProvider";
+// import NextAuthProvider from "@/utils/NextAuthProvider";
 import DashboardParent from "@/components/layouts/DashboardParent";
 
 export const metadata: Metadata = {
@@ -13,8 +13,8 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <NextAuthProvider>
-            <DashboardParent>{children}</DashboardParent>
-        </NextAuthProvider>
+        // <NextAuthProvider>
+        <DashboardParent>{children}</DashboardParent>
+        // </NextAuthProvider>
     );
 }

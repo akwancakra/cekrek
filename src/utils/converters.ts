@@ -286,6 +286,16 @@ const getSubCurrentStage = (birthHistory) => {
     return questionsBirthHealth.length;
 };
 
+const getUrlFromRole = (role: string) => {
+    const url = [
+        { role: "admin", url: "/a" },
+        { role: "teacher", url: "/t" },
+        { role: "parent", url: "/p" },
+    ];
+
+    return url.find((u) => u.role === role)?.url;
+};
+
 export {
     getScoreAssessments,
     getRiskCategory,
@@ -297,4 +307,5 @@ export {
     removeLeadingZeros,
     getSubCurrentStage,
     questionsBirthHealth,
+    getUrlFromRole,
 };

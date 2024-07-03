@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Session } from "@/types/userSession.type";
 
 const SidebarParent = ({
     isOpen,
@@ -11,7 +12,14 @@ const SidebarParent = ({
     toggleSidebar: () => void;
 }) => {
     const contactModal = useRef<HTMLDialogElement>(null);
-    const { data: session } = useSession();
+    const [profile, setProfile] = useState<Session>();
+    const { data } = useSession();
+
+    useEffect(() => {
+        if (data?.user) {
+            setProfile(data.user);
+        }
+    }, [data]);
 
     const showModal = () => {
         if (contactModal.current) {
@@ -125,9 +133,8 @@ const SidebarParent = ({
                     <li className="mx-0 my-2 fixed h-[60px] w-[78px] transition-all duration-[0.5s] ease-[ease] overflow-hidden px-3.5 py-2.5 left-0 -bottom-2 group-[.open]:w-[250px] group-[.open]:border-t group-[.open]:border-gray-300">
                         <div className="flex items-center flex-nowrap">
                             <div>
-                                <div className="text-sm whitespace-nowrap">
-                                    {session?.user?.teacherName ?? "Admin Name"}
-                                </div>
+                                <div className="text-sm whitespace-nowrap"></div>
+
                                 <div className="text-xs whitespace-nowrap">
                                     Orang Tua
                                 </div>

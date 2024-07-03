@@ -79,7 +79,6 @@ export async function POST(req: NextRequest) {
     try {
         const data = await req.json();
         const {
-            teacher_id,
             parent_id,
             full_name,
             nick_name,

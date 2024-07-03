@@ -33,7 +33,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                                     Judul{" "}
                                     {formik.errors.title && (
                                         <span className="text-red-500 text-xs italic">
-                                            *wajib dipilih
+                                            *wajib diisi
                                         </span>
                                     )}
                                 </span>
@@ -56,7 +56,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                                 Deskripsi{" "}
                                 {formik.errors.description && (
                                     <span className="text-red-500 text-xs italic">
-                                        *wajib dipilih
+                                        *wajib diisi
                                     </span>
                                 )}
                             </span>
@@ -85,7 +85,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                                     Frekuensi{" "}
                                     {formik.errors.frequency && (
                                         <span className="text-red-500 text-xs italic">
-                                            *wajib dipilih
+                                            *wajib diisi
                                         </span>
                                     )}
                                 </span>
@@ -120,7 +120,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                             }
                         >
                             <SelectTrigger
-                                name="gender"
+                                name="risk_category"
                                 className="w-full"
                                 onBlur={formik.handleBlur}
                             >

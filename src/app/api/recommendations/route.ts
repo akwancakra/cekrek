@@ -5,64 +5,72 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
     try {
-        // Extract limit and skip from query parameters
+        // Extract query parameters
         const url = new URL(req.url);
-        const limit = url?.searchParams?.get("limit") || "10";
-        const skip = url?.searchParams?.get("skip") || "0";
+        const limit = url?.searchParams?.get("limit");
+        const skip = url?.searchParams?.get("skip");
         const name_params = url?.searchParams?.get("name") || "";
         const data = url?.searchParams?.get("data") || "";
+        const main = url?.searchParams?.get("main");
 
         let recommendations;
+
+        const queryOptions: any = {
+            include: { children: true },
+        };
+
+        if (main) {
+            queryOptions.where = { is_main: main === "true" ? true : false };
+        }
+
+        // Apply limit and skip if they exist
+        if (limit) {
+            queryOptions.take = parseInt(limit);
+        }
+        if (skip) {
+            queryOptions.skip = parseInt(skip);
+        }
+
         if (data) {
             const finalData = JSON.parse(data);
-            // Extract the risk_category and assesments from the data
-            const {
-                risk_category,
-                assesments,
-            }: {
-                risk_category: string;
-                assesments: { assesment_number: string }[];
-            } = finalData;
+            const { risk_category, assessments } = finalData;
 
-            // Create an array of assesment_numbers and convert to number[]
-            const assesmentNumbers = Array.isArray(assesments)
-                ? assesments.map((assesment) =>
-                      parseInt(assesment.assesment_number)
+            const assessmentNumbers = Array.isArray(assessments)
+                ? assessments.map((assessment) =>
+                      parseInt(assessment.assessment_number)
                   )
                 : [];
 
-            // Query recommendations based on risk_category and assesment_numbers
-            recommendations = await prisma.recommendations.findMany({
-                where: {
-                    AND: [
-                        { is_main: true },
-                        {
-                            OR: [
-                                { risk_category: risk_category },
-                                { risk_category: null },
-                            ],
-                        },
-                        { assesment_number: { in: assesmentNumbers } },
-                    ],
-                },
-                include: { children: true },
-                take: parseInt(limit),
-                skip: parseInt(skip),
-            });
+            queryOptions.where = {
+                AND: [
+                    { is_main: true },
+                    {
+                        OR: [
+                            { risk_category: risk_category },
+                            { risk_category: null },
+                        ],
+                    },
+                    { assessment_number: { in: assessmentNumbers } },
+                ],
+            };
         } else {
-            recommendations = await prisma.recommendations.findMany({
-                where: { title: { contains: name_params } },
-                include: { children: true },
-                take: parseInt(limit),
-                skip: parseInt(skip),
-            });
+            queryOptions.where = {
+                title: { contains: name_params },
+            };
         }
 
-        if (recommendations.length === 0)
+        recommendations = await prisma.recommendations.findMany(queryOptions);
+
+        if (recommendations.length === 0) {
             return NextResponse.json(
-                { status: "error", message: "No Recommendations Found" },
+                {
+                    status: "error",
+                    message: "No Recommendations Found",
+                    recommendations: [],
+                },
                 { status: 200 }
             );
+        }
 
         return NextResponse.json(
             { status: "success", recommendations },

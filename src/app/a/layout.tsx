@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import NextAuthProvider from "@/utils/NextAuthProvider";
 import DashboardAdmin from "@/components/layouts/DashboardAdmin";
 
 export const metadata: Metadata = {
@@ -12,9 +11,5 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <NextAuthProvider>
-            <DashboardAdmin>{children}</DashboardAdmin>
-        </NextAuthProvider>
-    );
+    return <DashboardAdmin>{children}</DashboardAdmin>;
 }

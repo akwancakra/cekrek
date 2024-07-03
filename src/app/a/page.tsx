@@ -1,10 +1,17 @@
 "use client";
 
 import Clock from "@/components/elements/Clock";
+import { Button } from "@/components/ui/button";
+import { UserSession } from "@/types/userSession.type";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 
 export default function HomeAdmin() {
+    const { data: session }: { data: UserSession } = useSession();
+
+    console.log(session?.user);
+
     return (
         <>
             <section className="mx-auto max-w-7xl mb-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
@@ -32,6 +39,10 @@ export default function HomeAdmin() {
                         </label>
                     </div> */}
                 </div>
+
+                <Button onClick={() => signOut()} variant={"outline"}>
+                    Logout
+                </Button>
 
                 <div className="border border-gray-300 rounded-lg p-3">
                     <div>

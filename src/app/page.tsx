@@ -1,9 +1,24 @@
+"use client";
+
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
+import { Session } from "@/types/userSession.type";
+import { getUrlFromRole } from "@/utils/converters";
+import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+    const [profile, setProfile] = useState<Session>();
+    const { data } = useSession();
+
+    useEffect(() => {
+        if (data?.user) {
+            setProfile(data.user);
+        }
+    }, [data]);
+
     return (
         <>
             <header>
@@ -66,14 +81,18 @@ export default function Home() {
                             >
                                 <div className="text-gray-600 dark:text-gray-300 lg:pr-4 lg:w-auto w-full lg:pt-0">
                                     <ul className="tracking-wide font-medium lg:text-sm flex-col flex lg:flex-row gap-6 lg:gap-0">
-                                        <li>
-                                            <Link
-                                                href="/t"
-                                                className="block md:px-4 transition hover:text-primary"
-                                            >
-                                                <span>Dasbor</span>
-                                            </Link>
-                                        </li>
+                                        {profile && (
+                                            <li>
+                                                <Link
+                                                    href={getUrlFromRole(
+                                                        profile.role
+                                                    )}
+                                                    className="block md:px-4 transition hover:text-primary"
+                                                >
+                                                    <span>Dasbor</span>
+                                                </Link>
+                                            </li>
+                                        )}
                                         <li>
                                             <Link
                                                 href="#features"
@@ -101,17 +120,29 @@ export default function Home() {
                                     </ul>
                                 </div>
                                 <div className="mt-6 lg:mt-0">
-                                    <Button
-                                        variant={"default"}
-                                        asChild
-                                        className="rounded-full w-full sm:w-fit"
-                                    >
-                                        <Link href={"/login"}>
+                                    {profile ? (
+                                        <Button
+                                            variant={"default"}
+                                            className="rounded-full w-full sm:w-fit"
+                                            onClick={() => signOut()}
+                                        >
                                             <span className="relative text-sm font-semibold text-white">
-                                                Masuk
+                                                Keluar
                                             </span>
-                                        </Link>
-                                    </Button>
+                                        </Button>
+                                    ) : (
+                                        <Button
+                                            variant={"default"}
+                                            asChild
+                                            className="rounded-full w-full sm:w-fit"
+                                        >
+                                            <Link href={"/login"}>
+                                                <span className="relative text-sm font-semibold text-white">
+                                                    Masuk
+                                                </span>
+                                            </Link>
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -152,7 +183,7 @@ export default function Home() {
                                     asChild
                                     className="rounded-full"
                                 >
-                                    <Link href={"/p"}>
+                                    <Link href={getUrlFromRole(profile.role)}>
                                         <span className="relative text-sm font-semibold text-white">
                                             Coba Sekarang
                                         </span>
@@ -788,7 +819,7 @@ export default function Home() {
                                     asChild
                                     className="rounded-full"
                                 >
-                                    <Link href={"/p"}>
+                                    <Link href={getUrlFromRole(profile.role)}>
                                         <span className="relative text-sm font-semibold">
                                             Coba Sekarang
                                         </span>

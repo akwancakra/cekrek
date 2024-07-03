@@ -819,6 +819,9 @@ export default function StudentDetails({}) {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>
+                                                            Aksi
+                                                        </DropdownMenuLabel>
                                                         <DropdownMenuItem
                                                             className="cursor-pointer"
                                                             asChild

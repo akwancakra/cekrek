@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Session } from "@/types/userSession.type";
 
 const SidebarAdmin = ({
     isOpen,
@@ -11,7 +12,14 @@ const SidebarAdmin = ({
     toggleSidebar: () => void;
 }) => {
     const contactModal = useRef<HTMLDialogElement>(null);
-    const { data: session } = useSession();
+    const [profile, setProfile] = useState<Session>();
+    const { data } = useSession();
+
+    useEffect(() => {
+        if (data?.user) {
+            setProfile(data.user);
+        }
+    }, [data]);
 
     const showModal = () => {
         if (contactModal.current) {
@@ -122,6 +130,32 @@ const SidebarAdmin = ({
                     </li>
                     <li className="group/nav-link relative mx-0 my-2">
                         <Link
+                            href="/a/recommendations"
+                            className={`${
+                                pathname.startsWith("/a/recommendations")
+                                    ? "bg-primary text-white "
+                                    : ""
+                            }flex h-full w-full items-center no-underline transition-all duration-500 ease-in-out rounded-lg group-hover/nav-link:bg-primary group-hover/nav-link:text-white`}
+                        >
+                            <i
+                                className={`${
+                                    pathname.startsWith("/a/recommendations")
+                                        ? "filled "
+                                        : ""
+                                }material-symbols-outlined h-[50px] min-w-[47px] !text-xl text-center !leading-[50px]`}
+                            >
+                                fact_check
+                            </i>
+                            <span className="whitespace-nowrap opacity-0 pointer-events-none text-sm group-[.open]:opacity-100 group-[.open]:pointer-events-auto">
+                                Daftar Rekomendasi
+                            </span>
+                        </Link>
+                        <span className="bg-white absolute z-10 shadow-lg rounded text-sm opacity-0 whitespace-nowrap pointer-events-none transition-all duration-500 ease-in-out px-3 py-1.5 left-[calc(100%_+_15px)] -top-5 group-[.open]:hidden group-hover/nav-link:opacity-100 group-hover/nav-link:pointer-events-auto group-hover/nav-link:-translate-y-2/4 group-hover/nav-link:top-2/4">
+                            Daftar Rekomendasi
+                        </span>
+                    </li>
+                    <li className="group/nav-link relative mx-0 my-2">
+                        <Link
                             href="/a/settings"
                             className={`${
                                 pathname.startsWith("/a/settings")
@@ -150,7 +184,7 @@ const SidebarAdmin = ({
                         <div className="flex items-center flex-nowrap">
                             <div>
                                 <div className="text-sm whitespace-nowrap">
-                                    {session?.user?.teacherName ?? "Admin Name"}
+                                    {profile?.name ?? "Admin Name"}
                                 </div>
                                 <div className="text-xs whitespace-nowrap">
                                     Admin
@@ -170,7 +204,7 @@ const SidebarAdmin = ({
             </div>
 
             {/* BOTTOM BAR */}
-            <div className="fixed bottom-0 border-t border-gray-300 grid grid-cols-4 w-full h-16 bg-white z-20 sm:hidden">
+            <div className="fixed bottom-0 border-t border-gray-300 grid grid-cols-5 w-full h-16 bg-white z-20 sm:hidden">
                 <Link
                     href="/a"
                     className={`${
@@ -220,6 +254,26 @@ const SidebarAdmin = ({
                         contacts{" "}
                     </span>
                     <p className="text-xs">Murid</p>
+                </Link>
+                <Link
+                    href="/a/recommendations"
+                    className={`${
+                        pathname.startsWith("/a/recommendations")
+                            ? "text-primary "
+                            : ""
+                    }flex flex-col justify-center items-center transition-colors duration-200 ease-in-out  hover:text-primary`}
+                >
+                    <span
+                        className={`${
+                            pathname.startsWith("/a/recommendations")
+                                ? "filled "
+                                : ""
+                        }material-symbols-outlined`}
+                    >
+                        {" "}
+                        fact_check{" "}
+                    </span>
+                    <p className="text-xs">Rekomendasi</p>
                 </Link>
                 <Link
                     href="/a/settings"

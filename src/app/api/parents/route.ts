@@ -86,6 +86,12 @@ export async function POST(req: NextRequest) {
             phone,
         } = data;
 
+        let defaultPassword = "";
+        if (!password) {
+            const trimmedName = name.replace(/\s+/g, "").toLowerCase();
+            defaultPassword = trimmedName + "-cekrek";
+        }
+
         // role should be either "teacher" or "parent"
         if (!["teacher", "parent"].includes(role)) {
             return NextResponse.json(
@@ -102,20 +108,13 @@ export async function POST(req: NextRequest) {
             data.date_time_birth = null;
         }
 
-        let genPassword = "";
-        if (!password) {
-            genPassword = await bcrypt.hash(name + "_cekrek", 10);
-        }
-
         // Create user
         const parent = await prisma.users.create({
             data: {
                 name,
                 email,
                 role,
-                password: password
-                    ? await bcrypt.hash(password, 10)
-                    : genPassword,
+                password: await bcrypt.hash(password || defaultPassword, 10),
                 type,
                 place_birth,
                 date_time_birth: date_time_birth

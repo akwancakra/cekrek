@@ -46,6 +46,7 @@ interface AssessmentGetRecommendationsProps {
 }
 
 type RecomendationAdd = {
+    is_main: boolean;
     title: string;
     description: string;
     icon?: string;
@@ -62,6 +63,7 @@ const formSchema = Yup.object().shape({
 });
 
 const initialValues: RecomendationAdd = {
+    is_main: false,
     title: "",
     description: "",
     frequency: "",
@@ -77,7 +79,7 @@ export default function AssessmentGetRecommendations({
     isLoading,
 }: AssessmentGetRecommendationsProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
-    const [isSubmit, setIsSubmit] = useState(false);
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
     const [riskCategory, setRiskCategory] = useState<string>("");
     const [newRecommendations, setNewRecommendations] = useState<
@@ -201,38 +203,39 @@ export default function AssessmentGetRecommendations({
             ],
         };
 
-        const submitPromise = new Promise<void>(async (resolve, reject) => {
-            try {
-                await axios.post("/api/recommendations", finalData);
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        });
+        console.log("FINAL: ", finalData);
+
+        // const submitPromise = new Promise<void>(async (resolve, reject) => {
+        //     try {
+        //         await axios.post("/api/recommendations", finalData);
+        //         resolve();
+        //     } catch (error) {
+        //         reject(error);
+        //     }
+        // });
 
         try {
-            toast.promise(submitPromise, {
-                loading: "Mengirim rekomendasi...",
-                success: () => {
-                    push(`/t/students/${id}`);
-                    return "Berhasil mengirim rekomendasi!";
-                },
-                error: (err) => {
-                    if (err?.response?.status === 400) {
-                        return (
-                            err?.response?.data?.message ||
-                            "Gagal mengirim rekomendasi"
-                        );
-                    } else if (err?.response?.status === 500) {
-                        return "Server Error";
-                    } else {
-                        return "Terjadi kesalahan";
-                    }
-                },
-            });
-
-            removeAssessmentAnswer();
-            push(`/t/students/${child?.id}`);
+            // toast.promise(submitPromise, {
+            //     loading: "Mengirim rekomendasi...",
+            //     success: () => {
+            //         push(`/t/students/${id}`);
+            //         return "Berhasil mengirim rekomendasi!";
+            //     },
+            //     error: (err) => {
+            //         if (err?.response?.status === 400) {
+            //             return (
+            //                 err?.response?.data?.message ||
+            //                 "Gagal mengirim rekomendasi"
+            //             );
+            //         } else if (err?.response?.status === 500) {
+            //             return "Server Error";
+            //         } else {
+            //             return "Terjadi kesalahan";
+            //         }
+            //     },
+            // });
+            // removeAssessmentAnswer();
+            // push(`/t/students/${child?.id}`);
         } catch (error: any) {
             console.error("Error sending recommendation:", error.message);
         } finally {
@@ -279,9 +282,11 @@ export default function AssessmentGetRecommendations({
         validationSchema: formSchema,
         onSubmit: async (values) => {
             setNewRecommendations([...newRecommendations, values]);
+            // setRecommendations([...recommendations, values]);
             // const data = createDataObjectFinal();
             // const transformRecomendationAdd
-            // console.log([...newRecommendations, values]);
+
+            console.log([...newRecommendations, values], recommendations);
 
             formik.resetForm();
         },
@@ -434,7 +439,7 @@ const RecomendationForm = ({
             <DrawerContent className="p-0">
                 <ScrollArea className="p-0 max-h-svh overflow-auto">
                     <DrawerHeader className="text-left">
-                        <DrawerTitle>Edit profile</DrawerTitle>
+                        <DrawerTitle>Tambah Rekomendasi</DrawerTitle>
                         <DrawerDescription>
                             <div>
                                 <AddRecomendationForm formik={formik} />

@@ -12,7 +12,6 @@ import useSWR from "swr";
 export default function Assessments() {
     const [students, setStudents] = useState<Child[]>([]);
     const [keyword, setKeyword] = useState<string>("");
-    const [category, setCategory] = useState<string>("");
 
     const {
         data,
@@ -47,12 +46,11 @@ export default function Assessments() {
                         <p className="text-large font-semibold tracking-tight">
                             Daftar Siswa
                         </p>
-                        <Button
-                            variant={"outline"}
-                            asChild
-                            className="block sm:hidden"
-                        >
-                            <Link href={"/t/a/students/add"} className="gap-1">
+                        <Button variant={"outline"} asChild>
+                            <Link
+                                href="/a/students/add"
+                                className="items-center gap-1 inline-flex sm:hidden group-[.open]:inline-flex md:group-[.open]:hidden"
+                            >
                                 Tambah Siswa{" "}
                                 <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                                     person_add
@@ -62,12 +60,11 @@ export default function Assessments() {
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <Button
-                            variant={"outline"}
-                            asChild
-                            className="hidden sm:block"
-                        >
-                            <Link href={"/t/a/students/add"} className="gap-1">
+                        <Button variant={"outline"} asChild>
+                            <Link
+                                href="/a/students/add"
+                                className="items-center gap-1 hidden sm:inline-flex group-[.open]:hidden md:group-[.open]:inline-flex"
+                            >
                                 Tambah Siswa{" "}
                                 <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                                     person_add
@@ -81,6 +78,8 @@ export default function Assessments() {
                                     className="grow"
                                     placeholder="Search"
                                     name="keyword"
+                                    value={keyword}
+                                    onChange={(e) => setKeyword(e.target.value)}
                                 />
                                 <Button
                                     variant={"outline"}
@@ -105,7 +104,6 @@ export default function Assessments() {
                     <StudentsTable
                         students={students}
                         keyword={keyword}
-                        category={category}
                         removeStudent={removeStudent}
                     />
                 )}
