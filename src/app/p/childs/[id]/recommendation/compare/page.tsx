@@ -47,7 +47,12 @@ export default function CompareMonitoringParentLayout() {
         <>
             <section className="mx-auto max-w-7xl mb-4">
                 <Button asChild variant={"outline"} className="mb-3">
-                    <Link href={`/p/childs/${id}/recommendation`}>
+                    <Link
+                        href={`/p/childs/${id}/recommendation?date=${
+                            formattedDateStripYearFirst(date.toString()) ||
+                            today
+                        }`}
+                    >
                         <span className="material-symbols-outlined me-1 !leading-none !text-lg hover:no-underline">
                             arrow_back
                         </span>

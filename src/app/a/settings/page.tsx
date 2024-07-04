@@ -14,17 +14,17 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import useProfile from "@/utils/useProfile";
 import { signOut } from "next-auth/react";
+import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
 export default function AdminSettings({}) {
+    const profile = useProfile();
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
-    const editAccountButton = () => {
-        console.log("Account Edit Button Clicked!");
-    };
-
     const removeAccountButton = () => {
+        toast.success("Akun berhasil dihapus！");
         console.log("Account Remove Button Clicked!");
     };
 
@@ -103,13 +103,9 @@ export default function AdminSettings({}) {
                         </p>
                     </div>
                     {isDesktop ? (
-                        <EditProfileDialog
-                            editAccountButton={editAccountButton}
-                        />
+                        <EditProfileDialog profile={profile} />
                     ) : (
-                        <EditProfileDrawer
-                            editAccountButton={editAccountButton}
-                        />
+                        <EditProfileDrawer profile={profile} />
                     )}
                 </div>
                 <div className="flex justify-between items-center my-3">

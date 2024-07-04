@@ -154,7 +154,12 @@ export default function RecomendationStudent({}) {
                 </div>
                 <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
                     <Button variant={"outline"} asChild>
-                        <Link href={`/p/childs/${id}/recommendation/compare`}>
+                        <Link
+                            href={`/p/childs/${id}/recommendation/compare?date=${
+                                formattedDateStripYearFirst(date.toString()) ||
+                                today
+                            }`}
+                        >
                             Bandingkan hasil monitoring versi guru{" "}
                             <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
                                 arrow_forward
