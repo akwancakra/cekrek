@@ -12,13 +12,16 @@ import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Form, Field, ErrorMessage, FormikProvider, FormikProps } from "formik";
 
 interface Props {
-    formik: FormikProps<RecomendationAdd>;
+    formik: FormikProps<Recommendation>;
     assessmentFails: AssessmentAnswer[];
 }
 
-type RecomendationAdd = {
+type Recommendation = {
+    id?: number;
+    teacher_id?: string | number;
+    is_main: boolean;
+    assesment_number: string | number;
     title: string;
-    assesment_number: string;
     description: string;
     icon?: string;
     frequency?: string;
@@ -42,7 +45,12 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                             </span>
                         </div>
                         <Select
-                            value={formik.values.assesment_number}
+                            value={
+                                typeof formik.values.assesment_number ===
+                                "string"
+                                    ? formik.values.assesment_number
+                                    : formik.values.assesment_number?.toString()
+                            }
                             onValueChange={(value) =>
                                 formik.setFieldValue("assesment_number", value)
                             }

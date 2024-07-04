@@ -31,7 +31,6 @@ import { getRiskCategory } from "@/utils/converters";
 import { Child } from "@/types/children.types";
 import axios from "axios";
 import { toast } from "sonner";
-import { Recommendation } from "@/types/recommendation.type";
 import { useParams, useRouter } from "next/navigation";
 import { AddRecomendationForm } from "../forms/AddRecomendationForm";
 import * as Yup from "yup";
@@ -46,11 +45,11 @@ interface AssessmentGetRecommendationsProps {
     isLoading?: boolean;
 }
 
-type RecomendationAdd = {
+type Recommendation = {
     id?: number;
-    teacher_id: string;
+    teacher_id?: string | number;
     is_main: boolean;
-    assesment_number: string;
+    assesment_number: string | number;
     title: string;
     description: string;
     icon?: string;
@@ -68,7 +67,7 @@ const formSchema = Yup.object().shape({
     risk_category: Yup.string().required("Kategori risiko wajib diisi"),
 });
 
-const initialValues: RecomendationAdd = {
+const initialValues: Recommendation = {
     teacher_id: "",
     is_main: false,
     title: "",
@@ -91,7 +90,7 @@ export default function AssessmentGetRecommendations({
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
     const [riskCategory, setRiskCategory] = useState<string>("");
     const [newRecommendations, setNewRecommendations] = useState<
-        RecomendationAdd[]
+        Recommendation[]
     >([]);
     const [recommendations, setRecommendations] = useState<Recommendation[]>(
         []
@@ -182,7 +181,7 @@ export default function AssessmentGetRecommendations({
         };
     };
 
-    // const transformRecomendationAdd = (data: RecomendationAdd[]) => {
+    // const transformRecommendation = (data: Recommendation[]) => {
     //     return data.map((recommendation) => ({
     //         title: recommendation.title,
     //         description: recommendation.description,
@@ -313,7 +312,7 @@ export default function AssessmentGetRecommendations({
             setNewRecommendations([...newRecommendations, newValues]);
             // setRecommendations([...recommendations, values]);
             // const data = createDataObjectFinal();
-            // const transformRecomendationAdd
+            // const transformRecommendation
 
             console.log([...newRecommendations, values], recommendations);
 
@@ -506,7 +505,7 @@ const RecomendationForm = ({
     isSubmit,
 }: {
     assessmentFails: AssessmentAnswer[];
-    formik: FormikProps<RecomendationAdd>;
+    formik: FormikProps<Recommendation>;
     isSubmit: boolean;
 }) => {
     const [open, setOpen] = useState(false);
@@ -567,7 +566,7 @@ const RecomendationFormDesktop = ({
     isSubmit,
 }: {
     assessmentFails: AssessmentAnswer[];
-    formik: FormikProps<RecomendationAdd>;
+    formik: FormikProps<Recommendation>;
     isSubmit: boolean;
 }) => {
     return (

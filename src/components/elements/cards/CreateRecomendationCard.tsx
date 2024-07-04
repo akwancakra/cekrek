@@ -22,11 +22,23 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 
+// type Recommendation = {
+//     id?: number;
+//     teacher_id?: number;
+//     is_main: boolean;
+//     assesment_number: number;
+//     title: string;
+//     description: string;
+//     icon?: string;
+//     frequency?: string;
+//     risk_category?: "other" | "rendah" | "sedang" | "tinggi";
+// };
+
 type Recommendation = {
     id?: number;
-    teacher_id: string;
+    teacher_id?: string | number;
     is_main: boolean;
-    assesment_number: string;
+    assesment_number: string | number;
     title: string;
     description: string;
     icon?: string;
