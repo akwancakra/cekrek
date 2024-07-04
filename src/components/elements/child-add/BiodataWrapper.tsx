@@ -258,7 +258,7 @@ export default function BiodataWrapper({
         picture: "",
     };
 
-    const data: { [key: string]: string } = localData?.biodata || {};
+    const data: { [key: string]: string } = localData?.biodata || ({} as any);
     const fields: (keyof typeof initialValues)[] = [
         "risk_category",
         "parent_dad",

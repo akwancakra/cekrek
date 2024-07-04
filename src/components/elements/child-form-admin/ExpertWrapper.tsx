@@ -112,7 +112,8 @@ export default function ExpertWrapper({
         therapist_other: "-",
     };
 
-    const data: { [key: string]: string } = localData?.expertExamination || {};
+    const data: { [key: string]: string } =
+        localData?.expertExamination || ({} as any);
     const fields: (keyof typeof initialValues)[] = [
         "pediatrician",
         "psychologist",

@@ -186,7 +186,7 @@ export default function AddStudentPage() {
 
         // Helper functions to validate each stage
         const validateBiodata = () => {
-            const biodata = data.biodata || {};
+            const biodata = data.biodata || ({} as any);
             return (
                 biodata.full_name &&
                 biodata.gender &&
@@ -197,19 +197,19 @@ export default function AddStudentPage() {
         };
 
         const validateBirthHistory = () => {
-            const birthHistory = data.birthHistory || {};
+            const birthHistory = data.birthHistory || ({} as any);
             return Object.values(birthHistory).every((value) => value !== "");
         };
 
         const validateExpertExamination = () => {
-            const expertExamination = data.expertExamination || {};
+            const expertExamination = data.expertExamination || ({} as any);
             return Object.values(expertExamination).every(
                 (value) => value !== ""
             );
         };
 
         const validateHealthStatus = () => {
-            const healthStatus = data.healthStatus || {};
+            const healthStatus = data.healthStatus || ({} as any);
             return (
                 healthStatus.serious_illness &&
                 healthStatus.treatment_location &&
