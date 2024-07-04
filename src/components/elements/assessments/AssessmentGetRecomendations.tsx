@@ -47,6 +47,7 @@ interface AssessmentGetRecommendationsProps {
 }
 
 type RecomendationAdd = {
+    id?: number;
     teacher_id: string;
     is_main: boolean;
     assesment_number: string;

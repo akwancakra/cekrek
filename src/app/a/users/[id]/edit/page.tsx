@@ -35,7 +35,7 @@ import * as Yup from "yup";
 const initialValues = {
     name: "",
     email: "",
-    password: "",
+    // password: "",
     type: "",
     role: "",
     place_birth: "",

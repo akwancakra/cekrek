@@ -88,7 +88,8 @@ const processMultiChildAssessments = (
     return processedAssessments;
 };
 
-const processChildAssessments = (child: Child): ProcessedAssessment[] => {
+// Child
+const processChildAssessments = (child: any): ProcessedAssessment[] => {
     const processedAssessments: ProcessedAssessment[] = [];
 
     // Iterate through each child

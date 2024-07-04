@@ -44,7 +44,7 @@ const getFirstRecommendationImage = (
     });
 
     return (
-        firstRecommendation?.child_recommendation?.recommendation?.icon ||
+        firstRecommendation?.child_recommendation?.recommendations?.icon ||
         "default.jpg"
     );
 };
@@ -162,10 +162,10 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                         {data[0]?.child_recommendations
                             ?.slice(0, 6)
                             .map((item, index) =>
-                                item.recommendation ? (
+                                item.recommendations ? (
                                     <RecommendationIndexCard
                                         key={index}
-                                        recommendation={item.recommendation}
+                                        recommendation={item.recommendations}
                                         monitoringChildRec={
                                             data[0]
                                                 ?.monitoringChildRecommendations?.[0]

@@ -1,6 +1,5 @@
 "use client";
 
-import { getImageUrl } from "@/app/t/students/[id]/edit/page";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -16,6 +15,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChildrenData } from "@/types/childrenData.type";
+import { getImageUrl } from "@/utils/converters";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import axios from "axios";
 import Image from "next/image";

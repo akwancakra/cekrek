@@ -10,4 +10,5 @@ export type Recommendation = {
     frequency?: string;
     risk_category?: "rendah" | "sedang" | "tinggi";
     children?: ChildRecommendation[];
+    isFinished?: boolean;
 };

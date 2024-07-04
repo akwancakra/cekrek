@@ -541,7 +541,8 @@ export default function Template({}) {
                                                     )}
                                                 </p>
                                                 <p className="text-medium font-semibold">
-                                                    {value
+                                                    {typeof value ===
+                                                        "string" && value
                                                         ? capitalizeFirstLetter(
                                                               value
                                                           )
@@ -595,7 +596,8 @@ export default function Template({}) {
                                                     )}
                                                 </p>
                                                 <p className="text-medium font-semibold">
-                                                    {value
+                                                    {typeof value ===
+                                                        "string" && value
                                                         ? capitalizeFirstLetter(
                                                               value
                                                           )
@@ -666,7 +668,8 @@ export default function Template({}) {
                                                     )}
                                                 </p>
                                                 <p className="text-medium font-semibold">
-                                                    {value
+                                                    {typeof value ===
+                                                        "string" && value
                                                         ? capitalizeFirstLetter(
                                                               value
                                                           )

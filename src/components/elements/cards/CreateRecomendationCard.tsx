@@ -20,8 +20,19 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Recommendation } from "@/types/recommendation.type";
 import Image from "next/image";
+
+type Recommendation = {
+    id?: number;
+    teacher_id: string;
+    is_main: boolean;
+    assesment_number: string;
+    title: string;
+    description: string;
+    icon?: string;
+    frequency?: string;
+    risk_category?: "other" | "rendah" | "sedang" | "tinggi";
+};
 
 interface CreateRecomendationCardProps {
     recommendation: Recommendation;

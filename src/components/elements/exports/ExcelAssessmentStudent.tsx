@@ -18,7 +18,7 @@ import { useCallback, useRef } from "react";
 import * as XLSX from "xlsx";
 
 interface ExcelAssessmentStudentProps {
-    data: Child;
+    data: any; // child
     // date: Date;
     // childAssessment: ChildAssesment[];
 }

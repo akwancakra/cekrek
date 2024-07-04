@@ -31,6 +31,8 @@ export type Child = {
     expert_examination?: ExpertExamination;
     health_status?: HealthStatus;
     child_assesments?: AssesmentWrap[];
+    finishedRecommendations: boolean;
+    unfinishedRecommendations: boolean;
 };
 
 export type AssesmentWrap = {

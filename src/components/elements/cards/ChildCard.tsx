@@ -1,8 +1,8 @@
-import { getImageUrl } from "@/app/t/students/[id]/edit/page";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Child } from "@/types/children.types";
+import { getImageUrl } from "@/utils/converters";
 import { capitalizeFirstLetter } from "@/utils/formattedDate";
 import Image from "next/image";
 import Link from "next/link";
