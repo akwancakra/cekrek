@@ -1,4 +1,3 @@
-import { recommendations } from "@/utils/tempData";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
