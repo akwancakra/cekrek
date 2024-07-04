@@ -295,10 +295,9 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                                         recommendation={
                                                             item.recommendations
                                                         }
-                                                        monitoringChildRec={
-                                                            child
-                                                                ?.monitoringChildRecommendations?.[0]
-                                                                ?.monitorRecommendations
+                                                        isFinished={
+                                                            item?.isFinished ||
+                                                            false
                                                         }
                                                     />
                                                 ) : null

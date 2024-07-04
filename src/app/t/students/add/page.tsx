@@ -12,6 +12,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import { toast } from "sonner";
+import { getImageUrl } from "@/utils/converters";
 
 export interface ChildrenData {
     biodata: {
@@ -73,13 +74,6 @@ export default function AddStudentPage() {
     const searchParams = useSearchParams();
 
     const stages = ["biodata", "birth-history", "expert", "health", "preview"];
-
-    const getImageUrl = (image: any) => {
-        if (image instanceof File) {
-            return URL.createObjectURL(image);
-        }
-        return image || "/static/images/user-default.jpg";
-    };
 
     const handleNextStage = () => {
         if (currentStage !== 5) {

@@ -9,4 +9,5 @@ export type ChildRecommendation = {
     children?: Child;
     recommendations?: Recommendation;
     monitoringChildRecommendations?: MonitorChildRecommendation[];
+    isFinished?: boolean;
 };

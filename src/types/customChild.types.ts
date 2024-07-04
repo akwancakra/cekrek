@@ -5,7 +5,9 @@ export type ChildRecommendation = {
     children_id: number;
     recommendation_id: number;
     recommendations: Recommendation;
-    isFinished: boolean;
+    isFinished?: boolean;
+    isFinishedByParent?: boolean;
+    isFinishedByTeacher?: boolean;
 };
 
 export type Child = {
@@ -30,6 +32,8 @@ export type Child = {
         child_recommendations: ChildRecommendation;
         recommendations: Recommendation;
     }[];
-    unfinishedRecommendations: number;
-    finishedRecommendations: number;
+    finishedRecommendations?: number;
+    unfinishedRecommendations?: number;
+    finishedRecommendationsByTeacher?: number;
+    unfinishedRecommendationsByTeacher?: number;
 };

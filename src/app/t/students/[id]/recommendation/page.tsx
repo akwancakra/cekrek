@@ -39,6 +39,7 @@ import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
 import { Recommendation } from "@/types/recommendation.type";
 import useProfile from "@/utils/useProfile";
+import { Child } from "@/types/customChild.types";
 
 ChartJS.register(
     CategoryScale,
@@ -49,40 +50,6 @@ ChartJS.register(
     Tooltip,
     Legend
 );
-
-type ChildRecommendation = {
-    id: number;
-    children_id: number;
-    recommendation_id: number;
-    recommendations: Recommendation;
-    isFinished: boolean;
-};
-
-type Child = {
-    id: number;
-    full_name: string;
-    teacher_id: number;
-    nick_name: string | null;
-    picture: string | null;
-    gender: string;
-    place_birth: string;
-    date_time_birth: string;
-    religion: string;
-    count_of_siblings: number;
-    risk_category: string;
-    hearing_test: string;
-    child_recommendations: ChildRecommendation[];
-    monitor_child_recommendations: {
-        id: number;
-        child_recommendation_id: number;
-        date_time: string;
-        is_done: boolean;
-        child_recommendations: ChildRecommendation;
-        recommendations: Recommendation;
-    }[];
-    unfinishedRecommendations: number;
-    finishedRecommendations: number;
-};
 
 const labels = ["Apr - M-1", "Apr - M-2", "Apr - M-3", "Apr - M-4"];
 
@@ -375,7 +342,10 @@ export default function RecomendationStudent({}) {
                                 <RecomendationCard
                                     key={idx}
                                     recommendation={rec.recommendations}
-                                    isDone={rec.isFinished}
+                                    isDone={
+                                        rec?.isFinished ||
+                                        rec?.isFinishedByTeacher
+                                    }
                                 />
                             ) : null
                         )}

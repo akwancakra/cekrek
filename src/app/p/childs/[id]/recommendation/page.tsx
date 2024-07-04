@@ -337,7 +337,10 @@ export default function RecomendationStudent({}) {
                                 <RecomendationCard
                                     key={idx}
                                     recommendation={rec.recommendations}
-                                    isDone={rec.isFinished}
+                                    isDone={
+                                        rec?.isFinished ||
+                                        rec?.isFinishedByParent
+                                    }
                                 />
                             ) : null
                         )}

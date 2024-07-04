@@ -110,13 +110,15 @@ export default function CompareMonitoringParentLayout() {
                                     Aktifitas belum dilakukan
                                 </p>
                                 <p className="font-semibold tracking-tight text-xl sm:text-3xl">
-                                    {student?.unfinishedRecommendations || "0"}
+                                    {student?.unfinishedRecommendationsByTeacher ||
+                                        "0"}
                                 </p>
                             </div>
                             <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                                 <p className="text-small">Aktifitas selesai</p>
                                 <p className="font-semibold tracking-tight text-xl sm:text-3xl">
-                                    {student?.finishedRecommendations || "0"}
+                                    {student?.finishedRecommendationsByTeacher ||
+                                        "0"}
                                 </p>
                             </div>
                         </div>

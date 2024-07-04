@@ -14,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -167,6 +168,7 @@ export default function ParentSettings({}) {
                     <Button
                         variant={"default"}
                         className="gap-1 bg-red-500 text-white hover:bg-red-600 hover:text-white"
+                        onClick={() => signOut({ callbackUrl: "/login" })}
                     >
                         <span>Keluar</span>
                         <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">

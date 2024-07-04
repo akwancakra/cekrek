@@ -7,25 +7,27 @@ import Image from "next/image";
 interface RecommendationIndexCardProps {
     recommendation: Recommendation;
     monitoringChildRec?: MonitorChildRecommendation[];
+    isFinished?: boolean;
 }
 
 export default function RecommendationIndexCard({
     recommendation,
     monitoringChildRec,
+    isFinished = false,
 }: RecommendationIndexCardProps) {
-    const isDone = () => {
-        const found = monitoringChildRec?.some((item) => {
-            if (
-                item.child_recommendation?.recommendation_id ===
-                recommendation.id
-            ) {
-                return true;
-            }
-            return false;
-        });
+    // const isDone = () => {
+    //     const found = monitoringChildRec?.some((item) => {
+    //         if (
+    //             item.child_recommendation?.recommendation_id ===
+    //             recommendation.id
+    //         ) {
+    //             return true;
+    //         }
+    //         return false;
+    //     });
 
-        return found || false;
-    };
+    //     return found || false;
+    // };
 
     return (
         <>
@@ -33,10 +35,10 @@ export default function RecommendationIndexCard({
                 <div className="w-24 bg-gray-300 rounded-lg overflow-hidden">
                     <AspectRatio ratio={1 / 1} className="bg-muted">
                         <Image
-                            // src={`/static/images/${
-                            //     recommendation.icon || "default.jpg"
-                            // }`}
-                            src={"/static/images/recommendation.png"}
+                            src={`/static/images/${
+                                recommendation.icon || "default.jpg"
+                            }`}
+                            // src={"/static/images/recommendation.png"}
                             alt="Recomendation Image"
                             fill={true}
                             className="rounded-lg object-cover"
@@ -60,9 +62,7 @@ export default function RecommendationIndexCard({
                     />
                     {/* <p className="text-small">{recommendation.description}</p> */}
                     <div className="badge badge-outline text-small">
-                        {recommendation?.isFinished === true
-                            ? "Selesai"
-                            : "Belum dilakukan"}
+                        {isFinished ? "Selesai" : "Belum dilakukan"}
                     </div>
                 </div>
             </div>

@@ -17,7 +17,7 @@ export async function GET(req: any, { params }: any) {
         const skipAssess = url?.searchParams?.get("skip-assess") || "0";
 
         const date: string | Date =
-            url?.searchParams?.get("date") || new Date();
+            url?.searchParams?.get("date") || new Date().toLocaleDateString();
         const startDate = new Date(date);
         const endDate = new Date(startDate);
         endDate.setDate(startDate.getDate() + 1);
@@ -70,6 +70,7 @@ export async function GET(req: any, { params }: any) {
                                 gte: startDate.toISOString(),
                                 lt: endDate.toISOString(),
                             },
+                            with_whom: "parent",
                         },
                         include: {
                             child_recommendations: true,
@@ -86,7 +87,8 @@ export async function GET(req: any, { params }: any) {
                         isFinished: monitors.some(
                             (monitor) =>
                                 monitor.child_recommendations.id === rec.id &&
-                                monitor.is_done
+                                monitor.is_done &&
+                                monitor.with_whom === "parent"
                         ),
                     }));
 
@@ -112,8 +114,9 @@ export async function GET(req: any, { params }: any) {
                             .filter(
                                 (rec) =>
                                     rec.recommendation_id ===
-                                    monitor.child_recommendations
-                                        .recommendation_id
+                                        monitor.child_recommendations
+                                            .recommendation_id &&
+                                    monitor.with_whom === "parent"
                             )
                             .map((rec) => ({
                                 id: rec.id,
