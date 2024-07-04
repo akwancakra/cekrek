@@ -574,13 +574,14 @@ const ChildRecommendationCard = ({
     return (
         <>
             {childRecommendations.map((chrec) => {
-                if (chrec?.recommendation) {
+                // recommendation -> recommendations
+                if (chrec?.recommendations) {
                     return (
                         <RecomendationCard
                             key={chrec.id}
                             className={`mb-2`}
                             isActive={false}
-                            recommendation={chrec.recommendation}
+                            recommendation={chrec.recommendations}
                         />
                     );
                 }
