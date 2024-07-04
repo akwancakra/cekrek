@@ -6,9 +6,26 @@ const prisma = new PrismaClient();
 
 export async function GET(req: any, { params }: any) {
     try {
-        const id = parseInt(params.id);
+        const { id } = params;
+
+        if (!id || Array.isArray(id)) {
+            return NextResponse.json(
+                { error: "Invalid id parameter" },
+                { status: 400 }
+            );
+        }
+
+        const parentId = parseInt(id, 10);
+
+        if (isNaN(parentId)) {
+            return NextResponse.json(
+                { error: "Invalid id parameter" },
+                { status: 400 }
+            );
+        }
+
         const parent = await prisma.users.findUnique({
-            where: { id: id, role: "parent" },
+            where: { id: parentId, role: "parent" },
             include: {
                 children: {
                     include: {
@@ -29,6 +46,7 @@ export async function GET(req: any, { params }: any) {
                 },
             },
         });
+
         if (!parent) {
             return NextResponse.json(
                 { status: "error", message: "Parent Not Found" },
@@ -40,6 +58,7 @@ export async function GET(req: any, { params }: any) {
             { status: 200 }
         );
     } catch (error: any) {
+        console.log(error);
         return NextResponse.json(
             {
                 status: "error",
@@ -101,7 +120,8 @@ export async function PUT(req: any, { params }: any) {
         // Update user data
         const parentData = {
             name,
-            email,
+            email:
+                emailExist && emailExist.id !== id ? emailExist.email : email,
             role,
             type,
             place_birth,
@@ -134,6 +154,7 @@ export async function PUT(req: any, { params }: any) {
             { status: 200 }
         );
     } catch (error: any) {
+        console.log(error);
         return NextResponse.json(
             {
                 status: "error",

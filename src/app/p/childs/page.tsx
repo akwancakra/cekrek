@@ -1,14 +1,14 @@
 "use client";
 
 import ChildCard from "@/components/elements/cards/ChildCard";
-import { Button } from "@/components/ui/button";
 import { Child } from "@/types/children.types";
 import { fetcher } from "@/utils/fetcher";
-import Link from "next/link";
+import useProfile from "@/utils/useProfile";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 export default function Template({}) {
+    const profile = useProfile();
     const [childs, setChilds] = useState<Child[]>();
 
     const {
@@ -16,16 +16,16 @@ export default function Template({}) {
         isLoading,
     }: { data: { status: string; children: Child[] }; isLoading: boolean } =
         useSWR(
-            `/api/parents/${2}/children?limit-rec=1&limit-assess=1`,
+            `/api/parents/${profile?.id}/children?limit-rec=1&limit-assess=1`,
             fetcher
         );
 
     useEffect(() => {
-        if (data?.children) {
+        if (!isLoading && data?.children) {
             setChilds(data.children);
             // console.log(data.children);
         }
-    }, [data]);
+    }, [data, isLoading]);
 
     return (
         <div className="max-w-7xl mx-auto w-full min-h-svh flex justify-center items-center">

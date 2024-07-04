@@ -22,13 +22,36 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { User } from "@/types/user.types";
+import { fetcher } from "@/utils/fetcher";
+import { formattedDate } from "@/utils/formattedDate";
+import useProfile from "@/utils/useProfile";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 
 export default function ParentProfilePage() {
+    const profile = useProfile();
+    const [parentData, setParentData] = useState<User>(null);
+
     const { push } = useRouter();
+
+    const {
+        data,
+        isLoading,
+    }: { data: { status: string; parent: User }; isLoading: boolean } = useSWR(
+        `/api/parents/${profile?.id}`,
+        fetcher
+    );
+
+    useEffect(() => {
+        if (!isLoading && data?.parent) {
+            setParentData(data.parent);
+        }
+    }, [data, isLoading]);
 
     return (
         <>
@@ -62,7 +85,9 @@ export default function ParentProfilePage() {
                         <div className="w-full justify-between items-center sm:flex">
                             <div>
                                 <p className="text-gray-400 text-xs">Profil</p>
-                                <p className="text-header">Suyastika</p>
+                                <p className="text-header">
+                                    {parentData?.name}
+                                </p>
                             </div>
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild className="gap-1">
@@ -118,7 +143,9 @@ export default function ParentProfilePage() {
                                                             Ini akan menghapus
                                                             data{" "}
                                                             <span className="font-semibold">
-                                                                Suyastika
+                                                                {
+                                                                    parentData?.name
+                                                                }
                                                             </span>{" "}
                                                             dan tidak bisa
                                                             dikembalikan, dan
@@ -180,7 +207,7 @@ export default function ParentProfilePage() {
                                             Nama
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            Suyastika
+                                            {parentData?.name}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -188,7 +215,7 @@ export default function ParentProfilePage() {
                                             E-mail
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            suyastika88@mail.com
+                                            {parentData?.email}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -196,7 +223,7 @@ export default function ParentProfilePage() {
                                             Pendidikan
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            Sarjana 1 (S1)
+                                            {parentData?.education || "-"}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -204,15 +231,7 @@ export default function ParentProfilePage() {
                                             Pekerjaan
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            Pegawai Bank
-                                        </p>
-                                    </div>
-                                    <div className="my-1">
-                                        <p className="text-xs to-gray-400">
-                                            Jenis Kelamin
-                                        </p>
-                                        <p className="text-medium font-semibold">
-                                            Perempuan
+                                            {parentData?.job || "-"}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -220,7 +239,7 @@ export default function ParentProfilePage() {
                                             Agama
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            Islam
+                                            {parentData?.religion || "-"}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -228,7 +247,7 @@ export default function ParentProfilePage() {
                                             No. Telp
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            0899-4098-329
+                                            {parentData?.phone || "-"}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -236,7 +255,7 @@ export default function ParentProfilePage() {
                                             Tempat Lahir
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            katapang
+                                            {parentData?.phone || "-"}
                                         </p>
                                     </div>
                                     <div className="my-1">
@@ -244,7 +263,11 @@ export default function ParentProfilePage() {
                                             Tanggal Lahir
                                         </p>
                                         <p className="text-medium font-semibold">
-                                            29 Juli 1980
+                                            {parentData?.date_time_birth
+                                                ? formattedDate(
+                                                      parentData.date_time_birth.toString()
+                                                  )
+                                                : "-"}
                                         </p>
                                     </div>
                                 </div>
