@@ -16,6 +16,7 @@ import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { Child } from "@/types/children.types";
 import useProfile from "@/utils/useProfile";
+import { getImageUrl } from "@/utils/converters";
 
 export interface ChildrenData {
     biodata: {
@@ -66,18 +67,6 @@ export interface ChildrenData {
         bedwetting: string;
     };
 }
-
-const getImageUrl = (image: any) => {
-    if (image instanceof File) {
-        return URL.createObjectURL(image);
-    } else if (typeof image === "string" && image.startsWith("data:image")) {
-        return image; // This handles base64 images directly
-    } else if (typeof image === "string" && image) {
-        return `/uploads/children/${image}`;
-    } else {
-        return "/static/images/user-default.jpg";
-    }
-};
 
 export default function AddStudentPage() {
     const [currentStage, setCurrentStage] = useState(1);

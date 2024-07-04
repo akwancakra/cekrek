@@ -35,8 +35,8 @@ import { fetcher } from "@/utils/fetcher";
 import { User } from "@/types/user.types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getImageUrl } from "@/app/t/students/[id]/edit/page";
 import { ChildrenData } from "@/types/childrenData.type";
+import { getImageUrl } from "@/utils/converters";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(

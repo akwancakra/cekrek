@@ -168,7 +168,7 @@ const processChildAssessments = (child: Child): ProcessedAssessment[] => {
 };
 
 const generateAssessmentWrap = (child: Child): AssesmentWrap[] => {
-    const assessmentsByDate: { [key: string]: AssesmentWrap[] } = {};
+    const assessmentsByDate: any = {}; //{ [key: string]: AssesmentWrap[] }
 
     if (child.child_assesments) {
         child.child_assesments.forEach((assessment) => {
@@ -296,6 +296,18 @@ const getUrlFromRole = (role: string) => {
     return url.find((u) => u.role === role)?.url || "/";
 };
 
+const getImageUrl = (image: any) => {
+    if (image instanceof File) {
+        return URL.createObjectURL(image);
+    } else if (typeof image === "string" && image.startsWith("data:image")) {
+        return image; // This handles base64 images directly
+    } else if (typeof image === "string" && image) {
+        return `/uploads/children/${image}`;
+    } else {
+        return "/static/images/user-default.jpg";
+    }
+};
+
 export {
     getScoreAssessments,
     getRiskCategory,
@@ -308,4 +320,5 @@ export {
     getSubCurrentStage,
     questionsBirthHealth,
     getUrlFromRole,
+    getImageUrl,
 };
