@@ -40,7 +40,7 @@ export async function GET(req: any, { params }: any) {
                 where: { id: child.teacher_id },
             });
 
-            child.teacher = teacher;
+            child.teacher_id = teacher.id;
         }
 
         // Get the latest child_assesment date for the current child

@@ -168,7 +168,8 @@ const processChildAssessments = (child: any): ProcessedAssessment[] => {
     return processedAssessments;
 };
 
-const generateAssessmentWrap = (child: Child): AssesmentWrap[] => {
+// Child
+const generateAssessmentWrap = (child: any): AssesmentWrap[] => {
     const assessmentsByDate: any = {}; //{ [key: string]: AssesmentWrap[] }
 
     if (child.child_assesments) {

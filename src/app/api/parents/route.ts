@@ -12,17 +12,20 @@ export async function GET(req: NextRequest) {
         const name_params = url?.searchParams?.get("name");
         const plain = url?.searchParams?.get("plain") === "true";
 
-        let findOptions = {
+        // Deklarasikan findOptions sebagai any untuk mengizinkan properti dinamis
+        let findOptions: any = {
             where: { role: "parent" },
             take: limit ? parseInt(limit) : undefined,
             skip: skip ? parseInt(skip) : undefined,
         };
 
         if (name_params) {
+            // Tambahkan properti name ke where
             findOptions.where.name = { contains: name_params };
         }
 
         if (!plain) {
+            // Tambahkan properti include
             findOptions.include = {
                 children: {
                     include: {
