@@ -117,7 +117,7 @@ export default function EditStudentPage() {
 
         // Helper functions to validate each stage
         const validateBiodata = () => {
-            const biodata = data.biodata || {};
+            const biodata = data.biodata || ({} as ChildrenData["biodata"]);
             return (
                 biodata.full_name &&
                 biodata.gender &&
