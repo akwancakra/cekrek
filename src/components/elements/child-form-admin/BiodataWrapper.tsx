@@ -36,7 +36,7 @@ import { User } from "@/types/user.types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getImageUrl } from "@/app/t/students/[id]/edit/page";
-import { ChildrenData } from "@/app/a/students/add/page";
+import { ChildrenData } from "@/types/childrenData.type";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -251,7 +251,7 @@ export default function BiodataWrapper({
     // }
     // });
 
-    const initialValues: { [key: string]: string } = {
+    const initialValues: { [key: string]: string | number } = {
         teacher_id: "",
         risk_category: "",
         parent_dad: "",
@@ -268,7 +268,7 @@ export default function BiodataWrapper({
         picture: "",
     };
 
-    const data: { [key: string]: string } = localData?.biodata || {};
+    const data: { [key: string]: string | number } = localData?.biodata || {};
     const fields: (keyof typeof initialValues)[] = [
         "teacher_id",
         "risk_category",

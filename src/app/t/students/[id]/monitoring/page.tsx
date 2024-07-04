@@ -37,12 +37,14 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import Image from "next/image";
+import useProfile from "@/utils/useProfile";
 
 export default function MonitoringRecommendations() {
     const [student, setStudent] = useState<Child>();
     const { count, setCount, increment, decrement } = useCounter(1);
     const [answers, setAnswers] = useState<string[]>([]);
     const [isSubmit, setIsSubmit] = useState(false);
+    const profile = useProfile();
 
     const today = formattedDateStripYearFirst(new Date().toString());
     const { id } = useParams();
@@ -52,7 +54,7 @@ export default function MonitoringRecommendations() {
     const date = searchParams.get("date") || today;
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/teachers/${1}/students/${id}/recommendations?date=${date}`,
+        `/api/teachers/${profile?.id}/students/${id}/recommendations?date=${date}`,
         fetcher
     );
 
@@ -143,6 +145,8 @@ export default function MonitoringRecommendations() {
                     await axios.post("/api/monitoring", {
                         date: today,
                         data: finalAnswers,
+                        with_whom: "teacher",
+                        teacher_id: profile?.id,
                     });
                     resolve();
                 } catch (error) {

@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 
 export async function GET(req: any, { params }: any) {
     try {
-        const studentId = parseInt(params.childId);
+        const childId = parseInt(params.childId);
         const child = await prisma.children.findUnique({
-            where: { id: studentId },
+            where: { id: childId },
             include: {
                 birth_history: true,
                 health_status: true,
@@ -33,6 +33,14 @@ export async function GET(req: any, { params }: any) {
                 { status: "error", message: "Child Not Found" },
                 { status: 200 }
             );
+        }
+
+        if (child?.teacher_id) {
+            const teacher = await prisma.users.findUnique({
+                where: { id: child.teacher_id },
+            });
+
+            child.teacher = teacher;
         }
 
         // Get the latest child_assesment date for the current child

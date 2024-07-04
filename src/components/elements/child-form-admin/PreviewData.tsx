@@ -54,13 +54,13 @@ export default function PreviewData({
         } else {
             if (isSubmit) {
                 setIsSubmit(false);
-                router.push("/t");
+                router.push("a/students");
             }
 
             setIsSubmit(false);
 
             if (id) {
-                router.push(`/t/students/${id}/edit?stage=biodata`);
+                router.push(`/a/students/${id}/edit?stage=biodata`);
             }
         }
         setIsLoading(false);
@@ -98,6 +98,7 @@ export default function PreviewData({
             success: () => {
                 // setIsSubmit(false);
                 resetLocal({ push: true });
+                router.push("/a/students");
                 // if (id) {
                 return "Berhasil menyimpan data!";
                 // }

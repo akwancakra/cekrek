@@ -112,10 +112,18 @@ export default function CreateRecomendationCard({
                                             <p className="text-small text-gray-400 -mb-1">
                                                 Deskripsi
                                             </p>
-                                            <p>
+                                            <div
+                                                dangerouslySetInnerHTML={{
+                                                    __html:
+                                                        recommendation?.description ||
+                                                        "N/A",
+                                                }}
+                                                className="text-small"
+                                            />
+                                            {/* <p>
                                                 {recommendation?.description ||
                                                     "N/A"}
-                                            </p>
+                                            </p> */}
                                         </div>
                                     </div>
                                 </div>
@@ -131,7 +139,15 @@ export default function CreateRecomendationCard({
                     variant={"outline"}
                     size={"icon"}
                     className="bg-red-500 text-white hover:bg-red-600 hover:text-white"
-                    onClick={() => onDelete(recommendation?.id.toString())}
+                    onClick={() =>
+                        onDelete(
+                            recommendation?.id?.toString() ||
+                                typeof recommendation?.assesment_number ===
+                                    "number"
+                                ? recommendation?.assesment_number.toString()
+                                : recommendation?.assesment_number
+                        )
+                    }
                 >
                     <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
                         close
@@ -217,10 +233,18 @@ export default function CreateRecomendationCard({
                                                         <p className="text-small text-gray-400 -mb-1">
                                                             Deskripsi
                                                         </p>
-                                                        <p>
+                                                        {/* <p>
                                                             {recommendation?.description ||
                                                                 "N/A"}
-                                                        </p>
+                                                        </p> */}
+                                                        <div
+                                                            dangerouslySetInnerHTML={{
+                                                                __html:
+                                                                    recommendation?.description ||
+                                                                    "N/A",
+                                                            }}
+                                                            className="text-small"
+                                                        />
                                                     </div>
                                                 </div>
                                             </div>
@@ -235,7 +259,18 @@ export default function CreateRecomendationCard({
                                 </AlertDialogContent>
                             </AlertDialog>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600">
+                        <DropdownMenuItem
+                            className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                            onClick={() =>
+                                onDelete(
+                                    recommendation?.id?.toString() ||
+                                        typeof recommendation?.assesment_number ===
+                                            "number"
+                                        ? recommendation?.assesment_number.toString()
+                                        : recommendation?.assesment_number
+                                )
+                            }
+                        >
                             <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                 close
                             </span>{" "}

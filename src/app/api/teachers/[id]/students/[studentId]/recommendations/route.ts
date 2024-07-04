@@ -44,7 +44,7 @@ export async function GET(req: any, { params }: any) {
 
         // Menghitung finishedRecommendations berdasarkan is_done
         const finishedRecommendations = monitors.filter(
-            (monitor) => monitor.is_done
+            (monitor) => monitor.is_done && monitor.with_whom === "teacher"
         ).length;
 
         const unfinishedRecommendations =
@@ -58,7 +58,8 @@ export async function GET(req: any, { params }: any) {
                 isFinished: monitors.some(
                     (monitor) =>
                         monitor.child_recommendations.id === rec.id &&
-                        monitor.is_done
+                        monitor.is_done &&
+                        monitor.with_whom === "teacher"
                 ),
             })),
             monitor_child_recommendation: monitors.map((monitor) => ({

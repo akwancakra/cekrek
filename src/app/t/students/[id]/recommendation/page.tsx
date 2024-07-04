@@ -19,14 +19,15 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import RecomendationCard from "@/components/elements/cards/RecomendationCard";
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
     Legend,
@@ -37,11 +38,13 @@ import { useParams, useSearchParams } from "next/navigation";
 import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
 import { Recommendation } from "@/types/recommendation.type";
+import useProfile from "@/utils/useProfile";
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
     Legend
@@ -89,16 +92,14 @@ const getOptions = () => ({
     plugins: {
         legend: {
             display: false,
-            // position: "top" as const,
         },
         title: {
             display: false,
-            // text: title,
         },
     },
     scales: {
         y: {
-            display: false,
+            display: true,
         },
     },
 });
@@ -113,14 +114,17 @@ const datasets1 = [
     {
         label: "Nama Aksi",
         data: [65, 59, 80, 81],
-        backgroundColor: "rgba(126, 73, 255, 0.3)",
+        backgroundColor: "rgba(126, 73, 255, 0.5)",
         borderColor: "rgba(126, 73, 255, 1)",
-        borderWidth: 1.5,
+        borderWidth: 2,
+        lineTension: 0.3,
+        fill: true,
     },
 ];
 
 export default function RecomendationStudent({}) {
     const [date, setDate] = useState<Date>(new Date());
+    const profile = useProfile();
     // const [recommendations, setRecommendations] = useState<
     //     ChildRecommendation[]
     // >([]);
@@ -134,7 +138,9 @@ export default function RecomendationStudent({}) {
     const { id } = useParams();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/teachers/${1}/students/${id}/recommendations?date=${formattedDateStripYearFirst(
+        `/api/teachers/${
+            profile?.id
+        }/students/${id}/recommendations?date=${formattedDateStripYearFirst(
             date.toString()
         )}`,
         fetcher
@@ -168,7 +174,7 @@ export default function RecomendationStudent({}) {
                     Kembali
                 </Link>
             </Button>
-            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3">
+            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between items-center block group-[.open]:block lg:group-[.open]:flex sm:flex">
                 <div>
                     <p className="text-gray-400 text-small">
                         Monitoring Asesmen M-Chart-R/F
@@ -184,6 +190,16 @@ export default function RecomendationStudent({}) {
                     >
                         Tingkat {student?.risk_category || "N/A"}
                     </Badge>
+                </div>
+                <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
+                    <Button variant={"outline"}>
+                        <Link href={`/t/students/${id}/recommendation/compare`}>
+                            Bandingkan hasil monitoring versi orang tua{" "}
+                            <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
+                                arrow_forward
+                            </span>
+                        </Link>
+                    </Button>
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
@@ -211,10 +227,10 @@ export default function RecomendationStudent({}) {
                     </div>
                     <div className="w-full">
                         <AspectRatio ratio={16 / 9}>
-                            <Bar
+                            <Line
                                 options={getOptions()}
                                 data={getData(datasets1)}
-                                className="!h-full"
+                                // className="!h-full"
                             />
                         </AspectRatio>
                     </div>
@@ -241,10 +257,10 @@ export default function RecomendationStudent({}) {
                     </div>
                     <div className="w-full">
                         <AspectRatio ratio={16 / 9}>
-                            <Bar
+                            <Line
                                 options={getOptions()}
                                 data={getData(datasets1)}
-                                className="!h-full"
+                                // className="!h-full"
                             />
                         </AspectRatio>
                     </div>
@@ -274,10 +290,10 @@ export default function RecomendationStudent({}) {
                     </div>
                     <div className="w-full">
                         <AspectRatio ratio={16 / 9}>
-                            <Bar
+                            <Line
                                 options={getOptions()}
                                 data={getData(datasets1)}
-                                className="!h-full"
+                                // className="!h-full"
                             />
                         </AspectRatio>
                     </div>
@@ -348,10 +364,9 @@ export default function RecomendationStudent({}) {
                     </p> */}
                     <div className="flex flex-col gap-2">
                         {student?.child_recommendations?.length == 0 && (
-                            <div>
-                                <p className="text-center">
-                                    Tidak ada data rekomendasi
-                                </p>
+                            <div className="text-center">
+                                <p>Tidak ada data rekomendasi</p>
+                                <p>Lakukan asesmen jika belum melakukan</p>
                             </div>
                         )}
 
@@ -368,19 +383,23 @@ export default function RecomendationStudent({}) {
                 </div>
                 <div className="flex justify-end items-center p-2">
                     <Button asChild variant={"outline"} disabled={isLoading}>
-                        {today ==
-                            formattedDateStripYearFirst(date.toString()) && (
-                            <Link
-                                href={`/t/students/${id}/monitoring?date=${formattedDateStripYearFirst(
+                        {student?.child_recommendations &&
+                            student?.child_recommendations?.length > 0 &&
+                            today ==
+                                formattedDateStripYearFirst(
                                     date.toString()
-                                )}`}
-                            >
-                                Cek Hari Ini
-                                <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                                    chevron_right
-                                </span>
-                            </Link>
-                        )}
+                                ) && (
+                                <Link
+                                    href={`/t/students/${id}/monitoring?date=${formattedDateStripYearFirst(
+                                        date.toString()
+                                    )}`}
+                                >
+                                    Cek Hari Ini
+                                    <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                                        chevron_right
+                                    </span>
+                                </Link>
+                            )}
                     </Button>
                 </div>
             </div>

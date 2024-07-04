@@ -96,6 +96,7 @@ type Child = {
     hearing_test: string;
     child_recommendations?: ChildRecommendation[];
     last_assesment?: string;
+    teacher?: User;
     parent?: User[];
     monitoringChildRecommendations?: MonitorRecommendationWrap[];
     birth_history?: BirthHistory;
@@ -235,7 +236,7 @@ export default function StudentDetails({}) {
                                     </span>
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-56" align="start">
+                            <DropdownMenuContent className="w-56" align="end">
                                 <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuGroup>
@@ -446,6 +447,12 @@ export default function StudentDetails({}) {
                                     </p>
                                     <p className="text-medium font-semibold">
                                         {data?.count_of_siblings || "N/A"}
+                                    </p>
+                                </div>
+                                <div className="my-1 col-span-3">
+                                    <p className="text-xs to-gray-400">Guru</p>
+                                    <p className="text-medium font-semibold">
+                                        {data?.teacher?.name || "N/A"}
                                     </p>
                                 </div>
                             </div>

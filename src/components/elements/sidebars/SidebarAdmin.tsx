@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Session } from "@/types/userSession.type";
+import { useRef } from "react";
+import useProfile from "@/utils/useProfile";
 
 const SidebarAdmin = ({
     isOpen,
@@ -12,22 +12,15 @@ const SidebarAdmin = ({
     toggleSidebar: () => void;
 }) => {
     const contactModal = useRef<HTMLDialogElement>(null);
-    const [profile, setProfile] = useState<Session>();
-    const { data } = useSession();
-
-    useEffect(() => {
-        if (data?.user) {
-            setProfile(data.user);
-        }
-    }, [data]);
+    const pathname = usePathname();
+    const profile = useProfile();
 
     const showModal = () => {
         if (contactModal.current) {
             contactModal.current.showModal();
         }
+        1;
     };
-
-    const pathname = usePathname();
 
     return (
         <>

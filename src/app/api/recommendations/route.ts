@@ -33,11 +33,13 @@ export async function GET(req: NextRequest) {
 
         if (data) {
             const finalData = JSON.parse(data);
-            const { risk_category, assessments } = finalData;
+            const { risk_category, assesments } = finalData;
 
-            const assessmentNumbers = Array.isArray(assessments)
-                ? assessments.map((assessment) =>
-                      parseInt(assessment.assessment_number)
+            console.log(finalData, risk_category.toLowerCase());
+
+            const assessmentNumbers = Array.isArray(assesments)
+                ? assesments.map((assesment) =>
+                      parseInt(assesment.assesment_number)
                   )
                 : [];
 
@@ -46,11 +48,11 @@ export async function GET(req: NextRequest) {
                     { is_main: true },
                     {
                         OR: [
-                            { risk_category: risk_category },
+                            { risk_category: risk_category.toLowerCase() },
                             { risk_category: null },
                         ],
                     },
-                    { assessment_number: { in: assessmentNumbers } },
+                    { assesment_number: { in: assessmentNumbers } },
                 ],
             };
         } else {
@@ -95,7 +97,7 @@ export async function POST(req: NextRequest) {
         const { child_id, date_time, assessmentsAnswer, childRecommendations } =
             data;
 
-        const newDate = new Date(date_time);
+        // const newDate = new Date(date_time);
 
         // Begin transaction
         const transaction = await prisma.$transaction(async (prisma) => {
@@ -120,14 +122,17 @@ export async function POST(req: NextRequest) {
                         await prisma.recommendations.create({
                             data: {
                                 title: recommendation.title,
-                                assesment_number:
-                                    recommendation.assesment_number,
+                                assesment_number: parseInt(
+                                    recommendation.assesment_number
+                                ),
                                 description: recommendation.description || null,
                                 icon: recommendation.icon || null,
                                 frequency: recommendation.frequency,
                                 risk_category:
                                     recommendation.risk_category || null,
                                 is_main: false,
+                                teacher_id:
+                                    parseInt(recommendation.teacher_id) || null,
                             },
                         });
 
@@ -156,6 +161,14 @@ export async function POST(req: NextRequest) {
                 });
             }
 
+            await prisma.children.update({
+                where: { id: child_id },
+                data: {
+                    risk_category:
+                        assessmentsAnswer?.[0]?.risk_category || null,
+                },
+            });
+
             return createdRecommendations;
         });
 
@@ -164,6 +177,7 @@ export async function POST(req: NextRequest) {
             { status: 201 }
         );
     } catch (error: any) {
+        console.log(error);
         return NextResponse.json(
             {
                 status: "error",

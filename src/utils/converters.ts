@@ -293,7 +293,7 @@ const getUrlFromRole = (role: string) => {
         { role: "parent", url: "/p" },
     ];
 
-    return url.find((u) => u.role === role)?.url;
+    return url.find((u) => u.role === role)?.url || "/";
 };
 
 export {

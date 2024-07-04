@@ -505,10 +505,10 @@ export default function ExpertWrapper({
                                 type="submit"
                                 disabled={isLoading}
                             >
+                                Selanjutnya{" "}
                                 <span className="material-symbols-outlined me-1 !leading-none !text-xl hover:no-underline">
                                     arrow_forward
-                                </span>{" "}
-                                Selanjutnya
+                                </span>
                             </Button>
                         </div>
                     </div>

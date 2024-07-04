@@ -23,6 +23,7 @@ export type Child = {
         | "pendengaran di bawah normal"
         | "hasil tidak menyakinkan atau tidak definitif";
     last_assesment?: string;
+    teacher?: User[];
     parent?: User[];
     child_recommendations?: ChildRecommendation[];
     monitoringChildRecommendations?: MonitorRecommendationWrap[];

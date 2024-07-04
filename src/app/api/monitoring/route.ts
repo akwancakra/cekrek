@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function POST(req: NextRequest) {
-    const { date, data } = await req.json();
+    const { date, data, with_whom, teacher_id } = await req.json();
 
     const startDate = new Date(date);
     const endDate = new Date(startDate);
@@ -20,12 +20,13 @@ export async function POST(req: NextRequest) {
                             gte: startDate,
                             lt: endDate,
                         },
+                        with_whom,
                     },
                 });
 
             if (existing) {
                 return prisma.monitor_child_recommendation.update({
-                    where: { id: existing.id },
+                    where: { id: existing.id, with_whom },
                     data: {
                         date_time: startDate,
                         is_done: item.answer === "ya",
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
                         child_recommendation_id: item.child_recommendation_id,
                         date_time: startDate,
                         is_done: item.answer === "ya",
+                        with_whom,
                     },
                 });
             }
@@ -53,6 +55,7 @@ export async function POST(req: NextRequest) {
             { status: 200 }
         );
     } catch (error: any) {
+        console.log(error);
         return NextResponse.json(
             {
                 status: "error",

@@ -434,7 +434,7 @@ const UserDeleteDrawer = ({
                         <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                             delete
                         </span>
-                        <span>Hapus rekomendasi</span>
+                        <span>Hapus akun</span>
                     </button>
                 </DrawerTrigger>
                 <DrawerContent className="p-0">
@@ -497,7 +497,7 @@ const UserDeleteDialog = ({
                         <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                             delete
                         </span>
-                        <span>Hapus rekomendasi</span>
+                        <span>Hapus akun</span>
                     </button>
                 </AlertDialogTrigger>
                 <AlertDialogContent className="p-0">
@@ -514,7 +514,7 @@ const UserDeleteDialog = ({
                                 dan tidak bisa dikembalikan.
                             </AlertDialogDescription>
                         </AlertDialogHeader>
-                        <AlertDialogFooter>
+                        <AlertDialogFooter className="mt-3">
                             <AlertDialogCancel disabled={isLoading}>
                                 Batal
                             </AlertDialogCancel>

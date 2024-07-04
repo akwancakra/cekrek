@@ -2,22 +2,14 @@
 
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
-import { Session } from "@/types/userSession.type";
 import { getUrlFromRole } from "@/utils/converters";
-import { signOut, useSession } from "next-auth/react";
+import useProfile from "@/utils/useProfile";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 
 export default function Home() {
-    const [profile, setProfile] = useState<Session>();
-    const { data } = useSession();
-
-    useEffect(() => {
-        if (data?.user) {
-            setProfile(data.user);
-        }
-    }, [data]);
+    const profile = useProfile();
 
     return (
         <>
@@ -81,7 +73,7 @@ export default function Home() {
                             >
                                 <div className="text-gray-600 dark:text-gray-300 lg:pr-4 lg:w-auto w-full lg:pt-0">
                                     <ul className="tracking-wide font-medium lg:text-sm flex-col flex lg:flex-row gap-6 lg:gap-0">
-                                        {profile && (
+                                        {profile?.role && (
                                             <li>
                                                 <Link
                                                     href={getUrlFromRole(
@@ -183,7 +175,13 @@ export default function Home() {
                                     asChild
                                     className="rounded-full"
                                 >
-                                    <Link href={getUrlFromRole(profile.role)}>
+                                    <Link
+                                        href={
+                                            profile?.role
+                                                ? getUrlFromRole(profile.role)
+                                                : "/login"
+                                        }
+                                    >
                                         <span className="relative text-sm font-semibold text-white">
                                             Coba Sekarang
                                         </span>
@@ -819,7 +817,13 @@ export default function Home() {
                                     asChild
                                     className="rounded-full"
                                 >
-                                    <Link href={getUrlFromRole(profile.role)}>
+                                    <Link
+                                        href={
+                                            profile?.role
+                                                ? getUrlFromRole(profile.role)
+                                                : "/login"
+                                        }
+                                    >
                                         <span className="relative text-sm font-semibold">
                                             Coba Sekarang
                                         </span>

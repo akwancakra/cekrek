@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Session } from "@/types/userSession.type";
+import useProfile from "@/utils/useProfile";
 
 const SidebarParent = ({
     isOpen,
@@ -11,22 +10,7 @@ const SidebarParent = ({
     isOpen: boolean;
     toggleSidebar: () => void;
 }) => {
-    const contactModal = useRef<HTMLDialogElement>(null);
-    const [profile, setProfile] = useState<Session>();
-    const { data } = useSession();
-
-    useEffect(() => {
-        if (data?.user) {
-            setProfile(data.user);
-        }
-    }, [data]);
-
-    const showModal = () => {
-        if (contactModal.current) {
-            contactModal.current.showModal();
-        }
-    };
-
+    const profile = useProfile();
     const pathname = usePathname();
 
     return (
@@ -133,8 +117,9 @@ const SidebarParent = ({
                     <li className="mx-0 my-2 fixed h-[60px] w-[78px] transition-all duration-[0.5s] ease-[ease] overflow-hidden px-3.5 py-2.5 left-0 -bottom-2 group-[.open]:w-[250px] group-[.open]:border-t group-[.open]:border-gray-300">
                         <div className="flex items-center flex-nowrap">
                             <div>
-                                <div className="text-sm whitespace-nowrap"></div>
-
+                                <div className="text-sm whitespace-nowrap">
+                                    {profile?.name || "Anda"}
+                                </div>
                                 <div className="text-xs whitespace-nowrap">
                                     Orang Tua
                                 </div>

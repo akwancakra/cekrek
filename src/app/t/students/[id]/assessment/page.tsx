@@ -12,6 +12,7 @@ import { Child } from "@/types/children.types";
 import { Assessment } from "@/types/assessment.types";
 import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
 import { useCounter, useLocalStorage } from "usehooks-ts";
+import useProfile from "@/utils/useProfile";
 
 const stages = [
     "assessment-choose",
@@ -24,6 +25,7 @@ export default function AssessmentPage() {
     const [assessmentType, setAssessmentType] = useState<"umum" | "m-chart">();
     const [data, setData] = useState<Child>();
     const [assessmentData, setAssessmentData] = useState<Assessment[]>([]);
+    const profile = useProfile();
     // const [currentStage, setCurrentStage] = useState(1);
     const {
         count: currentStage,
@@ -48,7 +50,7 @@ export default function AssessmentPage() {
         data: childData,
         isLoading: isLoadingChild,
     }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
-        `/api/teachers/${1}/students/${id}`,
+        `/api/teachers/${profile?.id}/students/${id}`,
         fetcher
     );
 
@@ -144,17 +146,19 @@ export default function AssessmentPage() {
     };
 
     useEffect(() => {
-        if (childData && childData.child) {
-            setData(childData.child);
-        } else if (childData && !childData.child) {
-            back();
+        if (!isLoadingChild && profile) {
+            if (childData && childData.child) {
+                setData(childData.child);
+            } else {
+                back(); // Panggil back() jika data tidak ada
+            }
         }
 
         // Muat data dari localStorage jika ada
         if (value && value.length > 0) {
             setAssessmentAnswers(value);
         }
-    }, [childData, back]);
+    }, [isLoadingChild, childData, back]);
 
     useEffect(() => {
         const stageParam = searchParams.get("stage");
@@ -186,6 +190,12 @@ export default function AssessmentPage() {
                 stages[initialStageIndex - 1]
             }`
         );
+
+        // Arahkan ke stage pertama jika tidak ada parameter "stage"
+        if (!stageParam) {
+            setCurrentStage(1);
+            replace(`/t/students/${id}/assessment?stage=${stages[0]}`);
+        }
     }, [searchParams, assessmentAnswers]);
 
     const getStageComponent = () => {

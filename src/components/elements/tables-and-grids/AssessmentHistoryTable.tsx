@@ -49,6 +49,7 @@ import { ProcessedAssessment } from "@/types/processedAssessments.type";
 import { fetcher } from "@/utils/fetcher";
 import useSWR from "swr";
 import { Child } from "@/types/children.types";
+import useProfile from "@/utils/useProfile";
 
 interface AssessmentHistoryTableProps {
     keyword?: string;
@@ -296,6 +297,7 @@ export default function AssessmentHistoryTable({
     const [historyAssessmen, setHistoryAssessmen] = useState<
         ProcessedAssessment[] | undefined
     >(undefined);
+    const profile = useProfile();
 
     const [showSize, setShowSize] = useState(15);
 
@@ -305,7 +307,7 @@ export default function AssessmentHistoryTable({
     }: {
         data: { status: string; childrenAssessments: Child[] };
         isLoading: boolean;
-    } = useSWR(`/api/teachers/${1}/child-assessments`, fetcher);
+    } = useSWR(`/api/teachers/${profile?.id}/child-assessments`, fetcher);
 
     useEffect(() => {
         if (data) {

@@ -42,7 +42,7 @@ export default function RecomendationCard({
                                 {recommendation?.title || "N/A"}
                             </p>
                             <p className="text-gray-500 text-small">
-                                Tipe: {recommendation?.frequency || "N/A"}
+                                Frekuensi: {recommendation?.frequency || "N/A"}
                             </p>
                         </div>
                     </div>

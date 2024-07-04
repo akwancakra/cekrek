@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 
@@ -19,7 +18,7 @@ interface ChildrenData {
     place_birth: string;
     date_birth: string;
     hearing: string;
-    count_of_siblings: number;
+    count_of_siblings: string;
     picture: any;
     healthy_pregnancy: string;
     pregnancy_illness: string;
@@ -51,8 +50,8 @@ interface ChildrenData {
 export async function GET(req: NextRequest) {
     try {
         const url = new URL(req.url);
-        const limit = url?.searchParams?.get("limit") || "10";
-        const skip = url?.searchParams?.get("skip") || "0";
+        const limit = url?.searchParams?.get("limit");
+        const skip = url?.searchParams?.get("skip");
         const name_params = url?.searchParams?.get("name") || "";
         const plain = url?.searchParams?.get("plain") === "true";
 
@@ -69,12 +68,20 @@ export async function GET(req: NextRequest) {
                   },
               };
 
-        const children = await prisma.children.findMany({
+        const query: any = {
             where: { full_name: { contains: name_params } },
             include,
-            take: parseInt(limit),
-            skip: parseInt(skip),
-        });
+        };
+
+        if (limit) {
+            query.take = parseInt(limit);
+        }
+
+        if (skip) {
+            query.skip = parseInt(skip);
+        }
+
+        const children = await prisma.children.findMany(query);
 
         const childrenWithLastAssesmentDate = await Promise.all(
             children.map(async (child) => {
@@ -125,9 +132,8 @@ const saveImage = (base64String: string, imagePath: string) => {
     fs.writeFileSync(imagePath, buffer);
 };
 
-export async function PUT(req: any, { params }: any) {
+export async function POST(req: any, { params }: any) {
     try {
-        const id = parseInt(params.studentId);
         const data: ChildrenData = await req.json();
 
         const {
@@ -175,11 +181,6 @@ export async function PUT(req: any, { params }: any) {
             bedwetting,
         } = data;
 
-        // Check if the child exists
-        const childExist = await prisma.children.findUnique({
-            where: { id },
-        });
-
         if (teacher_id) {
             const teacherExist = await prisma.users.findUnique({
                 where: { id: parseInt(teacher_id) },
@@ -194,13 +195,6 @@ export async function PUT(req: any, { params }: any) {
         } else {
             return NextResponse.json(
                 { status: "error", message: "Teacher Not Found" },
-                { status: 404 }
-            );
-        }
-
-        if (!childExist) {
-            return NextResponse.json(
-                { status: "error", message: "Child Not Found" },
                 { status: 404 }
             );
         }
@@ -255,34 +249,12 @@ export async function PUT(req: any, { params }: any) {
             connectParents.push({ id: parseInt(parent_wali) });
         }
 
-        // Prepare the connect and disconnect arrays for parent
-        const existingParents = await prisma.children.findUnique({
-            where: { id },
-            select: {
-                parent: {
-                    select: {
-                        id: true,
-                    },
-                },
-            },
-        });
-
-        const existingParentIds =
-            existingParents?.parent.map((p) => p.id) || [];
-
-        const disconnectParents = existingParentIds
-            .filter(
-                (existingId) =>
-                    !connectParents.some((cp: any) => cp.id === existingId)
-            )
-            .map((id) => ({ id }));
-
         // Update child data and include related data
 
         // if (typeof picture === "string") {
         //     // Do nothing, keep existing picture path
         // } else if (picture instanceof File) {
-        let updatedPicture = childExist.picture;
+        let updatedPicture;
         if (typeof picture === "string" && picture.startsWith("data:image")) {
             const base64Data = picture.replace(/^data:image\/\w+;base64,/, "");
             const buffer = Buffer.from(base64Data, "base64");
@@ -295,22 +267,9 @@ export async function PUT(req: any, { params }: any) {
 
             fs.writeFileSync(fullPath, buffer);
             updatedPicture = imageName;
-
-            // Delete previous image if exists
-            if (childExist.picture && childExist.picture !== updatedPicture) {
-                const existingImagePath = path.join(
-                    process.cwd(),
-                    "public",
-                    `/uploads/children/${childExist.picture}`
-                );
-                if (fs.existsSync(existingImagePath)) {
-                    fs.unlinkSync(existingImagePath);
-                }
-            }
         }
 
-        const updatedChild = await prisma.children.update({
-            where: { id },
+        const updatedChild = await prisma.children.create({
             include: {
                 birth_history: true,
                 expert_examination: true,
@@ -323,92 +282,51 @@ export async function PUT(req: any, { params }: any) {
                 nick_name,
                 gender,
                 place_birth,
-                date_time_birth:
-                    date_time_birth !== undefined
-                        ? date_time_birth
-                            ? new Date(date_time_birth)
-                            : null
-                        : childExist.date_time_birth,
+                date_time_birth: date_time_birth
+                    ? new Date(date_time_birth)
+                    : null,
                 religion,
-                count_of_siblings,
+                count_of_siblings: parseInt(count_of_siblings) || null,
                 risk_category,
                 hearing_test,
                 parent: {
                     connect: connectParents,
-                    disconnect: disconnectParents,
                 },
                 birth_history: {
-                    upsert: {
-                        create: {
-                            healthy_pregnancy,
-                            pregnancy_illness,
-                            gestation_details,
-                            birthplace,
-                            birth_assistance,
-                            delivery_process,
-                            congenital_anomalies,
-                            first_food,
-                            formula_milk,
-                            immunization,
-                        },
-                        update: {
-                            healthy_pregnancy,
-                            pregnancy_illness,
-                            gestation_details,
-                            birthplace,
-                            birth_assistance,
-                            delivery_process,
-                            congenital_anomalies,
-                            first_food,
-                            formula_milk,
-                            immunization,
-                        },
+                    create: {
+                        healthy_pregnancy,
+                        pregnancy_illness,
+                        gestation_details,
+                        birthplace,
+                        birth_assistance,
+                        delivery_process,
+                        congenital_anomalies,
+                        first_food,
+                        formula_milk,
+                        immunization,
                     },
                 },
                 expert_examination: {
-                    upsert: {
-                        create: {
-                            pediatrician,
-                            rehabilitation,
-                            psychologist,
-                            therapist,
-                        },
-                        update: {
-                            pediatrician,
-                            rehabilitation,
-                            psychologist,
-                            therapist,
-                        },
+                    create: {
+                        pediatrician,
+                        rehabilitation,
+                        psychologist,
+                        therapist,
                     },
                 },
                 health_status: {
-                    upsert: {
-                        create: {
-                            serious_illness,
-                            current_diseases,
-                            treatment_location,
-                            treatment_duration,
-                            general_comparison,
-                            crawling_development,
-                            sitting_development,
-                            walking_development,
-                            first_words_age,
-                            speaking_fluency_age,
-                            bedwetting,
-                        },
-                        update: {
-                            serious_illness,
-                            current_diseases,
-                            treatment_location,
-                            treatment_duration,
-                            general_comparison,
-                            crawling_development,
-                            sitting_development,
-                            walking_development,
-                            first_words_age,
-                            speaking_fluency_age,
-                            bedwetting,
-                        },
+                    create: {
+                        serious_illness,
+                        current_diseases,
+                        treatment_location,
+                        treatment_duration,
+                        general_comparison,
+                        crawling_development,
+                        sitting_development,
+                        walking_development,
+                        first_words_age,
+                        speaking_fluency_age,
+                        bedwetting,
                     },
                 },
             },
@@ -434,6 +352,316 @@ export async function PUT(req: any, { params }: any) {
         await prisma.$disconnect();
     }
 }
+
+// export async function POST(req: any, { params }: any) {
+//     try {
+//         const id = parseInt(params.studentId);
+//         const data: ChildrenData = await req.json();
+
+//         const {
+//             teacher_id,
+//             parent_dad,
+//             parent_mother,
+//             parent_wali,
+//             full_name,
+//             nick_name,
+//             gender,
+//             place_birth,
+//             date_birth: date_time_birth,
+//             religion,
+//             count_of_siblings,
+//             risk_category,
+//             hearing: hearing_test,
+//             picture,
+//             // Birth History
+//             healthy_pregnancy,
+//             pregnancy_illness,
+//             gestation_details,
+//             birthplace,
+//             birth_assistance,
+//             delivery_process,
+//             congenital_anomalies,
+//             first_food,
+//             formula_milk,
+//             immunization,
+//             // Health Status
+//             pediatrician,
+//             rehabilitation,
+//             psychologist,
+//             therapist,
+//             // Expert Examination
+//             serious_illness,
+//             current_diseases,
+//             treatment_location,
+//             treatment_duration,
+//             general_comparison,
+//             crawling_development,
+//             sitting_development,
+//             walking_development,
+//             first_words_age,
+//             speaking_fluency_age,
+//             bedwetting,
+//         } = data;
+
+//         // Check if the child exists
+//         const childExist = await prisma.children.findUnique({
+//             where: { id },
+//         });
+
+//         if (teacher_id) {
+//             const teacherExist = await prisma.users.findUnique({
+//                 where: { id: parseInt(teacher_id) },
+//             });
+
+//             if (!teacherExist) {
+//                 return NextResponse.json(
+//                     { status: "error", message: "Teacher Not Found" },
+//                     { status: 404 }
+//                 );
+//             }
+//         } else {
+//             return NextResponse.json(
+//                 { status: "error", message: "Teacher Not Found" },
+//                 { status: 404 }
+//             );
+//         }
+
+//         if (!childExist) {
+//             return NextResponse.json(
+//                 { status: "error", message: "Child Not Found" },
+//                 { status: 404 }
+//             );
+//         }
+
+//         // Check if at least one parent is provided
+//         if (!parent_dad && !parent_mother && !parent_wali) {
+//             return NextResponse.json(
+//                 {
+//                     status: "error",
+//                     message: "At least one parent must be provided",
+//                 },
+//                 { status: 400 }
+//             );
+//         }
+
+//         // Create array to connect parents
+//         const connectParents: { id: number }[] = [];
+//         if (parent_dad) {
+//             const dad = await prisma.users.findUnique({
+//                 where: { id: parseInt(parent_dad), type: "ayah" },
+//             });
+//             if (!dad) {
+//                 return NextResponse.json(
+//                     { status: "error", message: "Parent (dad) not found" },
+//                     { status: 404 }
+//                 );
+//             }
+//             connectParents.push({ id: parseInt(parent_dad) });
+//         }
+//         if (parent_mother) {
+//             const mother = await prisma.users.findUnique({
+//                 where: { id: parseInt(parent_mother), type: "ibu" },
+//             });
+//             if (!mother) {
+//                 return NextResponse.json(
+//                     { status: "error", message: "Parent (mother) not found" },
+//                     { status: 404 }
+//                 );
+//             }
+//             connectParents.push({ id: parseInt(parent_mother) });
+//         }
+//         if (parent_wali) {
+//             const wali = await prisma.users.findUnique({
+//                 where: { id: parseInt(parent_wali), type: "wali" },
+//             });
+//             if (!wali) {
+//                 return NextResponse.json(
+//                     { status: "error", message: "Parent (wali) not found" },
+//                     { status: 404 }
+//                 );
+//             }
+//             connectParents.push({ id: parseInt(parent_wali) });
+//         }
+
+//         // Prepare the connect and disconnect arrays for parent
+//         const existingParents = await prisma.children.findUnique({
+//             where: { id },
+//             select: {
+//                 parent: {
+//                     select: {
+//                         id: true,
+//                     },
+//                 },
+//             },
+//         });
+
+//         const existingParentIds =
+//             existingParents?.parent.map((p) => p.id) || [];
+
+//         const disconnectParents = existingParentIds
+//             .filter(
+//                 (existingId) =>
+//                     !connectParents.some((cp: any) => cp.id === existingId)
+//             )
+//             .map((id) => ({ id }));
+
+//         // Update child data and include related data
+
+//         // if (typeof picture === "string") {
+//         //     // Do nothing, keep existing picture path
+//         // } else if (picture instanceof File) {
+//         let updatedPicture = childExist.picture;
+//         if (typeof picture === "string" && picture.startsWith("data:image")) {
+//             const base64Data = picture.replace(/^data:image\/\w+;base64,/, "");
+//             const buffer = Buffer.from(base64Data, "base64");
+//             const imageName = `${Date.now()}_${full_name}_image.png`;
+//             const fullPath = path.join(
+//                 process.cwd(),
+//                 "public",
+//                 `/uploads/children/${imageName}`
+//             );
+
+//             fs.writeFileSync(fullPath, buffer);
+//             updatedPicture = imageName;
+
+//             // Delete previous image if exists
+//             if (childExist.picture && childExist.picture !== updatedPicture) {
+//                 const existingImagePath = path.join(
+//                     process.cwd(),
+//                     "public",
+//                     `/uploads/children/${childExist.picture}`
+//                 );
+//                 if (fs.existsSync(existingImagePath)) {
+//                     fs.unlinkSync(existingImagePath);
+//                 }
+//             }
+//         }
+
+//         const updatedChild = await prisma.children.update({
+//             where: { id },
+//             include: {
+//                 birth_history: true,
+//                 expert_examination: true,
+//                 health_status: true,
+//             },
+//             data: {
+//                 teacher_id: teacher_id ? parseInt(teacher_id) : null,
+//                 full_name,
+//                 picture: updatedPicture,
+//                 nick_name,
+//                 gender,
+//                 place_birth,
+//                 date_time_birth:
+//                     date_time_birth !== undefined
+//                         ? date_time_birth
+//                             ? new Date(date_time_birth)
+//                             : null
+//                         : childExist.date_time_birth,
+//                 religion,
+//                 count_of_siblings,
+//                 risk_category,
+//                 hearing_test,
+//                 parent: {
+//                     connect: connectParents,
+//                     disconnect: disconnectParents,
+//                 },
+//                 birth_history: {
+//                     upsert: {
+//                         create: {
+//                             healthy_pregnancy,
+//                             pregnancy_illness,
+//                             gestation_details,
+//                             birthplace,
+//                             birth_assistance,
+//                             delivery_process,
+//                             congenital_anomalies,
+//                             first_food,
+//                             formula_milk,
+//                             immunization,
+//                         },
+//                         update: {
+//                             healthy_pregnancy,
+//                             pregnancy_illness,
+//                             gestation_details,
+//                             birthplace,
+//                             birth_assistance,
+//                             delivery_process,
+//                             congenital_anomalies,
+//                             first_food,
+//                             formula_milk,
+//                             immunization,
+//                         },
+//                     },
+//                 },
+//                 expert_examination: {
+//                     upsert: {
+//                         create: {
+//                             pediatrician,
+//                             rehabilitation,
+//                             psychologist,
+//                             therapist,
+//                         },
+//                         update: {
+//                             pediatrician,
+//                             rehabilitation,
+//                             psychologist,
+//                             therapist,
+//                         },
+//                     },
+//                 },
+//                 health_status: {
+//                     upsert: {
+//                         create: {
+//                             serious_illness,
+//                             current_diseases,
+//                             treatment_location,
+//                             treatment_duration,
+//                             general_comparison,
+//                             crawling_development,
+//                             sitting_development,
+//                             walking_development,
+//                             first_words_age,
+//                             speaking_fluency_age,
+//                             bedwetting,
+//                         },
+//                         update: {
+//                             serious_illness,
+//                             current_diseases,
+//                             treatment_location,
+//                             treatment_duration,
+//                             general_comparison,
+//                             crawling_development,
+//                             sitting_development,
+//                             walking_development,
+//                             first_words_age,
+//                             speaking_fluency_age,
+//                             bedwetting,
+//                         },
+//                     },
+//                 },
+//             },
+//         });
+
+//         return NextResponse.json(
+//             {
+//                 status: "success",
+//                 message: "Child Updated Successfully",
+//                 child: updatedChild,
+//             },
+//             { status: 200 }
+//         );
+//     } catch (error: any) {
+//         return NextResponse.json(
+//             {
+//                 status: "error",
+//                 message: error.message || "Internal Server Error",
+//             },
+//             { status: 500 }
+//         );
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// }
 
 // export async function POST(req: NextRequest) {
 //     try {

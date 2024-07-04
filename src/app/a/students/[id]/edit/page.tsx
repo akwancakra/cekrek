@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BiodataWrapper from "@/components/elements/child-add/BiodataWrapper";
-import BirthWrapper from "@/components/elements/child-add/BirthWrapper";
-import ExpertWrapper from "@/components/elements/child-add/ExpertWrapper";
-import HealthWrapper from "@/components/elements/child-add/HealthWrapper";
+import BiodataWrapper from "@/components/elements/child-form-admin/BiodataWrapper";
+import BirthWrapper from "@/components/elements/child-form-admin/BirthWrapper";
+import ExpertWrapper from "@/components/elements/child-form-admin/ExpertWrapper";
+import HealthWrapper from "@/components/elements/child-form-admin/HealthWrapper";
 import { useLocalStorage } from "usehooks-ts";
 import PreviewData from "@/components/elements/child-add/PreviewData";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -29,7 +29,7 @@ export const getImageUrl = (image: any) => {
     }
 };
 
-export default function AddStudentPage() {
+export default function EditStudentPage() {
     const [currentStage, setCurrentStage] = useState(1);
     // const [isLoading, setIsLoading] = useState(false);
     const [value, setValue, removeValue] = useLocalStorage<ChildrenData>(
@@ -47,7 +47,7 @@ export default function AddStudentPage() {
     }: {
         data: { status: string; child: Child };
         isLoading: boolean;
-    } = useSWR(`/api/teachers/${1}/students/${id}`, fetcher);
+    } = useSWR(`/api/children/${id}`, fetcher);
 
     const stages = ["biodata", "birth-history", "expert", "health", "preview"];
 
@@ -91,7 +91,7 @@ export default function AddStudentPage() {
     const handleResetValues = ({ push }: { push?: boolean }) => {
         removeValue();
         if (push) {
-            router.push("/t");
+            router.push("/a/students");
         }
     };
 
@@ -213,15 +213,15 @@ export default function AddStudentPage() {
     }, [id]);
 
     useEffect(() => {
-        console.log("Main: ", data);
         const childData = data?.child;
         if (childData) {
             removeValue();
 
-            console.log(value);
+            // console.log(value);
 
             const biodata = {
                 id: childData.id.toString(),
+                teacher_id: childData.teacher_id?.toString() || "",
                 risk_category: childData.risk_category || "",
                 parent_dad:
                     childData.parent
@@ -304,7 +304,7 @@ export default function AddStudentPage() {
                 healthStatus,
             });
 
-            console.log("Value: ", value);
+            // console.log("Value: ", value);
         }
     }, [data?.child]);
 
@@ -312,22 +312,22 @@ export default function AddStudentPage() {
     //     mutate();
     // }, []);
 
-    const getStageComponent = () => {
-        if (!data?.child || isLoading)
-            return (
-                <div className="flex min-h-screen justify-center items-center">
-                    <div className="flex items-center gap-1">
-                        <span className="loading loading-spinner loading-sm"></span>
-                        <span>Memuat data...</span>
-                    </div>
+    if (!data?.child || isLoading) {
+        return (
+            <div className="flex min-h-screen justify-center items-center">
+                <div className="flex items-center gap-1">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    <span>Memuat data...</span>
                 </div>
-            );
+            </div>
+        );
+    }
 
+    const getStageComponent = () => {
         switch (currentStage) {
             case 1:
                 return (
                     <BiodataWrapper
-                        // handleBackStage={handleBackStage}
                         handleNextStage={handleNextStage}
                         saveAllAnswers={saveAllAnswers}
                         localData={value}
@@ -377,7 +377,7 @@ export default function AddStudentPage() {
         <>
             <section className="mx-auto max-w-7xl">
                 <p className="font-semibold tracking-tighter text-xl sm:text-2xl">
-                    Ubah siswa {value?.biodata?.full_name}
+                    Ubah siswa {value?.biodata?.full_name || "Nama"}
                 </p>
                 <div className="divider my-1"></div>
 

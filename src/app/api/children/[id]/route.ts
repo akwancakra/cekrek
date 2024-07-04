@@ -79,6 +79,14 @@ export async function GET(req: any, { params }: any) {
             );
         }
 
+        if (child?.teacher_id) {
+            const teacher = await prisma.users.findUnique({
+                where: { id: child.teacher_id },
+            });
+
+            child.teacher = teacher;
+        }
+
         // Get the latest child_assesment date for the current child
         const lastAssesment = await prisma.child_assesment.findFirst({
             where: { children_id: child.id },
