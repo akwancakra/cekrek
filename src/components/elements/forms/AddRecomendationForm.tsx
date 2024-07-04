@@ -7,13 +7,20 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Form, Field, ErrorMessage, FormikProvider, FormikProps } from "formik";
 
 interface Props {
-    formik: FormikProps<RecomendationAdd>;
+    formik: FormikProps<Recommendation>;
+    assessmentFails: AssessmentAnswer[];
 }
 
-type RecomendationAdd = {
+type Recommendation = {
+    id?: number;
+    teacher_id?: string | number;
+    is_main: boolean;
+    assesment_number: string | number;
     title: string;
     description: string;
     icon?: string;
@@ -21,11 +28,60 @@ type RecomendationAdd = {
     risk_category?: "other" | "rendah" | "sedang" | "tinggi";
 };
 
-export const AddRecomendationForm = ({ formik }: Props) => {
+export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
     return (
         <FormikProvider value={formik}>
             <Form className="w-full space-y-6">
                 <div className="flex flex-col">
+                    <div>
+                        <div className="label ps-0">
+                            <span className="label-text">
+                                Nomor Asesmen{" "}
+                                {formik.errors.assesment_number && (
+                                    <span className="text-red-500 text-xs italic">
+                                        *wajib dipilih
+                                    </span>
+                                )}
+                            </span>
+                        </div>
+                        <Select
+                            value={
+                                typeof formik.values.assesment_number ===
+                                "string"
+                                    ? formik.values.assesment_number
+                                    : formik.values.assesment_number?.toString()
+                            }
+                            onValueChange={(value) =>
+                                formik.setFieldValue("assesment_number", value)
+                            }
+                        >
+                            <SelectTrigger
+                                name="assesment_number"
+                                onBlur={formik.handleBlur}
+                                className="w-full max-w-[480px]"
+                            >
+                                <SelectValue placeholder="Pilih Nomor Asesmen" />
+                            </SelectTrigger>
+                            <SelectContent className="max-w-md">
+                                <ScrollArea className="max-h-40">
+                                    {assessmentFails.map((fail, idx) => (
+                                        <SelectItem
+                                            key={idx}
+                                            value={fail?.assesment_id}
+                                        >
+                                            Asesmen {fail?.assesment_id}:{" "}
+                                            {fail?.assesment?.question}
+                                        </SelectItem>
+                                    ))}
+                                </ScrollArea>
+                            </SelectContent>
+                        </Select>{" "}
+                        <ErrorMessage
+                            name="assesment_number"
+                            component="div"
+                            className="text-small text-red-500"
+                        />
+                    </div>
                     <div>
                         <label className="form-control w-full">
                             <div className="label ps-0">
@@ -33,7 +89,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                                     Judul{" "}
                                     {formik.errors.title && (
                                         <span className="text-red-500 text-xs italic">
-                                            *wajib dipilih
+                                            *wajib diisi
                                         </span>
                                     )}
                                 </span>
@@ -56,7 +112,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                                 Deskripsi{" "}
                                 {formik.errors.description && (
                                     <span className="text-red-500 text-xs italic">
-                                        *wajib dipilih
+                                        *wajib diisi
                                     </span>
                                 )}
                             </span>
@@ -85,7 +141,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                                     Frekuensi{" "}
                                     {formik.errors.frequency && (
                                         <span className="text-red-500 text-xs italic">
-                                            *wajib dipilih
+                                            *wajib diisi
                                         </span>
                                     )}
                                 </span>
@@ -120,7 +176,7 @@ export const AddRecomendationForm = ({ formik }: Props) => {
                             }
                         >
                             <SelectTrigger
-                                name="gender"
+                                name="risk_category"
                                 className="w-full"
                                 onBlur={formik.handleBlur}
                             >

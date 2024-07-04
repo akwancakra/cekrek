@@ -4,13 +4,34 @@ import AddAccountDialog from "@/components/elements/alerts/AddAccountDialog";
 import AddAccountDrawer from "@/components/elements/alerts/AddAccountDrawer";
 import UsersTable from "@/components/elements/tables-and-grids/UsersTable";
 import { Button } from "@/components/ui/button";
+import { User } from "@/types/user.types";
+import { fetcher } from "@/utils/fetcher";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import useSWR from "swr";
 import { useMediaQuery } from "usehooks-ts";
 
 export default function UsersListAdmin() {
-    const isDesktop = useMediaQuery("(min-width: 768px)");
+    // const isDesktop = useMediaQuery("(min-width: 768px)");
+    const [keyword, setKeyword] = useState("");
+    const [users, setUsers] = useState<User[]>([]);
+
+    const {
+        data,
+        isLoading,
+    }: {
+        data: { status: string; users: User[] };
+        isLoading: boolean;
+    } = useSWR("/api/users", fetcher);
+
+    useEffect(() => {
+        if (!isLoading && data?.users) {
+            setUsers(data?.users || []);
+        }
+    }, [data, isLoading]);
 
     const addAccountButton = () => {
-        console.log("Account Add Button Clicked!");
+        console.log("Account Add Button Clicked");
     };
 
     return (
@@ -31,11 +52,31 @@ export default function UsersListAdmin() {
                             Daftar Akun
                         </p>
 
-                        <AddAccountDrawer addAccountButton={addAccountButton} />
+                        <Button variant={"outline"} asChild>
+                            <Link
+                                href="/a/users/add"
+                                className="items-center gap-1 inline-flex sm:hidden group-[.open]:inline-flex md:group-[.open]:hidden"
+                            >
+                                <span>Tambah Akun</span>{" "}
+                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                                    person_add
+                                </span>
+                            </Link>
+                        </Button>
                     </div>
 
                     <div className="flex items-center gap-2">
-                        <AddAccountDialog addAccountButton={addAccountButton} />
+                        <Button variant={"outline"} asChild>
+                            <Link
+                                href="/a/users/add"
+                                className="items-center gap-1 hidden sm:inline-flex group-[.open]:hidden md:group-[.open]:inline-flex"
+                            >
+                                <span>Tambah Akun</span>{" "}
+                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                                    person_add
+                                </span>
+                            </Link>
+                        </Button>
                         <form className="w-full grow">
                             <label className="input w-full input-bordered rounded-lg flex items-center gap-2 py-2 px-3 text-sm h-fit min-h-fit sm:w-fit group-[.open]:w-full md:group-[.open]:w-fit">
                                 <input
@@ -43,6 +84,8 @@ export default function UsersListAdmin() {
                                     className="grow"
                                     placeholder="Search"
                                     name="keyword"
+                                    value={keyword}
+                                    onChange={(e) => setKeyword(e.target.value)}
                                 />
                                 <Button
                                     variant={"outline"}
@@ -57,7 +100,15 @@ export default function UsersListAdmin() {
                     </div>
                 </div>
 
-                <UsersTable />
+                {isLoading ? (
+                    <>
+                        <div>
+                            <div className="skeleton w-full h-72 rounded-lg"></div>
+                        </div>
+                    </>
+                ) : (
+                    <UsersTable users={users} keyword={keyword} />
+                )}
             </section>
         </>
     );

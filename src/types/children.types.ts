@@ -23,6 +23,7 @@ export type Child = {
         | "pendengaran di bawah normal"
         | "hasil tidak menyakinkan atau tidak definitif";
     last_assesment?: string;
+    teacher?: User[];
     parent?: User[];
     child_recommendations?: ChildRecommendation[];
     monitoringChildRecommendations?: MonitorRecommendationWrap[];
@@ -30,6 +31,8 @@ export type Child = {
     expert_examination?: ExpertExamination;
     health_status?: HealthStatus;
     child_assesments?: AssesmentWrap[];
+    finishedRecommendations: boolean;
+    unfinishedRecommendations: boolean;
 };
 
 export type AssesmentWrap = {

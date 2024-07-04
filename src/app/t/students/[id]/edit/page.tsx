@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { Child } from "@/types/children.types";
+import useProfile from "@/utils/useProfile";
+import { getImageUrl } from "@/utils/converters";
 
 export interface ChildrenData {
     biodata: {
@@ -66,18 +68,6 @@ export interface ChildrenData {
     };
 }
 
-export const getImageUrl = (image: any) => {
-    if (image instanceof File) {
-        return URL.createObjectURL(image);
-    } else if (typeof image === "string" && image.startsWith("data:image")) {
-        return image; // This handles base64 images directly
-    } else if (typeof image === "string" && image) {
-        return `/uploads/children/${image}`;
-    } else {
-        return "/static/images/user-default.jpg";
-    }
-};
-
 export default function AddStudentPage() {
     const [currentStage, setCurrentStage] = useState(1);
     // const [isLoading, setIsLoading] = useState(false);
@@ -85,6 +75,7 @@ export default function AddStudentPage() {
         "children-data-edit",
         {} as ChildrenData
     );
+    const profile = useProfile();
 
     const router = useRouter();
     const { id } = useParams();
@@ -93,12 +84,10 @@ export default function AddStudentPage() {
     const {
         data,
         isLoading,
-        mutate,
     }: {
         data: { status: string; child: Child };
         isLoading: boolean;
-        mutate: () => void;
-    } = useSWR(`/api/teachers/${1}/students/${id}`, fetcher);
+    } = useSWR(`/api/teachers/${profile?.id}/students/${id}`, fetcher);
 
     const stages = ["biodata", "birth-history", "expert", "health", "preview"];
 
@@ -168,7 +157,7 @@ export default function AddStudentPage() {
 
         // Helper functions to validate each stage
         const validateBiodata = () => {
-            const biodata = data.biodata || {};
+            const biodata = data.biodata || ({} as any);
             return (
                 biodata.full_name &&
                 biodata.gender &&
@@ -179,19 +168,19 @@ export default function AddStudentPage() {
         };
 
         const validateBirthHistory = () => {
-            const birthHistory = data.birthHistory || {};
+            const birthHistory = data.birthHistory || ({} as any);
             return Object.values(birthHistory).every((value) => value !== "");
         };
 
         const validateExpertExamination = () => {
-            const expertExamination = data.expertExamination || {};
+            const expertExamination = data.expertExamination || ({} as any);
             return Object.values(expertExamination).every(
                 (value) => value !== ""
             );
         };
 
         const validateHealthStatus = () => {
-            const healthStatus = data.healthStatus || {};
+            const healthStatus = data.healthStatus || ({} as any);
             return (
                 healthStatus.serious_illness &&
                 healthStatus.treatment_location &&
@@ -363,17 +352,18 @@ export default function AddStudentPage() {
     //     mutate();
     // }, []);
 
-    const getStageComponent = () => {
-        if (!data?.child || isLoading)
-            return (
-                <div className="flex min-h-screen justify-center items-center">
-                    <div className="flex items-center gap-1">
-                        <span className="loading loading-spinner loading-sm"></span>
-                        <span>Memuat data...</span>
-                    </div>
+    if (!data?.child || isLoading) {
+        return (
+            <div className="flex min-h-screen justify-center items-center">
+                <div className="flex items-center gap-1">
+                    <span className="loading loading-spinner loading-sm"></span>
+                    <span>Memuat data...</span>
                 </div>
-            );
+            </div>
+        );
+    }
 
+    const getStageComponent = () => {
         switch (currentStage) {
             case 1:
                 return (

@@ -31,11 +31,11 @@ import { getRiskCategory } from "@/utils/converters";
 import { Child } from "@/types/children.types";
 import axios from "axios";
 import { toast } from "sonner";
-import { Recommendation } from "@/types/recommendation.type";
 import { useParams, useRouter } from "next/navigation";
 import { AddRecomendationForm } from "../forms/AddRecomendationForm";
 import * as Yup from "yup";
 import { FormikProps, useFormik } from "formik";
+import useProfile from "@/utils/useProfile";
 
 interface AssessmentGetRecommendationsProps {
     child: Child;
@@ -45,7 +45,11 @@ interface AssessmentGetRecommendationsProps {
     isLoading?: boolean;
 }
 
-type RecomendationAdd = {
+type Recommendation = {
+    id?: number;
+    teacher_id?: string | number;
+    is_main: boolean;
+    assesment_number: string | number;
     title: string;
     description: string;
     icon?: string;
@@ -54,15 +58,20 @@ type RecomendationAdd = {
 };
 
 const formSchema = Yup.object().shape({
+    teacher_id: Yup.string(),
     title: Yup.string().required("Judul wajib diisi"),
+    assesment_number: Yup.string(),
     description: Yup.string(), //.required("Deskripsi wajib diisi")
     icon: Yup.string(),
     frequency: Yup.string().required("Frekuensi wajib diisi"),
     risk_category: Yup.string().required("Kategori risiko wajib diisi"),
 });
 
-const initialValues: RecomendationAdd = {
+const initialValues: Recommendation = {
+    teacher_id: "",
+    is_main: false,
     title: "",
+    assesment_number: "",
     description: "",
     frequency: "",
     icon: "",
@@ -77,15 +86,19 @@ export default function AssessmentGetRecommendations({
     isLoading,
 }: AssessmentGetRecommendationsProps) {
     const isDesktop = useMediaQuery("(min-width: 768px)");
-    const [isSubmit, setIsSubmit] = useState(false);
+    const [isSubmit, setIsSubmit] = useState<boolean>(false);
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
     const [riskCategory, setRiskCategory] = useState<string>("");
     const [newRecommendations, setNewRecommendations] = useState<
-        RecomendationAdd[]
+        Recommendation[]
     >([]);
     const [recommendations, setRecommendations] = useState<Recommendation[]>(
         []
     );
+    const [assessmentFails, setAssessmentFails] = useState<AssessmentAnswer[]>(
+        []
+    );
+    const profile = useProfile();
 
     const { id } = useParams();
     const { push } = useRouter();
@@ -168,7 +181,7 @@ export default function AssessmentGetRecommendations({
         };
     };
 
-    // const transformRecomendationAdd = (data: RecomendationAdd[]) => {
+    // const transformRecommendation = (data: Recommendation[]) => {
     //     return data.map((recommendation) => ({
     //         title: recommendation.title,
     //         description: recommendation.description,
@@ -187,11 +200,20 @@ export default function AssessmentGetRecommendations({
         );
     };
 
+    const removeNewRecommendation = (id: string) => {
+        setNewRecommendations((prevNewRecommendations) =>
+            prevNewRecommendations.filter(
+                (item) => item.assesment_number !== id
+            )
+        );
+    };
+
     const handleSubmitRecommendation = async () => {
         setIsLoadingPost(true);
 
         const data = createDataObjectFinal();
         let finalData = {
+            teacher_id: profile?.id,
             child_id: data.child_id,
             date_time: data.date_time,
             assessmentsAnswer: data.assessmentsAnswer,
@@ -200,6 +222,8 @@ export default function AssessmentGetRecommendations({
                 ...newRecommendations,
             ],
         };
+
+        console.log("FINAL: ", finalData);
 
         const submitPromise = new Promise<void>(async (resolve, reject) => {
             try {
@@ -215,6 +239,7 @@ export default function AssessmentGetRecommendations({
                 loading: "Mengirim rekomendasi...",
                 success: () => {
                     push(`/t/students/${id}`);
+                    removeAssessmentAnswer();
                     return "Berhasil mengirim rekomendasi!";
                 },
                 error: (err) => {
@@ -229,10 +254,8 @@ export default function AssessmentGetRecommendations({
                         return "Terjadi kesalahan";
                     }
                 },
+                duration: 1000,
             });
-
-            removeAssessmentAnswer();
-            push(`/t/students/${child?.id}`);
         } catch (error: any) {
             console.error("Error sending recommendation:", error.message);
         } finally {
@@ -278,10 +301,20 @@ export default function AssessmentGetRecommendations({
         initialValues,
         validationSchema: formSchema,
         onSubmit: async (values) => {
-            setNewRecommendations([...newRecommendations, values]);
+            const newValues = {
+                ...values,
+                teacher_id:
+                    typeof profile?.id === "number"
+                        ? profile.id.toString()
+                        : profile?.id,
+            };
+
+            setNewRecommendations([...newRecommendations, newValues]);
+            // setRecommendations([...recommendations, values]);
             // const data = createDataObjectFinal();
-            // const transformRecomendationAdd
-            // console.log([...newRecommendations, values]);
+            // const transformRecommendation
+
+            console.log([...newRecommendations, values], recommendations);
 
             formik.resetForm();
         },
@@ -300,6 +333,17 @@ export default function AssessmentGetRecommendations({
             fetchRecommendations();
         }
     }, [riskCategory]);
+
+    useEffect(() => {
+        if (assessmentAnswer.length > 0) {
+            const failedAssessments = assessmentAnswer.filter((item) => {
+                return item.answer === "tidak" || item.answer === "gagal";
+            });
+            setAssessmentFails(failedAssessments);
+        } else {
+            setAssessmentFails([]);
+        }
+    }, [assessmentAnswer]);
 
     return (
         <section className="mx-auto max-w-7xl flex flex-col justify-center items-center w-full h-full gap-2 p-2">
@@ -326,12 +370,18 @@ export default function AssessmentGetRecommendations({
                     {isDesktop ? (
                         <RecomendationFormDesktop
                             formik={formik}
-                            isSubmit={isSubmit || isLoadingPost || isLoading}
+                            isSubmit={
+                                isSubmit || isLoadingPost || isLoading || false
+                            }
+                            assessmentFails={assessmentFails}
                         />
                     ) : (
                         <RecomendationForm
                             formik={formik}
-                            isSubmit={isSubmit || isLoadingPost || isLoading}
+                            isSubmit={
+                                isSubmit || isLoadingPost || isLoading || false
+                            }
+                            assessmentFails={assessmentFails}
                         />
                     )}
                     <Button
@@ -379,6 +429,16 @@ export default function AssessmentGetRecommendations({
                                 onDelete={removeRecommendation}
                             />
                         ))}
+
+                    {newRecommendations &&
+                        newRecommendations.length > 0 &&
+                        newRecommendations.map((recommendation, idx) => (
+                            <CreateRecomendationCard
+                                key={idx}
+                                recommendation={recommendation}
+                                onDelete={removeNewRecommendation}
+                            />
+                        ))}
                 </div>
             </div>
             <div className="flex gap-3 w-full mb-3 justify-between sm:justify-end">
@@ -393,27 +453,59 @@ export default function AssessmentGetRecommendations({
                     </span>
                     <span>Kembali</span>
                 </Button>
-                <Button
-                    variant={"outline"}
-                    className="gap-1"
-                    onClick={handleSubmitRecommendation}
-                    disabled={isLoading || isLoadingPost}
-                >
-                    <span>Selesai &amp; Kirim</span>
-                    <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                        check
-                    </span>
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant={"outline"}
+                            className="gap-1"
+                            disabled={isLoading || isLoadingPost}
+                        >
+                            <span>Selesai &amp; Kirim</span>
+                            <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                                check
+                            </span>
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent className="p-0">
+                        <ScrollArea className="max-h-[80vh] p-3">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Apakah kamu yakin?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Pastikan data yang akan dikirimkan sudah
+                                    benar dan sesuai
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter className="mt-3">
+                                <AlertDialogCancel>Kembali</AlertDialogCancel>
+                                <AlertDialogAction asChild>
+                                    {/* <Button>Apus</Button> */}
+
+                                    <Button
+                                        variant={"default"}
+                                        onClick={handleSubmitRecommendation}
+                                        disabled={isLoading || isLoadingPost}
+                                    >
+                                        Submit
+                                    </Button>
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </ScrollArea>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </section>
     );
 }
 
 const RecomendationForm = ({
+    assessmentFails,
     formik,
     isSubmit,
 }: {
-    formik: FormikProps<RecomendationAdd>;
+    assessmentFails: AssessmentAnswer[];
+    formik: FormikProps<Recommendation>;
     isSubmit: boolean;
 }) => {
     const [open, setOpen] = useState(false);
@@ -434,10 +526,13 @@ const RecomendationForm = ({
             <DrawerContent className="p-0">
                 <ScrollArea className="p-0 max-h-svh overflow-auto">
                     <DrawerHeader className="text-left">
-                        <DrawerTitle>Edit profile</DrawerTitle>
+                        <DrawerTitle>Tambah Rekomendasi</DrawerTitle>
                         <DrawerDescription>
                             <div>
-                                <AddRecomendationForm formik={formik} />
+                                <AddRecomendationForm
+                                    formik={formik}
+                                    assessmentFails={assessmentFails}
+                                />
                             </div>
                         </DrawerDescription>
                     </DrawerHeader>
@@ -466,10 +561,12 @@ const RecomendationForm = ({
 };
 
 const RecomendationFormDesktop = ({
+    assessmentFails,
     formik,
     isSubmit,
 }: {
-    formik: FormikProps<RecomendationAdd>;
+    assessmentFails: AssessmentAnswer[];
+    formik: FormikProps<Recommendation>;
     isSubmit: boolean;
 }) => {
     return (
@@ -490,7 +587,10 @@ const RecomendationFormDesktop = ({
                     <AlertDialogHeader className="m-1">
                         <AlertDialogTitle>Tambah Rekomendasi</AlertDialogTitle>
                         <div className="divider my-1"></div>
-                        <AddRecomendationForm formik={formik} />
+                        <AddRecomendationForm
+                            formik={formik}
+                            assessmentFails={assessmentFails}
+                        />
                         <AlertDialogDescription></AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

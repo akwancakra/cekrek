@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { useRef } from "react";
+import useProfile from "@/utils/useProfile";
 
 const SidebarParent = ({
     isOpen,
@@ -10,15 +10,7 @@ const SidebarParent = ({
     isOpen: boolean;
     toggleSidebar: () => void;
 }) => {
-    const contactModal = useRef<HTMLDialogElement>(null);
-    const { data: session } = useSession();
-
-    const showModal = () => {
-        if (contactModal.current) {
-            contactModal.current.showModal();
-        }
-    };
-
+    const profile = useProfile();
     const pathname = usePathname();
 
     return (
@@ -126,7 +118,7 @@ const SidebarParent = ({
                         <div className="flex items-center flex-nowrap">
                             <div>
                                 <div className="text-sm whitespace-nowrap">
-                                    {session?.user?.teacherName ?? "Admin Name"}
+                                    {profile?.name || "Anda"}
                                 </div>
                                 <div className="text-xs whitespace-nowrap">
                                     Orang Tua

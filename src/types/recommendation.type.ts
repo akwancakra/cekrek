@@ -2,6 +2,7 @@ import { ChildRecommendation } from "./childRecommendation.type";
 
 export type Recommendation = {
     id: number;
+    teacher_id?: number;
     assesment_number: number;
     is_main: boolean;
     title: string;
@@ -10,4 +11,5 @@ export type Recommendation = {
     frequency?: string;
     risk_category?: "rendah" | "sedang" | "tinggi";
     children?: ChildRecommendation[];
+    isFinished?: boolean;
 };

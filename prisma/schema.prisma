@@ -55,6 +55,7 @@ model children {
   expert_examination    expert_examination?
   health_status         health_status?
   child_assesments      child_assesment[]
+  // monitor_child_recommendations monitor_child_recommendation[]
 }
 
 model birth_history {
@@ -157,10 +158,12 @@ model child_recommendations {
 
 model monitor_child_recommendation {
   id                      Int                   @id @default(autoincrement())
+  // teacher_id              Int?
   child_recommendation_id Int
   date_time               DateTime              @db.Date
   is_done                 Boolean               @default(false)
   with_whom               String? // Dengan siapa? (orang tua, guru)
+  // teacher                 users?                @relation(fields: [teacher_id], references: [id])
   child_recommendations   child_recommendations @relation(fields: [child_recommendation_id], references: [id])
 }
 
@@ -175,6 +178,7 @@ model assesments {
 
 model child_assesment {
   id             Int      @id @default(autoincrement())
+  teacher_id    Int?
   assesment_type String   @default("awal") // awal, follow-up (enum)
   children_id    Int
   assesment_id   Int

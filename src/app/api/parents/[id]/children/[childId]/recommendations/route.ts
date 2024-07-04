@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { getSession } from "next-auth/react";
 import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
@@ -10,7 +11,7 @@ export async function GET(req: any, { params }: any) {
         const skip = url?.searchParams?.get("skip") || "0";
         const childId = parseInt(params.childId);
         const date: string | Date =
-            url?.searchParams?.get("date") || new Date();
+            url?.searchParams?.get("date") || new Date().toLocaleDateString();
 
         // Get the date from params and create start and end of the day
         const startDate = new Date(date);
@@ -41,23 +42,39 @@ export async function GET(req: any, { params }: any) {
             },
         });
 
-        // Menghitung finishedRecommendations berdasarkan is_done
+        // Menghitung finishedRecommendations dan unfinishedRecommendations oleh orang tua
         const finishedRecommendations = monitors.filter(
-            (monitor) => monitor.is_done
+            (monitor) => monitor.is_done && monitor.with_whom === "parent"
         ).length;
 
         const unfinishedRecommendations =
             child.child_recommendations.length - finishedRecommendations;
+
+        // Menghitung finishedRecommendations dan unfinishedRecommendations oleh guru
+        const finishedRecommendationsByTeacher = monitors.filter(
+            (monitor) => monitor.is_done && monitor.with_whom === "teacher"
+        ).length;
+
+        const unfinishedRecommendationsByTeacher =
+            child.child_recommendations.length -
+            finishedRecommendationsByTeacher;
 
         // Process and combine the recommendations and monitors
         const processed_recommendations = {
             ...child,
             child_recommendations: child.child_recommendations.map((rec) => ({
                 ...rec,
-                isFinished: monitors.some(
+                isFinishedByParent: monitors.some(
                     (monitor) =>
                         monitor.child_recommendations.id === rec.id &&
-                        monitor.is_done
+                        monitor.is_done &&
+                        monitor.with_whom === "parent"
+                ),
+                isFinishedByTeacher: monitors.some(
+                    (monitor) =>
+                        monitor.child_recommendations.id === rec.id &&
+                        monitor.is_done &&
+                        monitor.with_whom === "teacher"
                 ),
             })),
             monitor_child_recommendation: monitors.map((monitor) => ({
@@ -74,8 +91,10 @@ export async function GET(req: any, { params }: any) {
                         // tambahkan properti lain yang Anda perlukan
                     })),
             })),
-            unfinishedRecommendations,
             finishedRecommendations,
+            unfinishedRecommendations,
+            finishedRecommendationsByTeacher,
+            unfinishedRecommendationsByTeacher,
         };
 
         return NextResponse.json(

@@ -38,10 +38,9 @@ export default function DeleteAccountDialog({
                     <AlertDialogHeader>
                         <AlertDialogTitle>Apakah kamu yakin?</AlertDialogTitle>
                         <AlertDialogDescription>
-                            Ini akan menghapus data akunmu{" "}
-                            <span className="font-semibold">Dwiky Putra</span>{" "}
-                            dan tidak bisa dikembalikan, dan berikut rincian
-                            data yang akan dihapus:
+                            Ini akan menghapus data akunmu dan tidak bisa
+                            dikembalikan, dan berikut rincian data yang akan
+                            dihapus:
                             <span className="block mt-1">
                                 &gt; Data profil orang tua
                             </span>

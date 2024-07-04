@@ -12,6 +12,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import { toast } from "sonner";
+import { getImageUrl } from "@/utils/converters";
 
 export interface ChildrenData {
     biodata: {
@@ -73,13 +74,6 @@ export default function AddStudentPage() {
     const searchParams = useSearchParams();
 
     const stages = ["biodata", "birth-history", "expert", "health", "preview"];
-
-    const getImageUrl = (image: any) => {
-        if (image instanceof File) {
-            return URL.createObjectURL(image);
-        }
-        return image || "/static/images/user-default.jpg";
-    };
 
     const handleNextStage = () => {
         if (currentStage !== 5) {
@@ -186,7 +180,7 @@ export default function AddStudentPage() {
 
         // Helper functions to validate each stage
         const validateBiodata = () => {
-            const biodata = data.biodata || {};
+            const biodata = data.biodata || ({} as any);
             return (
                 biodata.full_name &&
                 biodata.gender &&
@@ -197,19 +191,19 @@ export default function AddStudentPage() {
         };
 
         const validateBirthHistory = () => {
-            const birthHistory = data.birthHistory || {};
+            const birthHistory = data.birthHistory || ({} as any);
             return Object.values(birthHistory).every((value) => value !== "");
         };
 
         const validateExpertExamination = () => {
-            const expertExamination = data.expertExamination || {};
+            const expertExamination = data.expertExamination || ({} as any);
             return Object.values(expertExamination).every(
                 (value) => value !== ""
             );
         };
 
         const validateHealthStatus = () => {
-            const healthStatus = data.healthStatus || {};
+            const healthStatus = data.healthStatus || ({} as any);
             return (
                 healthStatus.serious_illness &&
                 healthStatus.treatment_location &&

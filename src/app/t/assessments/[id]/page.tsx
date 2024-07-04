@@ -28,9 +28,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import ExcelAssessmentStudent from "@/components/elements/exports/ExcelAssessmentStudent";
 import { PDFAssessmentStudent } from "@/components/elements/exports/PDFAssessmentStudent";
+import useProfile from "@/utils/useProfile";
 
 export default function AssessmentDetail({}) {
     const [data, setData] = useState<Child>();
+    const profile = useProfile();
 
     const searchParams = useSearchParams();
     const date = searchParams.get("date");
@@ -40,7 +42,7 @@ export default function AssessmentDetail({}) {
         data: childAssesment,
         isLoading,
     }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
-        `/api/teachers/${1}/assesments/${id}?date=${date}`,
+        `/api/teachers/${profile?.id}/assesments/${id}?date=${date}`,
         fetcher
     );
 
@@ -353,8 +355,9 @@ export default function AssessmentDetail({}) {
                                     <div className="flex justify-between gap-2 mb-3">
                                         <div>
                                             <p className="font-medium tracking-tight text-medium">
-                                                Asesmen Awal
+                                                Asesmen
                                             </p>
+                                            {/* Awal */}
                                             <p className="text-gray-400 text-small -mb-1">
                                                 {"Skor: " +
                                                     getTotalChildAssessment({
@@ -389,7 +392,7 @@ export default function AssessmentDetail({}) {
                                             </span>
                                         </Button>
                                     </div>
-                                    <div className="flex justify-between gap-2">
+                                    {/* <div className="flex justify-between gap-2">
                                         <div>
                                             <p className="font-medium tracking-tight text-medium">
                                                 Asesmen Follow Up
@@ -427,7 +430,7 @@ export default function AssessmentDetail({}) {
                                                 info
                                             </span>
                                         </Button>
-                                    </div>
+                                    </div> */}
                                 </div>
 
                                 <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
@@ -436,8 +439,9 @@ export default function AssessmentDetail({}) {
                                             Skoring Soal
                                         </p>
                                         <p className="text-large font-semibold tracking-tight">
-                                            Asesmen Awal
+                                            Asesmen
                                         </p>
+                                        {/* Awal */}
                                     </div>
                                     <div className="divider my-1" />
                                     {!childAssessmentIsExist({
@@ -460,7 +464,7 @@ export default function AssessmentDetail({}) {
                                     })}
                                 </div>
 
-                                <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
+                                {/* <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
                                     <div className="">
                                         <p className="text-small text-gray-400 -mb-1">
                                             Skoring Soal
@@ -488,7 +492,7 @@ export default function AssessmentDetail({}) {
                                                 ?.assesments || [],
                                         type: "follow up",
                                     })}
-                                </div>
+                                </div> */}
 
                                 {/* <div className="border border-gray-300 p-2 rounded-lg my-3">
                                     <p className="text-large font-semibold tracking-tight">
@@ -570,13 +574,14 @@ const ChildRecommendationCard = ({
     return (
         <>
             {childRecommendations.map((chrec) => {
-                if (chrec?.recommendation) {
+                // recommendation -> recommendations
+                if (chrec?.recommendations) {
                     return (
                         <RecomendationCard
                             key={chrec.id}
                             className={`mb-2`}
                             isActive={false}
-                            recommendation={chrec.recommendation}
+                            recommendation={chrec.recommendations}
                         />
                     );
                 }

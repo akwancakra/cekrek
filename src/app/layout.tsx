@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import "./globalsIcons.css";
 import "react-day-picker/dist/style.css";
+import NextAuthProvider from "@/utils/NextAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,7 @@ export default function RootLayout({
     return (
         <html lang="en" className="scroll-smooth">
             <body className={inter.className}>
-                {children}
+                <NextAuthProvider>{children}</NextAuthProvider>
                 <Toaster richColors />
             </body>
         </html>

@@ -8,7 +8,7 @@ import { ChildAssesment } from "@/types/childAssesment.type";
 import { Child } from "@/types/children.types";
 
 interface PDFAssessmentStudentProps {
-    data: Child;
+    data: any; //Child
     // date: Date;
     // childAssessment: ChildAssesment[];
 }

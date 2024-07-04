@@ -19,14 +19,15 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { Bar } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import RecomendationCard from "@/components/elements/cards/RecomendationCard";
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
     Legend,
@@ -36,50 +37,18 @@ import { fetcher } from "@/utils/fetcher";
 import { useParams, useSearchParams } from "next/navigation";
 import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
-import { Recommendation } from "@/types/recommendation.type";
+import useProfile from "@/utils/useProfile";
+import { Child } from "@/types/customChild.types";
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    BarElement,
+    PointElement,
+    LineElement,
     Title,
     Tooltip,
     Legend
 );
-
-type ChildRecommendation = {
-    id: number;
-    children_id: number;
-    recommendation_id: number;
-    recommendations: Recommendation;
-    isFinished: boolean;
-};
-
-type Child = {
-    id: number;
-    full_name: string;
-    teacher_id: number;
-    nick_name: string | null;
-    picture: string | null;
-    gender: string;
-    place_birth: string;
-    date_time_birth: string;
-    religion: string;
-    count_of_siblings: number;
-    risk_category: string;
-    hearing_test: string;
-    child_recommendations: ChildRecommendation[];
-    monitor_child_recommendations: {
-        id: number;
-        child_recommendation_id: number;
-        date_time: string;
-        is_done: boolean;
-        child_recommendations: ChildRecommendation;
-        recommendations: Recommendation;
-    }[];
-    unfinishedRecommendations: number;
-    finishedRecommendations: number;
-};
 
 const labels = ["Apr - M-1", "Apr - M-2", "Apr - M-3", "Apr - M-4"];
 
@@ -89,16 +58,14 @@ const getOptions = () => ({
     plugins: {
         legend: {
             display: false,
-            // position: "top" as const,
         },
         title: {
             display: false,
-            // text: title,
         },
     },
     scales: {
         y: {
-            display: false,
+            display: true,
         },
     },
 });
@@ -113,25 +80,28 @@ const datasets1 = [
     {
         label: "Nama Aksi",
         data: [65, 59, 80, 81],
-        backgroundColor: "rgba(126, 73, 255, 0.3)",
+        backgroundColor: "rgba(126, 73, 255, 0.5)",
         borderColor: "rgba(126, 73, 255, 1)",
-        borderWidth: 1.5,
+        borderWidth: 2,
+        lineTension: 0.3,
+        fill: true,
     },
 ];
 
 export default function RecomendationStudent({}) {
     const [date, setDate] = useState<Date>(new Date());
+    const [student, setStudent] = useState<Child>();
+    const today = formattedDateStripYearFirst(new Date().toString());
+    const profile = useProfile();
 
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
-
-    const [student, setStudent] = useState<Child>();
-    const today = formattedDateStripYearFirst(new Date().toString());
-
     const { id } = useParams();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/parents/${1}/children/${id}/recommendations?date=${formattedDateStripYearFirst(
+        `/api/parents/${
+            profile?.id
+        }/children/${id}/recommendations?date=${formattedDateStripYearFirst(
             date.toString()
         )}`,
         fetcher
@@ -165,7 +135,7 @@ export default function RecomendationStudent({}) {
                     Kembali
                 </Link>
             </Button>
-            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3">
+            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between items-center block group-[.open]:block lg:group-[.open]:flex sm:flex">
                 <div>
                     <p className="text-gray-400 text-small">
                         Monitoring Asesmen M-Chart-R/F
@@ -181,6 +151,21 @@ export default function RecomendationStudent({}) {
                     >
                         Tingkat {student?.risk_category || "N/A"}
                     </Badge>
+                </div>
+                <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
+                    <Button variant={"outline"} asChild>
+                        <Link
+                            href={`/p/childs/${id}/recommendation/compare?date=${
+                                formattedDateStripYearFirst(date.toString()) ||
+                                today
+                            }`}
+                        >
+                            Bandingkan hasil monitoring versi guru{" "}
+                            <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
+                                arrow_forward
+                            </span>
+                        </Link>
+                    </Button>
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
@@ -208,10 +193,10 @@ export default function RecomendationStudent({}) {
                     </div>
                     <div className="w-full">
                         <AspectRatio ratio={16 / 9}>
-                            <Bar
+                            <Line
                                 options={getOptions()}
                                 data={getData(datasets1)}
-                                className="!h-full"
+                                // className="!h-full"
                             />
                         </AspectRatio>
                     </div>
@@ -238,10 +223,10 @@ export default function RecomendationStudent({}) {
                     </div>
                     <div className="w-full">
                         <AspectRatio ratio={16 / 9}>
-                            <Bar
+                            <Line
                                 options={getOptions()}
                                 data={getData(datasets1)}
-                                className="!h-full"
+                                // className="!h-full"
                             />
                         </AspectRatio>
                     </div>
@@ -271,10 +256,10 @@ export default function RecomendationStudent({}) {
                     </div>
                     <div className="w-full">
                         <AspectRatio ratio={16 / 9}>
-                            <Bar
+                            <Line
                                 options={getOptions()}
                                 data={getData(datasets1)}
-                                className="!h-full"
+                                // className="!h-full"
                             />
                         </AspectRatio>
                     </div>
@@ -357,7 +342,10 @@ export default function RecomendationStudent({}) {
                                 <RecomendationCard
                                     key={idx}
                                     recommendation={rec.recommendations}
-                                    isDone={rec.isFinished}
+                                    isDone={
+                                        rec?.isFinished ||
+                                        rec?.isFinishedByParent
+                                    }
                                 />
                             ) : null
                         )}

@@ -88,7 +88,8 @@ const processMultiChildAssessments = (
     return processedAssessments;
 };
 
-const processChildAssessments = (child: Child): ProcessedAssessment[] => {
+// Child
+const processChildAssessments = (child: any): ProcessedAssessment[] => {
     const processedAssessments: ProcessedAssessment[] = [];
 
     // Iterate through each child
@@ -167,8 +168,9 @@ const processChildAssessments = (child: Child): ProcessedAssessment[] => {
     return processedAssessments;
 };
 
-const generateAssessmentWrap = (child: Child): AssesmentWrap[] => {
-    const assessmentsByDate: { [key: string]: AssesmentWrap[] } = {};
+// Child
+const generateAssessmentWrap = (child: any): AssesmentWrap[] => {
+    const assessmentsByDate: any = {}; //{ [key: string]: AssesmentWrap[] }
 
     if (child.child_assesments) {
         child.child_assesments.forEach((assessment) => {
@@ -286,6 +288,28 @@ const getSubCurrentStage = (birthHistory) => {
     return questionsBirthHealth.length;
 };
 
+const getUrlFromRole = (role: string) => {
+    const url = [
+        { role: "admin", url: "/a" },
+        { role: "teacher", url: "/t" },
+        { role: "parent", url: "/p" },
+    ];
+
+    return url.find((u) => u.role === role)?.url || "/";
+};
+
+const getImageUrl = (image: any) => {
+    if (image instanceof File) {
+        return URL.createObjectURL(image);
+    } else if (typeof image === "string" && image.startsWith("data:image")) {
+        return image; // This handles base64 images directly
+    } else if (typeof image === "string" && image) {
+        return `/uploads/children/${image}`;
+    } else {
+        return "/static/images/user-default.jpg";
+    }
+};
+
 export {
     getScoreAssessments,
     getRiskCategory,
@@ -297,4 +321,6 @@ export {
     removeLeadingZeros,
     getSubCurrentStage,
     questionsBirthHealth,
+    getUrlFromRole,
+    getImageUrl,
 };

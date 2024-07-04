@@ -14,19 +14,22 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import useProfile from "@/utils/useProfile";
+import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
 export default function ParentSettings({}) {
+    const profile = useProfile();
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const { push } = useRouter();
 
-    const editAccountButton = () => {
-        toast.success("Akun berhasil diubah!");
-    };
+    // const editAccountButton = () => {
+    //     toast.success("Akun berhasil diubah!");
+    // };
 
     const removeAccountButton = () => {
         toast.success("Akun berhasil dihapus!");
@@ -63,24 +66,9 @@ export default function ParentSettings({}) {
                         </SelectContent>
                     </Select>
                 </div>
-                {/* <div className="flex justify-between items-center my-3">
-                    <p>Primary Color</p>
-                    <Select>
-                        <SelectTrigger className="w-fit min-w-24">
-                            <SelectValue placeholder="Pilih Minggu" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="light">Min 1 - Mar</SelectItem>
-                            <SelectItem value="dark">Min 2 - Mar</SelectItem>
-                            <SelectItem value="system" defaultChecked={true}>
-                                Min 3 - Mar
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div> */}
                 <div className="flex justify-between items-center my-3">
                     <p className="text-medium">Font Size</p>
-                    <Select>
+                    <Select disabled={true}>
                         <SelectTrigger className="w-fit min-w-24">
                             <SelectValue placeholder="14px Medium (Utama)" />
                         </SelectTrigger>
@@ -126,11 +114,13 @@ export default function ParentSettings({}) {
                     </div>
                     {isDesktop ? (
                         <EditProfileDialog
-                            editAccountButton={editAccountButton}
+                            // editAccountButton={editAccountButton}
+                            profile={profile}
                         />
                     ) : (
                         <EditProfileDrawer
-                            editAccountButton={editAccountButton}
+                            // editAccountButton={editAccountButton}
+                            profile={profile}
                         />
                     )}
                 </div>
@@ -167,6 +157,7 @@ export default function ParentSettings({}) {
                     <Button
                         variant={"default"}
                         className="gap-1 bg-red-500 text-white hover:bg-red-600 hover:text-white"
+                        onClick={() => signOut({ callbackUrl: "/login" })}
                     >
                         <span>Keluar</span>
                         <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">

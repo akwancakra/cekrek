@@ -1,17 +1,20 @@
 "use client";
 
 import Clock from "@/components/elements/Clock";
+import useProfile from "@/utils/useProfile";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import Image from "next/image";
 
 export default function HomeAdmin() {
+    const profile = useProfile();
+
     return (
         <>
             <section className="mx-auto max-w-7xl mb-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
-                    <p className="text-primary -mb-1">Good Morning</p>
+                    <p className="text-primary -mb-1">Selamat Datang</p>
                     <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
-                        Admin Wawan
+                        {profile?.name || "Admin"}
                     </p>
                 </div>
                 <Clock />

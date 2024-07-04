@@ -66,6 +66,7 @@ import { BirthHistory } from "@/types/birthHistory.type";
 import { ExpertExamination } from "@/types/expertExamination.type";
 import { HealthStatus } from "@/types/healthStatus.type";
 import { User } from "@/types/user.types";
+import useProfile from "@/utils/useProfile";
 
 type ChildRecommendation = {
     id: number;
@@ -121,6 +122,7 @@ export default function StudentDetails({}) {
     const [historyAssessmen, setHistoryAssessmen] = useState<
         ProcessedAssessment[]
     >([]);
+    const profile = useProfile();
 
     const { id } = useParams();
     const { push } = useRouter();
@@ -129,12 +131,12 @@ export default function StudentDetails({}) {
         data: childData,
         isLoading,
     }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
-        `/api/teachers/${1}/students/${id}`,
+        `/api/teachers/${profile?.id}/students/${id}`,
         fetcher
     );
 
     useEffect(() => {
-        if (!isLoading) {
+        if (!isLoading && profile) {
             if (childData && childData.child) {
                 // const assessmentWraps = generateAssessmentWrap(childData.child);
 
@@ -372,6 +374,27 @@ export default function StudentDetails({}) {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+
+                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                        <p className="font-semibold tracking-tight text-lg">
+                            Orang Tua
+                        </p>
+                        <div className="divider my-1" />
+                        <div className="w-full grid grid-cols-3 gap-2">
+                            {data?.parent?.map((item, index) => (
+                                <div className="my-1" key={index}>
+                                    <p className="text-xs to-gray-400">
+                                        {item?.type &&
+                                            capitalizeFirstLetter(item.type)}
+                                    </p>
+                                    <p className="text-medium font-semibold">
+                                        {item.name || "N/A"}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* PROFILE DATA */}
                     <div className="border border-gray-300 p-2 rounded-lg my-3">
                         <div>
@@ -508,7 +531,8 @@ export default function StudentDetails({}) {
                                                     )}
                                                 </p>
                                                 <p className="text-medium font-semibold">
-                                                    {value
+                                                    {typeof value ===
+                                                        "string" && value
                                                         ? capitalizeFirstLetter(
                                                               value
                                                           )
@@ -560,7 +584,8 @@ export default function StudentDetails({}) {
                                                 )}
                                             </p>
                                             <p className="text-medium font-semibold">
-                                                {value
+                                                {typeof value === "string" &&
+                                                value
                                                     ? capitalizeFirstLetter(
                                                           value
                                                       )
@@ -630,7 +655,8 @@ export default function StudentDetails({}) {
                                                     )}
                                                 </p>
                                                 <p className="text-medium font-semibold">
-                                                    {value
+                                                    {typeof value ===
+                                                        "string" && value
                                                         ? capitalizeFirstLetter(
                                                               value
                                                           )
@@ -819,6 +845,9 @@ export default function StudentDetails({}) {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
+                                                        <DropdownMenuLabel>
+                                                            Aksi
+                                                        </DropdownMenuLabel>
                                                         <DropdownMenuItem
                                                             className="cursor-pointer"
                                                             asChild

@@ -7,6 +7,7 @@ import StudentsGrid from "@/components/elements/tables-and-grids/StudentsGrid";
 import StudentsTable from "@/components/elements/tables-and-grids/StudentsTable";
 import { Child } from "@/types/children.types";
 import { fetcher } from "@/utils/fetcher";
+import useProfile from "@/utils/useProfile";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -19,6 +20,7 @@ export default function HomeTeacher({}) {
     const [students, setStudents] = useState<Child[]>([]);
     const [studentsFull, setStudentsFull] = useState<Child[]>([]);
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
+    const profile = useProfile();
 
     const {
         data,
@@ -28,10 +30,7 @@ export default function HomeTeacher({}) {
         data: { status: string; children: Child[] };
         isLoading: boolean;
         mutate: () => void;
-    } = useSWR(`/api/teachers/1/students`, fetcher, {
-        revalidateOnReconnect: true, // Refetch on network reconnect
-        revalidateOnFocus: true, // Refetch on window focus (optional)
-    });
+    } = useSWR(`/api/teachers/${profile?.id}/students`, fetcher);
 
     const {
         data: fullStudents,
@@ -41,7 +40,7 @@ export default function HomeTeacher({}) {
 
     const removeStudent = async (studentId: string) => {
         await axios
-            .put(`/api/teachers/${1}/students/${studentId}/delete`)
+            .put(`/api/teachers/${profile?.id}/students/${studentId}/delete`)
             .then(() => {
                 toast.success("Siswa berhasil dihapus!");
                 setIsLoadingPost(false);
@@ -89,7 +88,7 @@ export default function HomeTeacher({}) {
                 <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
                     <p className="text-primary -mb-1">Selamat Pagi Guru</p>
                     <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
-                        Nakula Sadewa
+                        {profile?.name || "Guru"}
                     </p>
                 </div>
                 <Clock />
@@ -145,7 +144,6 @@ export default function HomeTeacher({}) {
                             <StudentsTable
                                 students={students}
                                 keyword={keyword}
-                                category={category}
                                 removeStudent={removeStudent}
                             />
                         )}

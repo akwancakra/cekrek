@@ -35,7 +35,8 @@ import { fetcher } from "@/utils/fetcher";
 import { User } from "@/types/user.types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChildrenData, getImageUrl } from "@/app/t/students/[id]/edit/page";
+import { ChildrenData } from "@/app/t/students/[id]/edit/page";
+import { getImageUrl } from "@/utils/converters";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -258,7 +259,7 @@ export default function BiodataWrapper({
         picture: "",
     };
 
-    const data: { [key: string]: string } = localData?.biodata || {};
+    const data: { [key: string]: string } = localData?.biodata || ({} as any);
     const fields: (keyof typeof initialValues)[] = [
         "risk_category",
         "parent_dad",

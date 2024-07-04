@@ -18,7 +18,7 @@ interface ChildrenData {
     place_birth: string;
     date_birth: string;
     hearing: string;
-    count_of_siblings: number;
+    count_of_siblings: string;
     picture: any;
     healthy_pregnancy: string;
     pregnancy_illness: string;
@@ -147,6 +147,7 @@ export async function GET(req: any, { params }: any) {
 
 export async function PUT(req: any, { params }: any) {
     try {
+        const teacher_id = parseInt(params.id);
         const id = parseInt(params.studentId);
         const data: ChildrenData = await req.json();
 
@@ -318,6 +319,7 @@ export async function PUT(req: any, { params }: any) {
                 health_status: true,
             },
             data: {
+                teacher_id,
                 full_name,
                 picture: updatedPicture,
                 nick_name,
@@ -330,7 +332,9 @@ export async function PUT(req: any, { params }: any) {
                             : null
                         : childExist.date_time_birth,
                 religion,
-                count_of_siblings,
+                count_of_siblings: count_of_siblings
+                    ? parseInt(count_of_siblings)
+                    : 0,
                 risk_category,
                 hearing_test,
                 parent: {

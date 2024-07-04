@@ -46,14 +46,12 @@ import {
 interface StudentsTableProps {
     students: Child[];
     keyword: string;
-    category: string;
     removeStudent: (id: string) => void;
 }
 
 export default function StudentsTable({
     students,
     keyword,
-    category,
     removeStudent,
 }: StudentsTableProps) {
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -103,7 +101,7 @@ export default function StudentsTable({
                 return (
                     <div className="flex items-center gap-2">
                         <Link
-                            href={`/t/students/${row.getValue("id")}`}
+                            href={`/a/students/${row.getValue("id")}`}
                             className="hover:text-primary"
                         >
                             <span>{row.getValue("full_name")}</span>
@@ -190,41 +188,41 @@ export default function StudentsTable({
                                 className="cursor-pointer"
                                 asChild
                             >
-                                <Link href={`/t/students/${studentId}`}>
+                                <Link href={`/a/students/${studentId}`}>
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         contacts
                                     </span>{" "}
                                     Lihat detil
                                 </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                                 className="cursor-pointer"
                                 asChild
                             >
                                 <Link
-                                    href={`/t/students/${studentId}/assessment`}
+                                    href={`/a/students/${studentId}/assessment`}
                                 >
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         assignment
                                     </span>{" "}
                                     Lakukan asesmen
                                 </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
+                            </DropdownMenuItem> */}
+                            {/* <DropdownMenuItem
                                 className="cursor-pointer"
                                 asChild
                             >
                                 <Link
-                                    href={`/t/students/${studentId}/recommendation`}
+                                    href={`/a/students/${studentId}/recommendation`}
                                 >
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         clinical_notes
                                     </span>{" "}
                                     Lakukan monitoring
                                 </Link>
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             {/* <DropdownMenuItem className="cursor-pointer" asChild>
-                                <Link href={`/t/students/${studentId}/edit`}>
+                                <Link href={`/a/students/${studentId}/edit`}>
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         edit
                                     </span>{" "}
@@ -305,16 +303,14 @@ export default function StudentsTable({
     // }, [keyword]);
 
     const filteredData = useMemo(() => {
-        if (!keyword && !category) return students;
+        if (!keyword) return students;
         return students.filter((item) => {
             const matchesKeyword = item.full_name
                 .toLowerCase()
                 .includes(keyword.toLowerCase());
-            const matchesCategory =
-                !category || item.risk_category === category;
-            return matchesKeyword && matchesCategory;
+            return matchesKeyword;
         });
-    }, [students, keyword, category]);
+    }, [students, keyword]);
 
     const table = useReactTable({
         data: filteredData,

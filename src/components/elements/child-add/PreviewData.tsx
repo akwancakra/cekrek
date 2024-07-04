@@ -1,6 +1,5 @@
 "use client";
 
-import { getImageUrl } from "@/app/t/students/[id]/edit/page";
 import { ChildrenData } from "@/app/t/students/add/page";
 import {
     AlertDialog,
@@ -16,7 +15,9 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getImageUrl } from "@/utils/converters";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import useProfile from "@/utils/useProfile";
 import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -37,6 +38,7 @@ export default function PreviewData({
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [data, setData] = useState<ChildrenData>();
+    const profile = useProfile();
 
     const router = useRouter();
     const { id } = useParams();
@@ -70,7 +72,7 @@ export default function PreviewData({
         setIsSubmit(true);
 
         const finalData = {
-            teacher_id: 1,
+            teacher_id: profile?.id,
             ...data?.biodata,
             ...data?.birthHistory,
             ...data?.expertExamination,
@@ -81,7 +83,7 @@ export default function PreviewData({
             try {
                 if (id) {
                     await axios.put(
-                        `/api/teachers/${1}/students/${id}`,
+                        `/api/teachers/${profile?.id}/students/${id}`,
                         finalData
                     );
                 } else {
@@ -98,6 +100,7 @@ export default function PreviewData({
             success: () => {
                 // setIsSubmit(false);
                 resetLocal({ push: true });
+                router.push("/t");
                 // if (id) {
                 return "Berhasil menyimpan data!";
                 // }

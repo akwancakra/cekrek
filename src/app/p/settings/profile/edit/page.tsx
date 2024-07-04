@@ -20,47 +20,36 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { User } from "@/types/user.types";
+import { fetcher } from "@/utils/fetcher";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import useProfile from "@/utils/useProfile";
+import axios from "axios";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import useSWR from "swr";
 import { useLocalStorage } from "usehooks-ts";
 import * as Yup from "yup";
-
-const initialValues = {
-    name: "",
-    email: "",
-    password: "",
-    type: "ibu",
-    role: "parent",
-    place_birth: "",
-    date_birth: new Date(),
-    religion: "",
-    education: "",
-    job: "",
-    address: "",
-    phone: "",
-};
 
 const validationSchema = Yup.object().shape({
     name: Yup.string().required("Nama harus diisi"),
     email: Yup.string()
         .email("Format email tidak valid")
         .required("Email harus diisi"),
-    type: Yup.string()
-        .oneOf(["ayah", "ibu", "wali"])
-        .required("Jenis harus dipilih"),
-    place_birth: Yup.string().required("Tempat lahir harus diisi"),
-    date_birth: Yup.date().required("Tanggal lahir harus diisi").nullable(),
-    religion: Yup.string().required("Agama harus diisi"),
-    education: Yup.string().required("Pendidikan harus diisi"),
-    job: Yup.string().required("Pekerjaan harus diisi"),
-    address: Yup.string().required("Alamat harus diisi"),
-    phone: Yup.string()
-        .matches(/^\d+$/, "Nomor telepon hanya boleh berisi angka")
-        .required("Nomor telepon harus diisi"),
+    type: Yup.string().oneOf(
+        ["ayah", "ibu", "wali"],
+        "Tipe harus salah satu dari ayah, ibu, atau wali"
+    ),
+    place_birth: Yup.string(),
+    date_birth: Yup.date(),
+    religion: Yup.string(),
+    education: Yup.string(),
+    job: Yup.string(),
+    address: Yup.string(),
+    phone: Yup.string(),
 });
 
 type UserAdd = {
@@ -78,16 +67,40 @@ type UserAdd = {
     phone?: string;
 };
 
+const initialValues: UserAdd = {
+    name: "",
+    email: "",
+    password: "",
+    type: "",
+    role: "parent",
+    place_birth: "",
+    date_time_birth: new Date(),
+    religion: "",
+    education: "",
+    job: "",
+    address: "",
+    phone: "",
+};
+
 export default function AddParentPage() {
-    const [isLoading, setIsLoading] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [value, setValue, removeValue] = useLocalStorage(
         "parent-data",
         {} as UserAdd
     );
+    const profile = useProfile();
+
     const searchParams = useSearchParams();
     const callback = searchParams.get("callback");
     const router = useRouter();
+
+    const {
+        data,
+        isLoading,
+    }: { data: { status: string; parent: User }; isLoading: boolean } = useSWR(
+        `/api/parents/${profile?.id}`,
+        fetcher
+    );
 
     const formik = useFormik({
         initialValues,
@@ -95,48 +108,57 @@ export default function AddParentPage() {
         onSubmit: async (values) => {
             setIsSubmit(true);
 
+            setValue({
+                ...values,
+            });
+
             console.log(values);
 
-            // setValue({
-            //     ...values,
-            // });
+            const submitPromise = new Promise<void>(async (resolve, reject) => {
+                try {
+                    await axios.put(`/api/parents/${profile?.id}`, values);
 
-            // const submitPromise = new Promise<void>(async (resolve, reject) => {
-            //     try {
-            //         const response = await fetch("/api/parents", {
-            //             method: "POST",
-            //             headers: {
-            //                 "Content-Type": "application/json",
-            //             },
-            //             body: JSON.stringify(values),
-            //         });
+                    resolve();
+                } catch (error) {
+                    reject(error);
+                } finally {
+                    setIsSubmit(false);
+                }
+            });
 
-            //         if (!response.ok) {
-            //             throw new Error("Failed to add parent");
-            //         }
-
-            //         resolve();
-            //     } catch (error) {
-            //         reject(error);
-            //     } finally {
-            //         setIsSubmit(false);
-            //     }
-            // });
-
-            // toast.promise(submitPromise, {
-            //     loading: "Mengirimkan data...",
-            //     success: () => {
-            //         if (callback) {
-            //             router.push(callback);
-            //         } else {
-            //             router.push("/t");
-            //         }
-            //         return "Data orang tua telah ditambahkan!";
-            //     },
-            //     error: "Something went wrong",
-            // });
+            toast.promise(submitPromise, {
+                loading: "Mengirimkan data...",
+                success: () => {
+                    if (callback) {
+                        router.push(callback);
+                    } else {
+                        router.push("/p/settings/profile");
+                    }
+                    return "Data orang tua telah diubah!";
+                },
+                error: "Something went wrong",
+            });
         },
     });
+
+    useEffect(() => {
+        if (!isLoading && data?.parent) {
+            console.log(data);
+            formik.setValues({
+                email: data.parent.email,
+                name: data.parent.name,
+                type: data.parent.type,
+                role: data.parent.role, // Pastikan properti role ada
+                place_birth: data.parent.place_birth,
+                date_time_birth: data.parent.date_time_birth,
+                religion: data.parent.religion,
+                education: data.parent.education,
+                job: data.parent.job,
+                address: data.parent.address,
+                phone: data.parent.phone,
+            });
+        }
+    }, [isLoading, data]);
 
     return (
         <>
@@ -330,7 +352,7 @@ export default function AddParentPage() {
                                                     <span className="label-text">
                                                         Tanggal Lahir{" "}
                                                         {formik.errors
-                                                            .date_birth && (
+                                                            .date_time_birth && (
                                                             <span className="text-red-500 text-xs italic">
                                                                 *wajib diisi
                                                             </span>
@@ -341,12 +363,12 @@ export default function AddParentPage() {
                                                     type="date"
                                                     className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
                                                     {...formik.getFieldProps(
-                                                        "date_birth"
+                                                        "date_time_birth"
                                                     )}
                                                 />
                                             </label>
                                             <ErrorMessage
-                                                name="date_birth"
+                                                name="date_time_birth"
                                                 component="div"
                                                 className="text-red-500 text-xs sm:text-sm"
                                             />
@@ -621,8 +643,8 @@ export default function AddParentPage() {
                                                                 variant={
                                                                     "default"
                                                                 }
-                                                                onClick={
-                                                                    formik.submitForm
+                                                                onClick={() =>
+                                                                    formik.submitForm()
                                                                 }
                                                                 disabled={
                                                                     isLoading ||
@@ -723,9 +745,9 @@ export default function AddParentPage() {
                                         Tanggal Lahir
                                     </p>
                                     <p className="text-medium font-semibold">
-                                        {formik.values.date_birth
+                                        {formik.values.date_time_birth
                                             ? formattedDate(
-                                                  formik.values.date_birth.toString()
+                                                  formik.values.date_time_birth.toString()
                                               )
                                             : "N/A"}
                                     </p>

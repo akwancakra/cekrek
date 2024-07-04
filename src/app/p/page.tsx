@@ -19,6 +19,7 @@ import { useEffect, useState } from "react";
 import { Child } from "@/types/children.types";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
+import useProfile from "@/utils/useProfile";
 
 const getMonitoredRecToday = (
     monitorChildRec: MonitorChildRecommendation[]
@@ -43,19 +44,20 @@ const getFirstRecommendationImage = (
     });
 
     return (
-        firstRecommendation?.child_recommendation?.recommendation?.icon ||
+        firstRecommendation?.child_recommendation?.recommendations?.icon ||
         "default.jpg"
     );
 };
 
 export default function HomeParent({}) {
     const [childs, setChilds] = useState<Child[]>();
+    const profile = useProfile();
 
     const {
         data,
         isLoading,
     }: { data: { status: string; children: Child[] }; isLoading: boolean } =
-        useSWR(`/api/parents/${2}/children`, fetcher);
+        useSWR(`/api/parents/${profile?.id}/children`, fetcher);
 
     useEffect(() => {
         if (data?.children) {
@@ -68,9 +70,9 @@ export default function HomeParent({}) {
         <>
             <section className="mx-auto max-w-7xl mb-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
                 <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
-                    <p className="text-primary -mb-1">Good Morning</p>
+                    <p className="text-primary -mb-1">Selamat datang</p>
                     <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
-                        Suyastika
+                        {profile?.name || "Orang Tua"}
                     </p>
                 </div>
                 <Clock />
@@ -160,10 +162,10 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                         {data[0]?.child_recommendations
                             ?.slice(0, 6)
                             .map((item, index) =>
-                                item.recommendation ? (
+                                item.recommendations ? (
                                     <RecommendationIndexCard
                                         key={index}
-                                        recommendation={item.recommendation}
+                                        recommendation={item.recommendations}
                                         monitoringChildRec={
                                             data[0]
                                                 ?.monitoringChildRecommendations?.[0]
@@ -293,10 +295,9 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                                                         recommendation={
                                                             item.recommendations
                                                         }
-                                                        monitoringChildRec={
-                                                            child
-                                                                ?.monitoringChildRecommendations?.[0]
-                                                                ?.monitorRecommendations
+                                                        isFinished={
+                                                            item?.isFinished ||
+                                                            false
                                                         }
                                                     />
                                                 ) : null
