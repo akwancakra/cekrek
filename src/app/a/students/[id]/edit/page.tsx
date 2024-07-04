@@ -17,7 +17,7 @@ import { fetcher } from "@/utils/fetcher";
 import { Child } from "@/types/children.types";
 import { ChildrenData } from "@/types/childrenData.type";
 
-export const getImageUrl = (image: any) => {
+const getImageUrl = (image: any) => {
     if (image instanceof File) {
         return URL.createObjectURL(image);
     } else if (typeof image === "string" && image.startsWith("data:image")) {
