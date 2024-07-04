@@ -67,7 +67,7 @@ export interface ChildrenData {
     };
 }
 
-export const getImageUrl = (image: any) => {
+const getImageUrl = (image: any) => {
     if (image instanceof File) {
         return URL.createObjectURL(image);
     } else if (typeof image === "string" && image.startsWith("data:image")) {
