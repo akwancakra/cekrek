@@ -226,65 +226,35 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-12 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6">
+                        <div className="mt-12 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3">
                             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
                                 <Image
                                     src="/static/images/logo-upi.png"
                                     className="h-max max-h-10 w-auto mx-auto"
                                     loading="lazy"
                                     alt="client logo"
-                                    width="200"
-                                    height="200"
+                                    width="100"
+                                    height="100"
                                 />
                             </div>
                             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
                                 <Image
-                                    src="/static/images/logo-netflix.png"
+                                    src="/static/images/logo-satria.jpg"
                                     className="h-max max-h-10 w-auto mx-auto"
                                     loading="lazy"
                                     alt="client logo"
-                                    width="200"
-                                    height="200"
+                                    width="100"
+                                    height="100"
                                 />
                             </div>
                             <div className="p-4 flex grayscale transition duration-200 hover:grayscale-0">
                                 <Image
-                                    src="/static/images/logo-google.png"
+                                    src="/static/images/logo-helov.png"
                                     className="h-max max-h-10 w-auto m-auto"
                                     loading="lazy"
                                     alt="client logo"
-                                    width="200"
-                                    height="200"
-                                />
-                            </div>
-                            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
-                                <Image
-                                    src="/static/images/logo-gojek.png"
-                                    className="h-max max-h-10 w-auto mx-auto"
-                                    loading="lazy"
-                                    alt="client logo"
-                                    width="200"
-                                    height="200"
-                                />
-                            </div>
-                            <div className="p-4 flex grayscale transition duration-200 hover:grayscale-0">
-                                <Image
-                                    src="/static/images/logo-digitalocean.png"
-                                    className="h-max max-h-10 w-auto m-auto"
-                                    loading="lazy"
-                                    alt="client logo"
-                                    width="200"
-                                    height="200"
-                                />
-                            </div>
-                            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
-                                <Image
-                                    src="/static/images/logo-traveloka.png"
-                                    className="h-max max-h-10 w-auto mx-auto"
-                                    loading="lazy"
-                                    alt="client logo"
-                                    width="200"
-                                    height="200"
+                                    width="100"
+                                    height="100"
                                 />
                             </div>
                         </div>

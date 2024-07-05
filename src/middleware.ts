@@ -8,6 +8,7 @@ const publicRoutes = [
     "/api",
     "/_next/static",
     "/_next/image",
+    "/static/images",
     "/.*svg",
     "/.*png",
     "/.*jpg",
@@ -27,6 +28,8 @@ export async function middleware(req: NextRequest) {
         req,
         secret: process.env.NEXTAUTH_SECRET,
     })) as Session | null;
+
+    console.log(pathname);
 
     // console.log(token);
 
