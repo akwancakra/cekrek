@@ -80,7 +80,7 @@ const Page = () => {
                     <div className="mx-auto w-fit mb-3">
                         <Link href="/">
                             <Image
-                                src={"/static/images/logo.png"}
+                                src={"/static/images/logo-cekrek.png"}
                                 alt="CekRek logo"
                                 width={112}
                                 height={112}
