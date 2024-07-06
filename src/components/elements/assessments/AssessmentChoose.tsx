@@ -20,7 +20,7 @@ export default function AssessmentChoose({
     return (
         <section className="mx-auto flex flex-col justify-center items-center min-h-svh h-full gap-2 p-2">
             <section className="mx-auto max-w-7xl w-full mb-4 h-full">
-                <div className="mx-auto max-w-3xl rounded-lg border border-gray-300 p-2 flex justify-between items-center gap-4">
+                <div className="mx-auto max-w-3xl rounded-lg border border-gray-300 p-2 flex justify-between items-center gap-4 dark:border-neutral-600">
                     <div className="gap-4 sm:flex">
                         <div className="bg-gray-400 w-24 rounded-lg">
                             <AspectRatio ratio={1 / 1}>
@@ -83,7 +83,7 @@ export default function AssessmentChoose({
                     </Button>
                 </div>
                 <div className="max-w-3xl mx-auto h-full mt-3 grid grid-cols-2 gap-2">
-                    <div className="h-full border border-gray-300 rounded-lg p-2 md:min-w-80 group-[.open]:min-w-fit lg:group-[.open]:min-w-80">
+                    <div className="h-full border border-gray-300 rounded-lg p-2 md:min-w-80 group-[.open]:min-w-fit lg:group-[.open]:min-w-80 dark:border-neutral-600">
                         <div className="bg-gray-400 w-full rounded-lg">
                             <AspectRatio ratio={4 / 5}>
                                 <Image
@@ -117,7 +117,7 @@ export default function AssessmentChoose({
                             </Button>
                         </div>
                     </div>
-                    <div className="h-full border border-gray-300 rounded-lg p-2 md:min-w-80 group-[.open]:min-w-fit lg:group-[.open]:min-w-80">
+                    <div className="h-full border border-gray-300 rounded-lg p-2 md:min-w-80 group-[.open]:min-w-fit lg:group-[.open]:min-w-80 dark:border-neutral-600">
                         <div className="bg-gray-400 w-full rounded-lg">
                             <AspectRatio ratio={4 / 5}>
                                 <Image

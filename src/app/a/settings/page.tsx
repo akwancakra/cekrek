@@ -6,6 +6,7 @@ import EditProfileDialog from "@/components/elements/alerts/EditProfileDialog";
 import EditProfileDrawer from "@/components/elements/alerts/EditProfileDrawer";
 import InfoAccountDialog from "@/components/elements/alerts/InfoAccountDialog";
 import InfoAccountDrawer from "@/components/elements/alerts/InfoAccountDrawer";
+import ThemeSelector from "@/components/elements/buttons/ThemeSelector";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -20,7 +21,7 @@ import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
 export default function AdminSettings({}) {
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     const removeAccountButton = () => {
@@ -32,7 +33,7 @@ export default function AdminSettings({}) {
         <section className="mx-auto max-w-7xl mb-4">
             <div className="rounded-lg p-4 w-full flex items-center bg-gradient-to-r from-purple-400 to-purple-600 h-28 sm:h-36">
                 <div>
-                    <p className="text-white text-sm -mb-1">Settings</p>
+                    <p className="text-white text-sm -mb-1">Pengaturan</p>
                     <p className="font-semibold tracking-tight text-xl text-white">
                         CekRek
                     </p>
@@ -42,21 +43,10 @@ export default function AdminSettings({}) {
                 <p className="text-large font-semibold tracking-tight">
                     Personalize
                 </p>
-                <div className="divider my-0" />
+                <div className="divider my-0 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                 <div className="flex justify-between items-center my-3">
-                    <p className="text-medium">Change Theme</p>
-                    <Select>
-                        <SelectTrigger className="w-fit min-w-24">
-                            <SelectValue placeholder="Tema Terang (Utama)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="light" defaultChecked={true}>
-                                Tema Terang
-                            </SelectItem>
-                            <SelectItem value="dark">Tema Gelap</SelectItem>
-                            <SelectItem value="system">Tema Sistem</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <p className="text-medium">Ubah tema</p>
+                    <ThemeSelector />
                 </div>
                 {/* <div className="flex justify-between items-center my-3">
                     <p>Primary Color</p>
@@ -74,8 +64,8 @@ export default function AdminSettings({}) {
                     </Select>
                 </div> */}
                 <div className="flex justify-between items-center my-3">
-                    <p className="text-medium">Font Size</p>
-                    <Select>
+                    <p className="text-medium">Ukuran font</p>
+                    <Select disabled={true}>
                         <SelectTrigger className="w-fit min-w-24">
                             <SelectValue placeholder="14px Medium (Utama)" />
                         </SelectTrigger>
@@ -90,10 +80,8 @@ export default function AdminSettings({}) {
                 </div>
             </div>
             <div>
-                <p className="text-large font-semibold tracking-tight">
-                    Account
-                </p>
-                <div className="divider my-0" />
+                <p className="text-large font-semibold tracking-tight">Akun</p>
+                <div className="divider my-0 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                 <div className="flex justify-between items-center my-3">
                     <div>
                         <p className="text-medium">Ubah akun</p>

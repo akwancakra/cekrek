@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { signIn } from "next-auth/react";
-import Button from "@/components/elements/buttons/Button";
+import { Button } from "@/components/ui/button";
 
 const validationSchema = Yup.object().shape({
     email: Yup.string().email().required("Email is required"),
@@ -66,8 +66,8 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
     });
 
     return (
-        <main className="min-h-screen flex items-center justify-center sm:bg-gray-100">
-            <div className="container mx-auto bg-white p-4 sm:border-gray-300 sm:rounded-lg sm:border sm:w-[400px]">
+        <main className="min-h-screen flex items-center justify-center sm:bg-gray-100 dark:sm:bg-neutral-900">
+            <div className="container mx-auto bg-white p-4 sm:border-gray-300 sm:rounded-lg sm:border sm:w-[400px] dark:bg-neutral-800 dark:sm:border-neutral-600">
                 <form onSubmit={formik.handleSubmit}>
                     <div className="mx-auto w-fit mb-3">
                         <Link href="/">
@@ -87,13 +87,15 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
                     </div>
                     <label className="form-control w-full">
                         <div className="label">
-                            <span className="label-text">Email</span>
+                            <span className="label-text dark:text-neutral-300">
+                                Email
+                            </span>
                         </div>
                         <input
                             type="email"
                             name="email"
                             placeholder="example@mail.com"
-                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full dark:bg-neutral-700 dark:border-neutral-600"
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -106,13 +108,15 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
                     )}
                     <label className="form-control w-full relative">
                         <div className="label">
-                            <span className="label-text">Password</span>
+                            <span className="label-text dark:text-neutral-300">
+                                Password
+                            </span>
                         </div>
                         <input
                             type={showPassword ? "text" : "password"}
                             name="password"
                             placeholder="password here..."
-                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full dark:bg-neutral-700 dark:border-neutral-600"
                             value={formik.values.password}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -130,22 +134,23 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
                         </div>
                     )}
                     <Button
-                        text={isLoading ? "Logging in..." : "Log In"}
-                        icon="login"
-                        textPosition="left"
-                        buttonType="submit"
-                        type="primary"
-                        classnew="w-full text-center mt-3"
+                        variant={"default"}
+                        className="w-full text-center mt-3 gap-1"
                         disabled={isLoading}
-                    />
-                    <div className="divider">Or</div>
-                    <button
+                        type="submit"
+                    >
+                        <span>{isLoading ? "Masuk..." : "Masuk"}</span>
+                        <i className="material-symbols-outlined pointer-events-none !text-lg !leading-none">
+                            login
+                        </i>
+                    </Button>
+                    <div className="divider dark:after:!bg-neutral-600 dark:before:!bg-neutral-600 dark:text-neutral-400">
+                        Atau
+                    </div>
+                    <Button
                         type="button"
-                        className={`${
-                            isLoading
-                                ? "btn-disabled cursor-not-allowed disabled"
-                                : ""
-                        } btn btn-outline rounded-lg w-full border-gray-500 text-gray-500 px-3 py-2 min-h-[2.5rem] h-10 hover:bg-transparent hover:text-gray-700`}
+                        variant="outline"
+                        className="w-full gap-1"
                         disabled={isLoading}
                         onClick={() =>
                             signIn("google", { callbackUrl, redirect: false })
@@ -167,14 +172,14 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
                                 >
                                     <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z" />
                                 </svg>
-                                Continue with Google
+                                Lanjut dengan Google
                             </>
                         )}
-                    </button>
+                    </Button>
                     <p className="text-sm text-gray-400 text-center mt-3">
-                        Haven&apos;t account yet?{" "}
+                        Belum memiliki akun?{" "}
                         <Link href={"/register"} className="hover:text-primary">
-                            Create one
+                            Buat sekarang
                         </Link>
                     </p>
                 </form>

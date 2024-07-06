@@ -1,14 +1,12 @@
 "use client";
 
-import Button from "@/components/elements/buttons/Button";
-import { error } from "console";
+import { Button } from "@/components/ui/button";
 import { useFormik } from "formik";
 import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
@@ -76,8 +74,8 @@ const Page = () => {
     });
 
     return (
-        <main className="min-h-screen flex items-center justify-center sm:bg-gray-100">
-            <div className="container mx-auto bg-white p-4 sm:border-gray-300 sm:rounded-lg sm:border sm:w-[400px]">
+        <main className="min-h-screen flex items-center justify-center sm:bg-gray-100 dark:sm:bg-neutral-900">
+            <div className="container mx-auto bg-white p-4 sm:border-gray-300 sm:rounded-lg sm:border sm:w-[400px] dark:bg-neutral-800 dark:sm:border-neutral-600">
                 <form onSubmit={formik.handleSubmit}>
                     <div className="mx-auto w-fit mb-3">
                         <Link href="/">
@@ -97,13 +95,15 @@ const Page = () => {
                     </div>
                     <label className="form-control w-full">
                         <div className="label">
-                            <span className="label-text">Email</span>
+                            <span className="label-text dark:text-neutral-300">
+                                Email
+                            </span>
                         </div>
                         <input
                             type="email"
                             placeholder="example@mail.com"
                             name="email"
-                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full dark:bg-neutral-700 dark:border-neutral-600"
                             value={formik.values.email}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -116,13 +116,15 @@ const Page = () => {
                     )}
                     <label className="form-control w-full">
                         <div className="label">
-                            <span className="label-text">Name</span>
+                            <span className="label-text dark:text-neutral-300">
+                                Name
+                            </span>
                         </div>
                         <input
                             type="text"
                             placeholder="Name..."
                             name="name"
-                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full dark:bg-neutral-700 dark:border-neutral-600"
                             value={formik.values.name}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -135,14 +137,16 @@ const Page = () => {
                     )}
                     <label className="form-control w-full relative">
                         <div className="label">
-                            <span className="label-text">Password</span>
+                            <span className="label-text dark:text-neutral-300">
+                                Password
+                            </span>
                         </div>
                         <input
                             id="password"
                             type={showPassword ? "text" : "password"}
                             placeholder="password here..."
                             name="password"
-                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full dark:bg-neutral-700 dark:border-neutral-600"
                             value={formik.values.password}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -161,14 +165,16 @@ const Page = () => {
                     )}
                     <label className="form-control w-full h-fit relative">
                         <div className="label">
-                            <span className="label-text">Confirm Password</span>
+                            <span className="label-text dark:text-neutral-300">
+                                Confirm Password
+                            </span>
                         </div>
                         <input
                             id="confirmPassword"
                             type={showPasswordConf ? "text" : "password"}
                             placeholder="Confirm password here..."
                             name="confirmPassword"
-                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full dark:bg-neutral-700 dark:border-neutral-600"
                             value={formik.values.confirmPassword}
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
@@ -187,20 +193,27 @@ const Page = () => {
                             </div>
                         )}
                     <Button
-                        text={isLoading ? "Registering..." : "Register"}
-                        icon="login"
-                        textPosition="left"
-                        buttonType="submit"
-                        type="primary"
-                        classnew="w-full text-center mt-3"
+                        variant={"default"}
+                        className="w-full text-center mt-3 gap-1"
                         disabled={isLoading}
-                    />
+                        type="submit"
+                    >
+                        <span>
+                            {isLoading ? "Membuat akun..." : "Buat akun"}
+                        </span>
+                        <i className="material-symbols-outlined pointer-events-none !text-lg !leading-none">
+                            login
+                        </i>
+                    </Button>
                     {/* DIVIDER */}
-                    <div className="divider">Or</div>
+                    <div className="divider dark:after:!bg-neutral-600 dark:before:!bg-neutral-600 dark:text-neutral-400">
+                        Atau
+                    </div>
                     {/* DIVIDER */}
-                    <button
-                        className="btn btn-outline rounded-lg w-full border-gray-500 text-gray-500 px-3 py-2 min-h-[2.5rem] h-10 hover:bg-transparent hover:text-gray-700"
+                    <Button
+                        variant="outline"
                         type="button"
+                        className="w-full"
                         disabled={isLoading}
                         onClick={() =>
                             signIn("google", {
@@ -218,12 +231,12 @@ const Page = () => {
                         >
                             <path d="M20.283 10.356h-8.327v3.451h4.792c-.446 2.193-2.313 3.453-4.792 3.453a5.27 5.27 0 0 1-5.279-5.28 5.27 5.27 0 0 1 5.279-5.279c1.259 0 2.397.447 3.29 1.178l2.6-2.599c-1.584-1.381-3.615-2.233-5.89-2.233a8.908 8.908 0 0 0-8.934 8.934 8.907 8.907 0 0 0 8.934 8.934c4.467 0 8.529-3.249 8.529-8.934 0-.528-.081-1.097-.202-1.625z" />
                         </svg>
-                        Continue with Google
-                    </button>
+                        Lanjut dengan Google
+                    </Button>
                     <p className="text-sm text-gray-400 text-center mt-3">
-                        Already have an account?{" "}
+                        Sudah memiliki akun?{" "}
                         <Link href={"/login"} className="hover:text-primary">
-                            Login now
+                            Masuk
                         </Link>
                     </p>
                 </form>

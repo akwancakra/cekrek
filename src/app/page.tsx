@@ -9,7 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
-    const profile = useProfile();
+    const { profile } = useProfile();
 
     return (
         <>
@@ -69,7 +69,7 @@ export default function Home() {
                                 className="flex-col z-20 flex-wrap gap-6 p-8 rounded-xl border border-gray-100 bg-white shadow-2xl shadow-gray-600/10 justify-end w-full invisible opacity-0 translate-y-1  absolute top-full left-0 transition-all duration-300 scale-95 origin-top 
                       lg:relative lg:scale-100 lg:peer-checked:translate-y-0 lg:translate-y-0 lg:flex lg:flex-row lg:items-center lg:gap-0 lg:p-0 lg:bg-transparent lg:w-7/12 lg:visible lg:opacity-100 lg:border-none
                       peer-checked:scale-100 peer-checked:opacity-100 peer-checked:visible lg:shadow-none 
-                      dark:shadow-none dark:bg-gray-800 dark:border-gray-700"
+                      dark:shadow-none dark:bg-neutral-800/40 dark:border-neutral-700 dark:lg:bg-transparent"
                             >
                                 <div className="text-gray-600 dark:text-gray-300 lg:pr-4 lg:w-auto w-full lg:pt-0">
                                     <ul className="tracking-wide font-medium lg:text-sm flex-col flex lg:flex-row gap-6 lg:gap-0">
@@ -145,7 +145,7 @@ export default function Home() {
             <div className="relative" id="home">
                 <div
                     aria-hidden="true"
-                    className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
+                    className="absolute inset-0 grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-70"
                 >
                     <div className="blur-[106px] h-32 bg-gradient-to-r from-yellow-400 to-red-300 dark:to-indigo-600" />
                     <div className="blur-[106px] h-56 bg-gradient-to-br from-primary to-purple-400 dark:from-blue-700" />
@@ -190,7 +190,7 @@ export default function Home() {
                                 <Button
                                     variant={"default"}
                                     asChild
-                                    className="rounded-full bg-purple-200 text-primary hover:bg-purple-300 hover:text-primary"
+                                    className="rounded-full bg-purple-200 text-primary hover:bg-purple-300 hover:text-primary dark:bg-purple-950 dark:border dark:border-purple-800 dark:text-white dark:hover:bg-purple-900"
                                 >
                                     <Link href={"#features"}>
                                         <span className="relative text-sm font-semibold">
@@ -289,8 +289,8 @@ export default function Home() {
                             magni adipisci.
                         </p>
                     </div>
-                    <div className="mt-16 grid divide-x divide-y divide-gray-100 dark:divide-gray-700 overflow-hidden rounded-3xl border border-gray-100 text-gray-600 dark:border-gray-700 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0 xl:grid-cols-4">
-                        <div className="group relative bg-white dark:bg-gray-800 transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10">
+                    <div className="mt-16 grid divide-x divide-y divide-gray-100 dark:divide-neutral-600 overflow-hidden rounded-3xl border border-gray-100 text-gray-600 dark:border-neutral-600 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0 xl:grid-cols-4">
+                        <div className="group relative bg-white transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10 dark:bg-neutral-700 dark:hover:bg-neutral-800">
                             <div className="relative space-y-8 py-12 p-8">
                                 <Image
                                     src="https://cdn-icons-png.flaticon.com/512/4341/4341139.png"
@@ -311,7 +311,7 @@ export default function Home() {
                                 </div>
                                 <a
                                     href="#"
-                                    className="flex items-center justify-between group-hover:text-primary"
+                                    className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
                                     <span className="text-sm">Read more</span>
                                     <svg
@@ -329,7 +329,7 @@ export default function Home() {
                                 </a>
                             </div>
                         </div>
-                        <div className="group relative bg-white dark:bg-gray-800 transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10">
+                        <div className="group relative bg-white transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10 dark:bg-neutral-700 dark:hover:bg-neutral-800">
                             <div className="relative space-y-8 py-12 p-8">
                                 <Image
                                     src="https://cdn-icons-png.flaticon.com/512/4341/4341134.png"
@@ -350,7 +350,7 @@ export default function Home() {
                                 </div>
                                 <a
                                     href="#"
-                                    className="flex items-center justify-between group-hover:text-primary"
+                                    className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
                                     <span className="text-sm">Read more</span>
                                     <svg
@@ -368,7 +368,7 @@ export default function Home() {
                                 </a>
                             </div>
                         </div>
-                        <div className="group relative bg-white dark:bg-gray-800 transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10">
+                        <div className="group relative bg-white transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10 dark:bg-neutral-700 dark:hover:bg-neutral-800">
                             <div className="relative space-y-8 py-12 p-8">
                                 <Image
                                     src="https://cdn-icons-png.flaticon.com/512/4341/4341160.png"
@@ -389,7 +389,7 @@ export default function Home() {
                                 </div>
                                 <a
                                     href="#"
-                                    className="flex items-center justify-between group-hover:text-primary"
+                                    className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
                                     <span className="text-sm">Read more</span>
                                     <svg
@@ -407,8 +407,8 @@ export default function Home() {
                                 </a>
                             </div>
                         </div>
-                        <div className="group relative bg-gray-50 dark:bg-gray-900 transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10">
-                            <div className="relative space-y-8 py-12 p-8 transition duration-300 group-hover:bg-white dark:group-hover:bg-gray-800">
+                        <div className="group relative bg-gray-50 transition hover:z-[1] hover:shadow-2xl hover:shadow-gray-600/10 dark:bg-neutral-800 dark:hover:bg-neutral-800">
+                            <div className="relative space-y-8 py-12 p-8 transition duration-300 group-hover:bg-white dark:group-hover:bg-neutral-900">
                                 <Image
                                     src="https://cdn-icons-png.flaticon.com/512/4341/4341025.png"
                                     className="w-12"
@@ -561,7 +561,7 @@ export default function Home() {
                         </h2>
                     </div>
                     <div className="md:columns-2 lg:columns-3 gap-8 space-y-8">
-                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
+                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
                             <div className="flex gap-4">
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
@@ -598,7 +598,7 @@ export default function Home() {
                                 harum et rerum.
                             </p>
                         </div>
-                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
+                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
                             <div className="flex gap-4">
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
@@ -630,7 +630,7 @@ export default function Home() {
                                 veritatis harum et rerum.
                             </p>
                         </div>
-                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
+                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
                             <div className="flex gap-4">
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
@@ -662,7 +662,7 @@ export default function Home() {
                                 reprehenderit, veritatis harum et rerum.
                             </p>
                         </div>
-                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
+                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
                             <div className="flex gap-4">
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
@@ -694,7 +694,7 @@ export default function Home() {
                                 reprehenderit, veritatis harum et rerum.
                             </p>
                         </div>
-                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
+                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
                             <div className="flex gap-4">
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
@@ -727,7 +727,7 @@ export default function Home() {
                                 reprehenderit, veritatis harum et rerum.
                             </p>
                         </div>
-                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white dark:bg-gray-800 dark:border-gray-700 shadow-2xl shadow-gray-600/10 dark:shadow-none">
+                        <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
                             <div className="flex gap-4">
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
@@ -766,7 +766,7 @@ export default function Home() {
             <div className="relative py-16 my-14">
                 <div
                     aria-hidden="true"
-                    className="absolute inset-0 h-max w-full m-auto grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-20"
+                    className="absolute inset-0 h-max w-full m-auto grid grid-cols-2 -space-x-52 opacity-40 dark:opacity-70"
                 >
                     <div className="blur-[106px] h-32 bg-gradient-to-r from-yellow-400 to-red-300 dark:to-indigo-600" />
                     <div className="blur-[106px] h-56 bg-gradient-to-br from-primary to-purple-400 dark:from-blue-700" />
@@ -807,23 +807,32 @@ export default function Home() {
 
             <footer className="footer footer-center p-10 text-base-content rounded">
                 <nav className="grid grid-flow-col gap-4">
-                    <Link href="#testimonials" className="link link-hover">
+                    <Link
+                        href="#testimonials"
+                        className="link link-hover dark:text-neutral-300"
+                    >
                         Tentang Kami
                     </Link>
                     <Link
                         href="https://wa.me/+6285960224084"
                         target="_blank"
-                        className="link link-hover"
+                        className="link link-hover dark:text-neutral-300"
                     >
                         Kontak
                     </Link>
-                    <Link href="/terms" className="link link-hover">
+                    <Link
+                        href="/terms"
+                        className="link link-hover dark:text-neutral-300"
+                    >
                         Syarat & Ketentuan
                     </Link>
                 </nav>
                 <nav>
                     <div className="grid grid-flow-col gap-4">
-                        <Link href={"https://instagram.com/cekrek_assist"}>
+                        <Link
+                            href={"https://instagram.com/cekrek_assist"}
+                            className="dark:text-neutral-300"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width={24}
@@ -835,7 +844,10 @@ export default function Home() {
                                 <circle cx="11.994" cy="11.979" r="3.003" />
                             </svg>
                         </Link>
-                        <Link href={"mailto:cekrek_assist@gmail.com"}>
+                        <Link
+                            href={"mailto:cekrek_assist@gmail.com"}
+                            className="dark:text-neutral-300"
+                        >
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 width={24}
@@ -849,7 +861,9 @@ export default function Home() {
                     </div>
                 </nav>
                 <aside>
-                    <p>Copyright © 2024 - All right reserved by Helov Team</p>
+                    <p className="dark:text-neutral-400">
+                        Copyright © 2024 - All right reserved by Helov Team
+                    </p>
                 </aside>
             </footer>
         </>

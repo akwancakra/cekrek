@@ -16,18 +16,20 @@ export default function CompareMonitoringParentLayout() {
     const [date, setDate] = useState<Date>(new Date());
     const [student, setStudent] = useState<Child>();
     const today = formattedDateStripYearFirst(new Date().toString());
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
     const { id } = useParams();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/parents/${
-            profile?.id
-        }/children/${id}/recommendations?date=${formattedDateStripYearFirst(
-            date.toString()
-        )}`,
+        isReady &&
+            profile?.id &&
+            `/api/parents/${
+                profile?.id
+            }/children/${id}/recommendations?date=${formattedDateStripYearFirst(
+                date.toString()
+            )}`,
         fetcher
     );
 
@@ -59,7 +61,7 @@ export default function CompareMonitoringParentLayout() {
                         Kembali
                     </Link>
                 </Button>
-                <div className="w-full border border-gray-300 rounded-lg p-2 mb-3">
+                <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 dark:border-neutral-600">
                     <div>
                         <p className="text-gray-400 text-small">
                             Monitoring Asesmen M-Chart-R/F
@@ -80,13 +82,13 @@ export default function CompareMonitoringParentLayout() {
                     </div>
                 </div>
 
-                <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between block group-[.open]:block lg:group-[.open]:flex sm:flex">
+                <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between block group-[.open]:block lg:group-[.open]:flex sm:flex dark:border-neutral-600">
                     <div className="grow">
                         <p className="text-large font-semibold tracking-tight">
                             Monitoring yang saya lakukan
                         </p>
                         <div className="divider my-1"></div>
-                        <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2">
+                        <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
                             <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                                 <p className="text-small">
                                     Aktifitas belum dilakukan
@@ -109,7 +111,7 @@ export default function CompareMonitoringParentLayout() {
                             Monitoring yang dilakukan guru
                         </p>
                         <div className="divider my-1"></div>
-                        <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2">
+                        <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
                             <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                                 <p className="text-small">
                                     Aktifitas belum dilakukan

@@ -203,14 +203,14 @@ export default function EditRecommendatioPage() {
                             <div className="w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
                                 <div className="skeleton w-full h-[400px] rounded-lg"></div>
                             </div>
-                            <div className="sticky top-4 rounded-lg p-2 bg-white w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+                            <div className="sticky top-4 rounded-lg p-2 bg-white w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800">
                                 <div className="skeleton w-full h-36 rounded-lg"></div>
                             </div>
                         </>
                     ) : (
                         <>
                             <div className="w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                                <div className="border border-gray-300 rounded-lg p-3">
+                                <div className="border border-gray-300 rounded-lg p-3 dark:border-neutral-600">
                                     <div>
                                         <p className="font-semibold text-large tracking-tight">
                                             Data Rekomendasi
@@ -543,7 +543,7 @@ export default function EditRecommendatioPage() {
                                 </div>
                             </div>
 
-                            <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+                            <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                                 <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                                     <div>
                                         <p className="text-xs text-gray-400">

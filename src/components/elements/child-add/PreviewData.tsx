@@ -38,7 +38,7 @@ export default function PreviewData({
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [data, setData] = useState<ChildrenData>();
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const router = useRouter();
     const { id } = useParams();
@@ -81,9 +81,9 @@ export default function PreviewData({
 
         const submitPromise = new Promise<void>(async (resolve, reject) => {
             try {
-                if (id) {
+                if (id && isReady && profile?.id) {
                     await axios.put(
-                        `/api/teachers/${profile?.id}/students/${id}`,
+                        `/api/teachers/${profile.id}/students/${id}`,
                         finalData
                     );
                 } else {

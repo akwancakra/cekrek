@@ -8,15 +8,17 @@ import { useEffect, useState } from "react";
 import useSWR from "swr";
 
 export default function Template({}) {
-    const profile = useProfile();
     const [childs, setChilds] = useState<Child[]>();
+    const { profile, isReady } = useProfile();
 
     const {
         data,
         isLoading,
     }: { data: { status: string; children: Child[] }; isLoading: boolean } =
         useSWR(
-            `/api/parents/${profile?.id}/children?limit-rec=1&limit-assess=1`,
+            isReady &&
+                profile?.id &&
+                `/api/parents/${profile?.id}/children?limit-rec=1&limit-assess=1`,
             fetcher
         );
 
@@ -31,8 +33,9 @@ export default function Template({}) {
         <div className="max-w-7xl mx-auto w-full min-h-svh flex justify-center items-center">
             {isLoading ? (
                 <>
-                    <div>
-                        <p>Loading...</p>
+                    <div className="max-w-4xl w-full grid grid-cols-2 gap-2">
+                        <div className="skeleton rounded-lg h-72 sm:h-96"></div>
+                        <div className="skeleton rounded-lg h-72 sm:h-96"></div>
                     </div>
                 </>
             ) : (
@@ -44,7 +47,7 @@ export default function Template({}) {
                     {!childs ||
                         (childs.length == 0 && (
                             <div className="flex items-center justify-center w-full">
-                                <div className="max-w-md w-full border border-gray-300 rounded-lg p-2">
+                                <div className="max-w-md w-full border border-gray-300 rounded-lg p-2 dark:border-gray-600">
                                     <p className="text-center mb-2">
                                         Tidak ada data anak yang anda miliki
                                     </p>

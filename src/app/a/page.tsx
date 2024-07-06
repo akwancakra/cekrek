@@ -6,14 +6,16 @@ import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import Image from "next/image";
 
 export default function HomeAdmin() {
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     return (
         <>
             <section className="mx-auto max-w-7xl mb-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
-                <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
-                    <p className="text-primary -mb-1">Selamat Datang</p>
-                    <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
+                <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-br from-purple-200 to-purple-100 sm:h-64 dark:from-purple-900 dark:to-purple-400">
+                    <p className="text-primary -mb-1 dark:text-purple-100">
+                        Selamat Datang
+                    </p>
+                    <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl dark:text-purple-100">
                         {profile?.name || "Admin"}
                     </p>
                 </div>

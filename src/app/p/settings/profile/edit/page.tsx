@@ -88,7 +88,7 @@ export default function AddParentPage() {
         "parent-data",
         {} as UserAdd
     );
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const searchParams = useSearchParams();
     const callback = searchParams.get("callback");
@@ -98,7 +98,7 @@ export default function AddParentPage() {
         data,
         isLoading,
     }: { data: { status: string; parent: User }; isLoading: boolean } = useSWR(
-        `/api/parents/${profile?.id}`,
+        isReady && profile?.id && `/api/parents/${profile?.id}`,
         fetcher
     );
 
@@ -116,7 +116,10 @@ export default function AddParentPage() {
 
             const submitPromise = new Promise<void>(async (resolve, reject) => {
                 try {
-                    await axios.put(`/api/parents/${profile?.id}`, values);
+                    await axios.put(
+                        isReady && profile?.id && `/api/parents/${profile?.id}`,
+                        values
+                    );
 
                     resolve();
                 } catch (error) {

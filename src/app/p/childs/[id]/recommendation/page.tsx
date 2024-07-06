@@ -92,18 +92,20 @@ export default function RecomendationStudent({}) {
     const [date, setDate] = useState<Date>(new Date());
     const [student, setStudent] = useState<Child>();
     const today = formattedDateStripYearFirst(new Date().toString());
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
     const { id } = useParams();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/parents/${
-            profile?.id
-        }/children/${id}/recommendations?date=${formattedDateStripYearFirst(
-            date.toString()
-        )}`,
+        isReady &&
+            profile?.id &&
+            `/api/parents/${
+                profile?.id
+            }/children/${id}/recommendations?date=${formattedDateStripYearFirst(
+                date.toString()
+            )}`,
         fetcher
     );
 
@@ -135,7 +137,7 @@ export default function RecomendationStudent({}) {
                     Kembali
                 </Link>
             </Button>
-            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between items-center block group-[.open]:block lg:group-[.open]:flex sm:flex">
+            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between items-center block group-[.open]:block lg:group-[.open]:flex sm:flex dark:border-neutral-600">
                 <div>
                     <p className="text-gray-400 text-small">
                         Monitoring Asesmen M-Chart-R/F
@@ -169,7 +171,7 @@ export default function RecomendationStudent({}) {
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
-                <div className="w-full border border-gray-300 p-2 rounded-lg">
+                <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
                     <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <p className="text-medium font-medium tracking-tight">
                             Mengikuti Perintah
@@ -201,7 +203,7 @@ export default function RecomendationStudent({}) {
                         </AspectRatio>
                     </div>
                 </div>
-                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60">
+                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
                     <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <p className="font-medium tracking-tight">Nama Aspek</p>
                         <Select disabled={isLoading}>
@@ -231,7 +233,7 @@ export default function RecomendationStudent({}) {
                         </AspectRatio>
                     </div>
                 </div>
-                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60">
+                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
                     <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                         <p className="font-medium tracking-tight">Nama Aspek</p>
                         <Select disabled={isLoading}>
@@ -273,8 +275,8 @@ export default function RecomendationStudent({}) {
                     </p>
                 </div>
             </div>
-            <div className="border border-gray-300 rounded-lg overflow-hidden">
-                <div className="bg-purple-50 flex justify-between items-center p-2 !text-sm sm:text-base">
+            <div className="border border-gray-300 rounded-lg overflow-hidden dark:border-neutral-600">
+                <div className="bg-purple-50 flex justify-between items-center p-2 !text-sm sm:text-base dark:bg-purple-900">
                     <p className="font-semibold tracking-tight text-medium">
                         Rekomendasi Aktifitas
                     </p>
@@ -309,7 +311,7 @@ export default function RecomendationStudent({}) {
                     </Popover>
                 </div>
                 <div className="p-2">
-                    <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2">
+                    <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
                         <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                             <p className="text-small">
                                 Aktifitas belum dilakukan

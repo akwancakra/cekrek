@@ -25,7 +25,7 @@ export function Calendar({
     return (
         <DayPicker
             showOutsideDays={showOutsideDays}
-            className={cn("p-0", className)}
+            className={cn("p-0 dark:text-white", className)}
             classNames={{
                 months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
                 month: "space-y-4",
@@ -44,14 +44,15 @@ export function Calendar({
                 head_cell:
                     "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
                 row: "flex w-full mt-2",
-                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                cell: "text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 dark:[&:has([aria-selected])]:!bg-purple-700 dark:[&:has([aria-selected])]:!text-white dark:[&:has([aria-selected])]:!rounded-md",
                 day: cn(
                     buttonVariants({ variant: "ghost" }),
-                    "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+                    "h-9 w-9 p-0 font-normal aria-selected:opacity-100 dark:hover:!bg-primary"
                 ),
                 day_selected:
-                    "bg-primary text-white hover:bg-primary-foreground hover:text-white focus:bg-primary focus:text-primary-foreground",
-                day_today: "bg-purple-100 text-accent-foreground",
+                    "bg-primary text-white hover:bg-primary-foreground hover:text-white focus:bg-primary focus:text-primary-foreground dark:focus:text-white",
+                day_today:
+                    "bg-purple-200 text-accent-foreground dark:bg-neutral-900 dark:text-white",
                 day_outside: "text-muted-foreground opacity-50",
                 day_disabled: "text-muted-foreground opacity-50",
                 day_range_middle:

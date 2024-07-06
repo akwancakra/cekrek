@@ -13,8 +13,8 @@ interface ChildCardProps {
 
 export default function ChildCard({ child }: ChildCardProps) {
     return (
-        <div className="border border-gray-300 rounded-lg p-2 md:min-w-48">
-            <div className="bg-gray-400 w-full rounded-lg overflow-hidden">
+        <div className="border border-gray-300 rounded-lg p-2 md:min-w-48 dark:border-gray-600">
+            <div className="bg-gray-400 w-full rounded-lg overflow-hidden dark:border-gray-700">
                 <AspectRatio ratio={4 / 3} className="bg-muted">
                     <Image
                         src={getImageUrl(child?.picture)}

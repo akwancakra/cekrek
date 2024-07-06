@@ -16,7 +16,7 @@ export default function Alert({
     classnew,
 }: AlertProps) {
     const typeList = {
-        primary: "bg-primary text-white",
+        primary: "bg-primary text-white dark:border-neutral-600",
         primaryDark: "border border-purple-300 bg-purple-900 text-white",
         secondary: "bg-gray-300 text-black",
         error: "bg-red-500 text-white",

@@ -20,7 +20,7 @@ export default function HomeTeacher({}) {
     const [students, setStudents] = useState<Child[]>([]);
     const [studentsFull, setStudentsFull] = useState<Child[]>([]);
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const {
         data,
@@ -30,7 +30,10 @@ export default function HomeTeacher({}) {
         data: { status: string; children: Child[] };
         isLoading: boolean;
         mutate: () => void;
-    } = useSWR(`/api/teachers/${profile?.id}/students`, fetcher);
+    } = useSWR(
+        isReady && profile?.id && `/api/teachers/${profile?.id}/students`,
+        fetcher
+    );
 
     const {
         data: fullStudents,
@@ -39,24 +42,26 @@ export default function HomeTeacher({}) {
         useSWR(`/api/children?plain=true`, fetcher);
 
     const removeStudent = async (studentId: string) => {
-        await axios
-            .put(`/api/teachers/${profile?.id}/students/${studentId}/delete`)
-            .then(() => {
-                toast.success("Siswa berhasil dihapus!");
-                setIsLoadingPost(false);
+        if (isReady && profile?.id) {
+            await axios
+                .put(`/api/teachers/${profile.id}/students/${studentId}/delete`)
+                .then(() => {
+                    toast.success("Siswa berhasil dihapus!");
+                    setIsLoadingPost(false);
 
-                mutate();
-            })
-            .catch((err) => {
-                if (err?.response.status === 400) {
-                    toast.error(err?.response?.data?.message);
-                } else if (err?.response.status === 500) {
-                    toast.error("Server Error");
-                } else {
-                    toast.error("Terjadi kesalahan");
-                }
-                setIsLoadingPost(false);
-            });
+                    mutate();
+                })
+                .catch((err) => {
+                    if (err?.response.status === 400) {
+                        toast.error(err?.response?.data?.message);
+                    } else if (err?.response.status === 500) {
+                        toast.error("Server Error");
+                    } else {
+                        toast.error("Terjadi kesalahan");
+                    }
+                    setIsLoadingPost(false);
+                });
+        }
     };
 
     useEffect(() => {
@@ -85,9 +90,11 @@ export default function HomeTeacher({}) {
     return (
         <>
             <section className="mx-auto max-w-7xl mb-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
-                <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
-                    <p className="text-primary -mb-1">Selamat Pagi Guru</p>
-                    <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
+                <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-br from-purple-200 to-purple-100 sm:h-64 dark:from-purple-900 dark:to-purple-400">
+                    <p className="text-primary -mb-1 dark:text-purple-100">
+                        Selamat Pagi Guru
+                    </p>
+                    <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl dark:text-purple-100">
                         {profile?.name || "Guru"}
                     </p>
                 </div>

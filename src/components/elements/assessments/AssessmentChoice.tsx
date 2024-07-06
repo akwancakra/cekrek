@@ -144,7 +144,7 @@ export default function AssessmentChoice({
                             ))}
                         </SelectContent>
                     </Select>
-                    <p className="text-gray-500 text-center text-small">
+                    <p className="text-gray-500 text-center text-small dark:text-gray-300">
                         {assessments[count - 1]?.question}
                     </p>
                     <div className="bg-gray-400 rounded-lg w-full overflow-hidden">

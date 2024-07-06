@@ -52,7 +52,7 @@ AssessmentResultProps) {
 
     return (
         <section className="mx-auto max-w-7xl flex flex-col justify-center items-center w-full h-full gap-2 p-2">
-            <div className="w-full border border-gray-300 rounded-lg p-2">
+            <div className="w-full border border-gray-300 rounded-lg p-2 dark:border-gray-600">
                 <div>
                     <p className="text-gray-400 text-xs">
                         Hasil Akhir Asesmen Umum
@@ -62,8 +62,8 @@ AssessmentResultProps) {
                     </p>
                 </div>
             </div>
-            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden">
-                <div className="bg-purple-100 w-full p-3">
+            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden dark:border-gray-600">
+                <div className="bg-purple-100 w-full p-3 dark:bg-purple-900">
                     <p className="text-large font-semibold tracking-tight">
                         Screening Awal
                     </p>
@@ -134,8 +134,8 @@ AssessmentResultProps) {
                     </div> */}
                 </div>
             </div>
-            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden">
-                <div className="bg-purple-100 w-full p-3">
+            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden dark:border-gray-600">
+                <div className="bg-purple-100 w-full p-3 dark:bg-purple-900">
                     <p className="text-large font-semibold tracking-tight">
                         Skoring Soal
                     </p>
@@ -157,8 +157,8 @@ AssessmentResultProps) {
                     })}
                 </div>
             </div>
-            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden">
-                <div className="bg-purple-100 w-full p-3">
+            <div className="w-full border border-gray-300 rounded-lg mt-3 overflow-hidden dark:border-gray-600">
+                <div className="bg-purple-100 w-full p-3 dark:bg-purple-900">
                     <p className="text-large font-semibold tracking-tight">
                         Hasil
                     </p>

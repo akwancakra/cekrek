@@ -733,7 +733,10 @@ export default function BiodataWrapper({
                                         </option>
                                     </select> */}
                                     <Select
-                                        value={formik.values.gender}
+                                        value={formik.values.gender || ""}
+                                        defaultValue={
+                                            formik.values.gender || ""
+                                        }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(
                                                 "gender",
@@ -810,7 +813,10 @@ export default function BiodataWrapper({
                                         </option>
                                     </select> */}
                                     <Select
-                                        defaultValue={formik.values.religion}
+                                        value={formik.values.religion || ""}
+                                        defaultValue={
+                                            formik.values.religion || ""
+                                        }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(
                                                 "religion",
@@ -902,7 +908,10 @@ export default function BiodataWrapper({
                                         </span>
                                     </div>
                                     <Select
-                                        defaultValue={formik.values.hearing}
+                                        value={formik.values.hearing || ""}
+                                        defaultValue={
+                                            formik.values.hearing || ""
+                                        }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(
                                                 "hearing",
@@ -939,8 +948,11 @@ export default function BiodataWrapper({
                                         </span>
                                     </div>
                                     <Select
+                                        value={
+                                            formik.values.risk_category || ""
+                                        }
                                         defaultValue={
-                                            formik.values.risk_category
+                                            formik.values.risk_category || ""
                                         }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(

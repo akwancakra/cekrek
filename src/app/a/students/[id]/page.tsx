@@ -300,7 +300,7 @@ export default function StudentDetails({}) {
                                             <AlertDialogTrigger asChild>
                                                 <button
                                                     type="button"
-                                                    className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                                    className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600 dark:bg-red-600 dark:text-red-100 dark:hover:!bg-red-700 dark:hover:!text-red-200"
                                                     disabled={isSubmit}
                                                 >
                                                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
@@ -376,13 +376,15 @@ export default function StudentDetails({}) {
                             <div className="divider my-1" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">Nama</p>
+                                    <p className="text-xs text-gray-400">
+                                        Nama
+                                    </p>
                                     <p className="text-medium font-semibold">
                                         {data?.full_name || "N/A"}
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">
+                                    <p className="text-xs text-gray-400">
                                         Nama Panggilan
                                     </p>
                                     <p className="text-medium font-semibold">
@@ -390,7 +392,7 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">
+                                    <p className="text-xs text-gray-400">
                                         Jenis Kelamin
                                     </p>
                                     <p className="text-medium font-semibold">
@@ -400,7 +402,9 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">Agama</p>
+                                    <p className="text-xs text-gray-400">
+                                        Agama
+                                    </p>
                                     <p className="text-medium font-semibold">
                                         {data?.religion
                                             ? capitalizeFirstLetter(
@@ -410,7 +414,7 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">
+                                    <p className="text-xs text-gray-400">
                                         Tempat Lahir
                                     </p>
                                     <p className="text-medium font-semibold">
@@ -418,7 +422,7 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">
+                                    <p className="text-xs text-gray-400">
                                         Tanggal Lahir
                                     </p>
                                     <p className="text-medium font-semibold">
@@ -430,7 +434,7 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">
+                                    <p className="text-xs text-gray-400">
                                         Pendengaran
                                     </p>
                                     <p className="text-medium font-semibold">
@@ -442,7 +446,7 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1">
-                                    <p className="text-xs to-gray-400">
+                                    <p className="text-xs text-gray-400">
                                         Jumlah Saudara
                                     </p>
                                     <p className="text-medium font-semibold">
@@ -450,7 +454,9 @@ export default function StudentDetails({}) {
                                     </p>
                                 </div>
                                 <div className="my-1 col-span-3">
-                                    <p className="text-xs to-gray-400">Guru</p>
+                                    <p className="text-xs text-gray-400">
+                                        Guru
+                                    </p>
                                     <p className="text-medium font-semibold">
                                         {data?.teacher?.name || "N/A"}
                                     </p>
@@ -502,7 +508,7 @@ export default function StudentDetails({}) {
 
                                         return (
                                             <div key={key} className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     {translatedKey.replace(
                                                         "_",
                                                         " "
@@ -555,7 +561,7 @@ export default function StudentDetails({}) {
 
                                     return (
                                         <div key={key} className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 {translatedKey.replace(
                                                     "_",
                                                     " "
@@ -626,7 +632,7 @@ export default function StudentDetails({}) {
 
                                         return (
                                             <div key={key} className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     {translatedKeyHealth.replace(
                                                         "_",
                                                         " "

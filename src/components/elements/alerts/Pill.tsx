@@ -15,7 +15,8 @@ export default function Pill({
 }: AlertProps) {
     const typeList = {
         primary: "border border-purple-600 bg-purple-200 text-purple-600",
-        secondary: "border border-gray-600 bg-gray-200 text-gray-600",
+        secondary:
+            "border border-gray-600 bg-gray-200 text-gray-600 dark:border-neutral-600 dark:bg-neutral-900 dark:text-white",
         error: "border border-red-600 bg-red-200 text-red-600",
         warning: "border border-yellow-600 bg-yellow-200 text-yellow-600",
     };

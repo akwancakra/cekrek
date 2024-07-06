@@ -25,7 +25,7 @@ export default function AssessmentPage() {
     const [assessmentType, setAssessmentType] = useState<"umum" | "m-chart">();
     const [data, setData] = useState<Child>();
     const [assessmentData, setAssessmentData] = useState<Assessment[]>([]);
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
     // const [currentStage, setCurrentStage] = useState(1);
     const {
         count: currentStage,
@@ -50,7 +50,7 @@ export default function AssessmentPage() {
         data: childData,
         isLoading: isLoadingChild,
     }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
-        `/api/teachers/${profile?.id}/students/${id}`,
+        isReady && profile?.id && `/api/teachers/${profile?.id}/students/${id}`,
         fetcher
     );
 

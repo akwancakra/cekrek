@@ -44,7 +44,7 @@ export default function MonitoringRecommendations() {
     const { count, setCount, increment, decrement } = useCounter(1);
     const [answers, setAnswers] = useState<string[]>([]);
     const [isSubmit, setIsSubmit] = useState(false);
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const today = formattedDateStripYearFirst(new Date().toString());
     const { id } = useParams();
@@ -54,7 +54,9 @@ export default function MonitoringRecommendations() {
     const date = searchParams.get("date") || today;
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/teachers/${profile?.id}/students/${id}/recommendations?date=${date}`,
+        isReady &&
+            profile?.id &&
+            `/api/teachers/${profile?.id}/students/${id}/recommendations?date=${date}`,
         fetcher
     );
 

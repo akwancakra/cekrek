@@ -347,7 +347,10 @@ export default function AddStudentPage() {
                 <p className="font-semibold tracking-tighter text-xl sm:text-2xl">
                     Tambah siswa
                 </p>
-                <div className="divider my-1"></div>
+                <div
+                    className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600
+"
+                ></div>
 
                 <div className="flex justify-center mb-3">
                     <ul className="steps w-full">
@@ -394,8 +397,8 @@ export default function AddStudentPage() {
                     <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
                         {getStageComponent()}
                     </div>
-                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
-                        <div className="max-w-32 mb-3 bg-gray-300 border border-gray-300 rounded-lg overflow-hidden">
+                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
+                        <div className="max-w-32 mb-3 bg-gray-300 border border-gray-300 rounded-lg overflow-hidden dark:border-neutral-700">
                             <AspectRatio ratio={1 / 1}>
                                 <Image
                                     src={getImageUrl(value?.biodata?.picture)}
@@ -408,13 +411,13 @@ export default function AddStudentPage() {
                         </div>
                         <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                             <div>
-                                <p className="text-xs to-gray-400">Nama</p>
+                                <p className="text-xs text-gray-400">Nama</p>
                                 <p className="text-medium font-semibold">
                                     {value?.biodata?.full_name || "N/A"}
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">
+                                <p className="text-xs text-gray-400">
                                     Nama Panggilan
                                 </p>
                                 <p className="text-medium font-semibold">
@@ -422,7 +425,7 @@ export default function AddStudentPage() {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">
+                                <p className="text-xs text-gray-400">
                                     Jenis Kelamin
                                 </p>
                                 <p className="text-medium font-semibold">
@@ -434,7 +437,7 @@ export default function AddStudentPage() {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">Agama</p>
+                                <p className="text-xs text-gray-400">Agama</p>
                                 <p className="text-medium font-semibold">
                                     {value?.biodata?.religion
                                         ? capitalizeFirstLetter(
@@ -444,7 +447,7 @@ export default function AddStudentPage() {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">
+                                <p className="text-xs text-gray-400">
                                     Tempat Lahir
                                 </p>
                                 <p className="text-medium font-semibold">
@@ -452,7 +455,7 @@ export default function AddStudentPage() {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">
+                                <p className="text-xs text-gray-400">
                                     Tanggal Lahir
                                 </p>
                                 <p className="text-medium font-semibold">
@@ -464,7 +467,7 @@ export default function AddStudentPage() {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">
+                                <p className="text-xs text-gray-400">
                                     Pendengaran
                                 </p>
                                 <p className="text-medium font-semibold">
@@ -476,7 +479,7 @@ export default function AddStudentPage() {
                                 </p>
                             </div>
                             <div>
-                                <p className="text-xs to-gray-400">
+                                <p className="text-xs text-gray-400">
                                     Jumlah Saudara
                                 </p>
                                 <p className="text-medium font-semibold">

@@ -21,7 +21,9 @@ export default function RecomendationCard({
     }
 
     return (
-        <div className={`collapse rounded-lg hover:bg-gray-100 ${className}`}>
+        <div
+            className={`collapse rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-700 ${className}`}
+        >
             <input type="checkbox" />
             <div className="collapse-title p-0 min-h-fit">
                 <div className="flex justify-between items-center mb-1">
@@ -41,7 +43,7 @@ export default function RecomendationCard({
                             <p className="font-medium text-medium">
                                 {recommendation?.title || "N/A"}
                             </p>
-                            <p className="text-gray-500 text-small">
+                            <p className="text-gray-500 text-small dark:text-gray-400">
                                 Frekuensi: {recommendation?.frequency || "N/A"}
                             </p>
                         </div>
