@@ -36,7 +36,7 @@ const Clock = () => {
     }, [time]);
 
     return (
-        <div className="h-64 relative bg-purple-100 overflow-hidden rounded-lg">
+        <div className="h-64 relative bg-purple-100 overflow-hidden rounded-lg dark:bg-purple-900">
             <div className="w-full h-full bg-cover bg-center" />
             <Image
                 src={`/static/images/${getDayOrNight()}.jpg`}
@@ -48,14 +48,14 @@ const Clock = () => {
                 <div
                     className={`w-3/4 h-2/3 border-8 border-primary p-2 flex justify-center items-center rounded-xl ${
                         getDayOrNight() === "classroom-day"
-                            ? "bg-purple-100"
+                            ? "bg-purple-100 dark:bg-purple-600/60"
                             : "bg-purple-100/30"
                     }`}
                 >
                     <div
                         className={`flex items-end gap-1 ${
                             getDayOrNight() === "classroom-day"
-                                ? "text-primary"
+                                ? "text-primary dark:text-purple-200"
                                 : "text-purple-100"
                         }`}
                     >

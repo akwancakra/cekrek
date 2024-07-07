@@ -1,13 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { Session, UserSession } from "./types/userSession.type";
+import { Session } from "./types/userSession.type";
 
 const restrictedRoutes = ["/login", "/register"];
 const publicRoutes = [
     "/api",
     "/_next/static",
     "/_next/image",
+    "/static/images",
     "/.*svg",
     "/.*png",
     "/.*jpg",
@@ -27,6 +28,8 @@ export async function middleware(req: NextRequest) {
         req,
         secret: process.env.NEXTAUTH_SECRET,
     })) as Session | null;
+
+    console.log(pathname);
 
     // console.log(token);
 

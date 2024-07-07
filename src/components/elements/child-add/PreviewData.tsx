@@ -1,6 +1,5 @@
 "use client";
 
-import { ChildrenData } from "@/app/t/students/add/page";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -15,6 +14,7 @@ import {
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChildrenData } from "@/types/childrenData.type";
 import { getImageUrl } from "@/utils/converters";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
@@ -38,7 +38,7 @@ export default function PreviewData({
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [data, setData] = useState<ChildrenData>();
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const router = useRouter();
     const { id } = useParams();
@@ -81,9 +81,9 @@ export default function PreviewData({
 
         const submitPromise = new Promise<void>(async (resolve, reject) => {
             try {
-                if (id) {
+                if (id && isReady && profile?.id) {
                     await axios.put(
-                        `/api/teachers/${profile?.id}/students/${id}`,
+                        `/api/teachers/${profile.id}/students/${id}`,
                         finalData
                     );
                 } else {
@@ -105,15 +105,10 @@ export default function PreviewData({
                 return "Berhasil menyimpan data!";
                 // }
             },
-            error: (data) => {
+            error: (error) => {
                 setIsSubmit(false);
-                if (data?.response?.status === 400) {
-                    return data?.response?.data?.message;
-                } else if (data?.response?.status === 500) {
-                    return "Server Error";
-                } else {
-                    return "Terjadi kesalahan";
-                }
+
+                return error?.response?.data?.message || "Gagal mengubah data";
             },
         });
     };

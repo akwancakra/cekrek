@@ -18,6 +18,7 @@ import {
     Command,
     CommandEmpty,
     CommandGroup,
+    CommandInput,
     CommandItem,
     CommandList,
 } from "@/components/ui/command";
@@ -40,6 +41,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Child } from "@/types/children.types";
 import { getChildrenImage } from "@/utils/fetcher";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import useProfile from "@/utils/useProfile";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -60,13 +62,12 @@ export default function ConnectStudentDialog({
 }) {
     const [open, setOpen] = useState(false);
     const [popoverOpen, setPopoverOpen] = useState(false);
-
     const [value, setValue] = useState("");
     const [search, setSearch] = useState("");
     const [selectedProfile, setSelectedProfile] = useState<Child | undefined>();
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
-
     const isDesktop = useMediaQuery("(min-width: 768px)");
+    const { profile, isReady } = useProfile();
 
     const filteredStudents = students.filter(
         (student) =>
@@ -89,6 +90,12 @@ export default function ConnectStudentDialog({
     const connectStudentButton = async () => {
         setIsLoadingPost(true);
 
+        if (!isReady && !profile?.id) {
+            return toast.error(
+                "Tidak dapat menambahkan siswa, silahkan coba lagi!"
+            );
+        }
+
         if (!selectedProfile?.id) {
             return toast.error("Pilih siswa terlebih dahulu!");
         }
@@ -99,7 +106,7 @@ export default function ConnectStudentDialog({
         };
 
         await axios
-            .put(`/api/teachers/${1}/students/add`, postData)
+            .put(`/api/teachers/${profile?.id}/students/add`, postData)
             .then((res) => {
                 toast.success("Siswa berhasil ditambahkan!");
                 setIsLoadingPost(false);
@@ -127,7 +134,7 @@ export default function ConnectStudentDialog({
                     <ScrollArea className="max-h-[80vh] p-3">
                         <AlertDialogHeader className="m-1">
                             <AlertDialogTitle>Tambah Siswa</AlertDialogTitle>
-                            <div className="divider my-1"></div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div>
                                 <AspectRatio ratio={12 / 13}>
                                     <Image
@@ -169,6 +176,15 @@ export default function ConnectStudentDialog({
                                                     align="start"
                                                 >
                                                     <Command className="w-96">
+                                                        {/* <CommandInput
+                                                            placeholder="Cari nama anak..."
+                                                            value={search}
+                                                            onValueChange={(
+                                                                value
+                                                            ) =>
+                                                                setSearch(value)
+                                                            }
+                                                        /> */}
                                                         <div className="p-2">
                                                             <input
                                                                 type="text"
@@ -284,7 +300,7 @@ export default function ConnectStudentDialog({
                                     </Link>
                                 </Button>
                             )}
-                            <div className="divider my-1"></div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <AlertDialogDescription />
                         </AlertDialogHeader>
                         <AlertDialogFooter>
@@ -311,7 +327,7 @@ export default function ConnectStudentDialog({
                     <ScrollArea className="p-0">
                         <DrawerHeader className="text-left">
                             <DrawerTitle>Tambah Siswa</DrawerTitle>
-                            <div className="divider my-1"></div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div>
                                 <AspectRatio ratio={12 / 13}>
                                     <Image

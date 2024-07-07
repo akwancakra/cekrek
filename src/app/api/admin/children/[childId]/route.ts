@@ -28,6 +28,10 @@ export async function GET(req: any, { params }: any) {
             },
         });
 
+        const teacher = await prisma.users.findUnique({
+            where: { id: child?.teacher_id },
+        });
+
         if (!child) {
             return NextResponse.json(
                 { status: "error", message: "Child Not Found" },
@@ -90,6 +94,7 @@ export async function GET(req: any, { params }: any) {
 
         const childFinal = {
             ...response,
+            teacher,
             child_assesments: generateAssessmentWrap(response),
             monitor_table_data,
         };

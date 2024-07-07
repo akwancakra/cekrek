@@ -94,8 +94,8 @@ export async function PUT(req: any, { params }: any) {
 
         if (!userExists) {
             return NextResponse.json(
-                { status: "error", message: "Parent Not Found" },
-                { status: 200 }
+                { status: "error", message: "Data tidak ditemukan" },
+                { status: 400 }
             );
         }
 
@@ -104,15 +104,15 @@ export async function PUT(req: any, { params }: any) {
             where: { email: email },
         });
 
-        if (emailExist && emailExist.id !== id) {
+        if (emailExist && emailExist.id != id) {
             return NextResponse.json(
-                { status: "error", message: "Email Already Exist" },
-                { status: 200 }
+                { status: "error", message: "Email sudah digunakan" },
+                { status: 400 }
             );
         }
 
         // Check if password is provided and not empty
-        let hashedPassword;
+        let hashedPassword: string;
         if (password) {
             hashedPassword = await bcrypt.hash(password, 10);
         }

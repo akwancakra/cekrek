@@ -20,6 +20,7 @@ import { Child } from "@/types/children.types";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import useProfile from "@/utils/useProfile";
+import { getRecommendationImageUrl } from "@/utils/converters";
 
 const getMonitoredRecToday = (
     monitorChildRec: MonitorChildRecommendation[]
@@ -32,32 +33,18 @@ const getMonitoredRecToday = (
     return monitorChildRec.length;
 };
 
-const getFirstRecommendationImage = (
-    monitorChildRec: MonitorChildRecommendation[]
-) => {
-    // GET FIRST RECOMMENDATION THAT NO MONITORING YET, THEN RETURN RECOMMENDATION IMAGE
-    const firstRecommendation = monitorChildRec.find((item) => {
-        if (item.is_done === false) {
-            return true;
-        }
-        return false;
-    });
-
-    return (
-        firstRecommendation?.child_recommendation?.recommendations?.icon ||
-        "default.jpg"
-    );
-};
-
 export default function HomeParent({}) {
     const [childs, setChilds] = useState<Child[]>();
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const {
         data,
         isLoading,
     }: { data: { status: string; children: Child[] }; isLoading: boolean } =
-        useSWR(`/api/parents/${profile?.id}/children`, fetcher);
+        useSWR(
+            isReady && profile?.id && `/api/parents/${profile?.id}/children`,
+            fetcher
+        );
 
     useEffect(() => {
         if (data?.children) {
@@ -69,9 +56,11 @@ export default function HomeParent({}) {
     return (
         <>
             <section className="mx-auto max-w-7xl mb-4 grid gap-4 grid-cols-1 sm:grid-cols-2">
-                <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-b from-purple-200 to-purple-100 sm:h-64">
-                    <p className="text-primary -mb-1">Selamat datang</p>
-                    <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl">
+                <div className="h-32 overflow-hidden p-4 rounded-lg bg-gradient-to-br from-purple-200 to-purple-100 sm:h-64 dark:from-purple-900 dark:to-purple-400">
+                    <p className="text-primary -mb-1 dark:text-purple-100">
+                        Selamat datang
+                    </p>
+                    <p className="text-primary font-semibold tracking-tight text-xl sm:text-3xl dark:text-purple-100">
                         {profile?.name || "Orang Tua"}
                     </p>
                 </div>
@@ -120,24 +109,27 @@ export default function HomeParent({}) {
 
 const SingleChildCard = ({ data }: { data: Child[] }) => {
     return (
-        <section className="mx-auto max-w-7xl">
+        <section className="mx-auto max-w-7xl flex gap-2 p-3 border rounded-lg border-gray-300 dark:border-neutral-600">
             <div className="mb-2 group-[.open]:mb-2 group-[.open]:w-full sm:mb-0 sm:w-7/12 md:group-[.open]:mb-0 md:group-[.open]:w-7/12">
                 <p className="font-semibold tracking-tighter text-large">
-                    Today activites
+                    Aktifitas hari ini
                 </p>
-                <p className="text-gray-500 text-small">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Officia corrupti nulla modi cupiditate delectus inventore.
+                <p className="text-gray-500 text-small dark:text-neutral-300">
+                    Rekomendasi aktifitas yang harus anak ini lakukan atau
+                    selesaikan, dengan mengikuti arahan dari rekomendasi yang
+                    sesuai.
                 </p>
-                <Alert
-                    text={`${data[0].full_name} menggunakan asesmen M-Chart-R/F`}
-                    desc="Asesmen M-Chart-R/F adalah untuk memonitoring anak autisme"
-                    icon="info"
-                    type="primary"
-                    classnew="my-2"
-                />
+                {data[0]?.child_recommendations?.length > 0 && (
+                    <Alert
+                        text={`${data[0].full_name} menggunakan asesmen M-Chart-R/F`}
+                        desc="Asesmen M-Chart-R/F adalah untuk memonitoring anak autisme"
+                        icon="info"
+                        type="primary"
+                        classnew="my-2"
+                    />
+                )}
 
-                <div className="flex items-center">
+                <div className="flex items-center mt-3">
                     <Pill
                         text={`Rekomendasi ${getMonitoredRecToday(
                             data[0]?.monitoringChildRecommendations?.[0]
@@ -194,10 +186,10 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
             <div className="group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12">
                 <AspectRatio ratio={8 / 9} className="bg-muted">
                     <Image
-                        src={`/static/images/${getFirstRecommendationImage(
-                            data[0]?.monitoringChildRecommendations?.[0]
-                                ?.monitorRecommendations || []
-                        )}`}
+                        src={getRecommendationImageUrl(
+                            data[0]?.child_recommendations[0]?.recommendations
+                                .icon
+                        )}
                         alt="Recomendation Image"
                         fill={true}
                         className="rounded-xl object-cover"
@@ -234,24 +226,27 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                     {data.map((child, index) => (
                         <CarouselItem
                             key={index}
-                            className="w-full bg-white border border-gray-300 rounded-lg gap-2 p-3 group-[.open]:block sm:flex md:group-[.open]:flex"
+                            className="w-full bg-white border border-gray-300 rounded-lg gap-2 p-3 group-[.open]:block sm:flex md:group-[.open]:flex dark:bg-neutral-800 dark:border-neutral-600"
                         >
                             <div className="mb-2 group-[.open]:mb-2 group-[.open]:w-full sm:mb-0 sm:w-7/12 md:group-[.open]:mb-0 md:group-[.open]:w-7/12">
                                 <p className="font-semibold tracking-tighter text-large">
-                                    Today activites
+                                    Aktifitas hari ini
                                 </p>
-                                <p className="text-gray-500 text-small">
-                                    Lorem ipsum dolor sit amet consectetur
-                                    adipisicing elit. Officia corrupti nulla
-                                    modi cupiditate delectus inventore.
+                                <p className="text-gray-500 text-small dark:text-neutral-400">
+                                    Rekomendasi aktifitas yang harus anak ini
+                                    lakukan atau selesaikan, dengan mengikuti
+                                    arahan dari rekomendasi yang sesuai.
                                 </p>
-                                <Alert
-                                    text={`${child.full_name} menggunakan asesmen M-Chart-R/F`}
-                                    desc="Asesmen M-Chart-R/F adalah untuk memonitoring anak autisme"
-                                    icon="info"
-                                    type="primary"
-                                    classnew="my-2"
-                                />
+
+                                {child?.child_recommendations?.length > 0 && (
+                                    <Alert
+                                        text={`${child.full_name} menggunakan asesmen M-Chart-R/F`}
+                                        desc="Asesmen M-Chart-R/F adalah untuk memonitoring anak autisme"
+                                        icon="info"
+                                        type="primary"
+                                        classnew="my-2"
+                                    />
+                                )}
 
                                 <div className="flex items-center">
                                     <Pill
@@ -326,11 +321,10 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                             <div className="group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12">
                                 <AspectRatio ratio={8 / 9} className="bg-muted">
                                     <Image
-                                        src={`/static/images/${getFirstRecommendationImage(
-                                            child
-                                                .monitoringChildRecommendations?.[0]
-                                                ?.monitorRecommendations || []
-                                        )}`}
+                                        src={getRecommendationImageUrl(
+                                            child?.child_recommendations[0]
+                                                ?.recommendations.icon
+                                        )}
                                         alt="Recomendation Image"
                                         fill={true}
                                         className="rounded-xl object-cover"

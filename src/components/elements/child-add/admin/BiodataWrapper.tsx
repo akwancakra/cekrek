@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { DatePicker } from "../inputs/datepicker";
+import { DatePicker } from "../../inputs/datepicker";
 import { useEffect, useMemo, useState } from "react";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { toast } from "sonner";
@@ -273,6 +273,7 @@ export default function BiodataWrapper({
     const fields: (keyof typeof initialValues)[] = [
         "teacher_id",
         "risk_category",
+        "parent_wali",
         "parent_dad",
         "parent_mother",
         "full_name",
@@ -751,7 +752,7 @@ export default function BiodataWrapper({
                                                 placeholder="Anit..."
                                                 className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
                                                 {...formik.getFieldProps(
-                                                    "nickname"
+                                                    "nick_name"
                                                 )}
                                                 // value={formik.values.name}
                                                 // onChange={formik.handleChange}
@@ -876,8 +877,9 @@ export default function BiodataWrapper({
                                         </option>
                                     </select> */}
                                         <Select
+                                            value={formik.values.religion || ""}
                                             defaultValue={
-                                                formik.values.religion
+                                                formik.values.religion || ""
                                             }
                                             onValueChange={(value) =>
                                                 formik.setFieldValue(
@@ -972,7 +974,10 @@ export default function BiodataWrapper({
                                             </span>
                                         </div>
                                         <Select
-                                            defaultValue={formik.values.hearing}
+                                            value={formik.values.hearing || ""}
+                                            defaultValue={
+                                                formik.values.hearing || ""
+                                            }
                                             onValueChange={(value) =>
                                                 formik.setFieldValue(
                                                     "hearing",
@@ -1009,8 +1014,13 @@ export default function BiodataWrapper({
                                             </span>
                                         </div>
                                         <Select
+                                            value={
+                                                formik.values.risk_category ||
+                                                ""
+                                            }
                                             defaultValue={
-                                                formik.values.risk_category
+                                                formik.values.risk_category ||
+                                                ""
                                             }
                                             onValueChange={(value) =>
                                                 formik.setFieldValue(

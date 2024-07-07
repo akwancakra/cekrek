@@ -281,7 +281,7 @@ export default function AddParentPage() {
                                             Data Akun
                                         </p>
                                     </div>
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                         <div>
                                             <label className="form-control w-full">
@@ -730,7 +730,7 @@ export default function AddParentPage() {
                                         )}
                                     </div>
 
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <div className="col-span-2 flex justify-end gap-2">
                                         <Button
                                             variant={"outline"}

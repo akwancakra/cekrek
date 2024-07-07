@@ -205,7 +205,7 @@ export default function AddParentPage() {
                 </div>
 
                 <div className="sm:flex gap-3 group-[.open]:block md:group-[.open]:flex">
-                    <div className=" w-full border border-gray-300 rounded-lg p-3 sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
+                    <div className=" w-full border border-gray-300 rounded-lg p-3 sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3 dark:border-neutral-600">
                         {isLoading ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
@@ -249,7 +249,7 @@ export default function AddParentPage() {
                                             Data Akun
                                         </p>
                                     </div>
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                         <div>
                                             <label className="form-control w-full">
@@ -698,7 +698,7 @@ export default function AddParentPage() {
                                         )}
                                     </div>
 
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <div className="col-span-2 flex justify-end gap-2">
                                         <Button
                                             variant={"outline"}
@@ -777,7 +777,7 @@ export default function AddParentPage() {
                             </FormikProvider>
                         )}
                     </div>
-                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                         {isLoading ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">

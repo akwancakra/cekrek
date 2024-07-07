@@ -166,20 +166,20 @@ export default function AddRecommendatioPage() {
                             <div className="w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
                                 <div className="skeleton w-full h-[400px] rounded-lg"></div>
                             </div>
-                            <div className="sticky top-4 rounded-lg p-2 bg-white w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+                            <div className="sticky top-4 rounded-lg p-2 bg-white w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800">
                                 <div className="skeleton w-full h-36 rounded-lg"></div>
                             </div>
                         </>
                     ) : (
                         <>
                             <div className="w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                                <div className="border border-gray-300 rounded-lg p-3">
+                                <div className="border border-gray-300 rounded-lg p-3 dark:border-neutral-600">
                                     <div>
                                         <p className="font-semibold text-large tracking-tight">
                                             Data Rekomendasi
                                         </p>
                                     </div>
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <FormikProvider value={formik}>
                                         <Form>
                                             <div className="flex flex-col">
@@ -415,7 +415,7 @@ export default function AddRecommendatioPage() {
                                             </div>
                                         </Form>
                                     </FormikProvider>
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <div className="flex justify-end gap-2">
                                         <Button
                                             variant={"outline"}
@@ -499,7 +499,7 @@ export default function AddRecommendatioPage() {
                                 </div>
                             </div>
 
-                            <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+                            <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                                 <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                                     <div>
                                         <p className="text-xs text-gray-400">

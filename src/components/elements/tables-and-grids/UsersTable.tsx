@@ -429,7 +429,7 @@ const UserDeleteDrawer = ({
                 <DrawerTrigger asChild>
                     <button
                         type="button"
-                        className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                        className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600 dark:bg-red-600 dark:text-red-100 dark:hover:!bg-red-700 dark:hover:!text-red-200"
                     >
                         <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                             delete
@@ -492,7 +492,7 @@ const UserDeleteDialog = ({
                 <AlertDialogTrigger asChild>
                     <button
                         type="button"
-                        className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                        className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600 dark:bg-red-600 dark:text-red-100 dark:hover:!bg-red-700 dark:hover:!text-red-200"
                     >
                         <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                             delete

@@ -95,7 +95,7 @@ export default function CreateRecomendationCard({
                                 <AlertDialogTitle>
                                     Detil Rekomendasi
                                 </AlertDialogTitle>
-                                <div className="divider my-1"></div>
+                                <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                 <div>
                                     <div className="bg-gray-300 rounded-lg overflow-hidden">
                                         <AspectRatio ratio={1 / 1}>
@@ -215,7 +215,7 @@ export default function CreateRecomendationCard({
                                             <AlertDialogTitle>
                                                 Detil Rekomendasi
                                             </AlertDialogTitle>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                             <div>
                                                 <div className="bg-gray-300 rounded-lg overflow-hidden">
                                                     <AspectRatio ratio={1 / 1}>

@@ -63,7 +63,7 @@ export default function StudentCard({
     removeStudent,
 }: StudentCardProps) {
     return (
-        <div className="w-full flex flex-col gap-2 border border-gray-300 p-2 rounded-lg">
+        <div className="w-full flex flex-col gap-2 border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
             <div className="w-full h-1/2 bg-gray-300 rounded-lg overflow-hidden">
                 <AspectRatio ratio={1 / 1}>
                     <Image
@@ -85,10 +85,10 @@ export default function StudentCard({
                         {truncateString(student?.full_name || "N/A", 15)}
                     </p>
                     <div className="my-1.5">
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-neutral-400">
                             Terakhir asesmen
                         </p>
-                        <p className="text-small text-gray-700">
+                        <p className="text-small text-gray-700 dark:text-neutral-200">
                             {student?.last_assesment
                                 ? formattedDate(student.last_assesment)
                                 : "N/A"}
@@ -181,7 +181,7 @@ export default function StudentCard({
                                     <AlertDialogTrigger asChild>
                                         <button
                                             type="button"
-                                            className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                            className="w-full text-sm py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600 dark:bg-red-600 dark:text-red-100 dark:hover:!bg-red-700 dark:hover:!text-red-200"
                                         >
                                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                                 delete

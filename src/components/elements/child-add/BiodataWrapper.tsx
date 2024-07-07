@@ -35,8 +35,8 @@ import { fetcher } from "@/utils/fetcher";
 import { User } from "@/types/user.types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChildrenData } from "@/app/t/students/[id]/edit/page";
 import { getImageUrl } from "@/utils/converters";
+import { ChildrenData } from "@/types/childrenData.type";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -262,6 +262,7 @@ export default function BiodataWrapper({
     const data: { [key: string]: string } = localData?.biodata || ({} as any);
     const fields: (keyof typeof initialValues)[] = [
         "risk_category",
+        "parent_wali",
         "parent_dad",
         "parent_mother",
         "full_name",
@@ -685,7 +686,7 @@ export default function BiodataWrapper({
                                             placeholder="Anit..."
                                             className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
                                             {...formik.getFieldProps(
-                                                "nickname"
+                                                "nick_name"
                                             )}
                                             // value={formik.values.name}
                                             // onChange={formik.handleChange}
@@ -733,7 +734,10 @@ export default function BiodataWrapper({
                                         </option>
                                     </select> */}
                                     <Select
-                                        value={formik.values.gender}
+                                        value={formik.values.gender || ""}
+                                        defaultValue={
+                                            formik.values.gender || ""
+                                        }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(
                                                 "gender",
@@ -810,7 +814,10 @@ export default function BiodataWrapper({
                                         </option>
                                     </select> */}
                                     <Select
-                                        defaultValue={formik.values.religion}
+                                        value={formik.values.religion || ""}
+                                        defaultValue={
+                                            formik.values.religion || ""
+                                        }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(
                                                 "religion",
@@ -902,7 +909,10 @@ export default function BiodataWrapper({
                                         </span>
                                     </div>
                                     <Select
-                                        defaultValue={formik.values.hearing}
+                                        value={formik.values.hearing || ""}
+                                        defaultValue={
+                                            formik.values.hearing || ""
+                                        }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(
                                                 "hearing",
@@ -939,8 +949,11 @@ export default function BiodataWrapper({
                                         </span>
                                     </div>
                                     <Select
+                                        value={
+                                            formik.values.risk_category || ""
+                                        }
                                         defaultValue={
-                                            formik.values.risk_category
+                                            formik.values.risk_category || ""
                                         }
                                         onValueChange={(value) =>
                                             formik.setFieldValue(

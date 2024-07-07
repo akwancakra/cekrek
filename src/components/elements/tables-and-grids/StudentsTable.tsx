@@ -199,9 +199,7 @@ export default function StudentsTable({
                                 className="cursor-pointer"
                                 asChild
                             >
-                                <Link
-                                    href={`/a/students/${studentId}/assessment`}
-                                >
+                                <Link href={`/a/students/${studentId}/edit`}>
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         assignment
                                     </span>{" "}
@@ -221,14 +219,17 @@ export default function StudentsTable({
                                     Lakukan monitoring
                                 </Link>
                             </DropdownMenuItem> */}
-                            {/* <DropdownMenuItem className="cursor-pointer" asChild>
+                            <DropdownMenuItem
+                                className="cursor-pointer"
+                                asChild
+                            >
                                 <Link href={`/a/students/${studentId}/edit`}>
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         edit
                                     </span>{" "}
                                     Ubah siswa
                                 </Link>
-                            </DropdownMenuItem> */}
+                            </DropdownMenuItem>
                             <DropdownMenuItem
                                 className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
                                 asChild
@@ -237,7 +238,7 @@ export default function StudentsTable({
                                     <AlertDialogTrigger asChild>
                                         <button
                                             type="button"
-                                            className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                            className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600 dark:bg-red-600 dark:text-red-100 dark:hover:!bg-red-700 dark:hover:!text-red-200"
                                         >
                                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                                 delete

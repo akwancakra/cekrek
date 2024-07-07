@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChildrenData } from "@/app/t/students/add/page";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { useEffect, useState } from "react";
@@ -19,6 +18,7 @@ import BirthHealthYNMore from "../questions/BirthHealthYNMore";
 import HealthThreeNumber from "../questions/HealthThreeNumber";
 import BirthHealthOption from "../questions/BirthHealthOption";
 import HealthOneNumber from "../questions/HealthOneNumber";
+import { ChildrenData } from "@/types/childrenData.type";
 
 interface Props {
     handleNextStage: () => void;

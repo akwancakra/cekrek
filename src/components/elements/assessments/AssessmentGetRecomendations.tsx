@@ -98,7 +98,7 @@ export default function AssessmentGetRecommendations({
     const [assessmentFails, setAssessmentFails] = useState<AssessmentAnswer[]>(
         []
     );
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const { id } = useParams();
     const { push } = useRouter();
@@ -347,7 +347,7 @@ export default function AssessmentGetRecommendations({
 
     return (
         <section className="mx-auto max-w-7xl flex flex-col justify-center items-center w-full h-full gap-2 p-2">
-            <div className="w-full border border-gray-300 rounded-lg p-2">
+            <div className="w-full border border-gray-300 rounded-lg p-2 dark:border-neutral-600">
                 <div>
                     <p className="text-gray-400 text-xs">
                         Rekomendasi Hasil Asesmen M-Chart-R/F
@@ -357,7 +357,7 @@ export default function AssessmentGetRecommendations({
                     </p>
                 </div>
             </div>
-            <div className="w-full border border-gray-300 rounded-lg mt-3 p-3 overflow-hidden">
+            <div className="w-full border border-gray-300 rounded-lg mt-3 p-3 overflow-hidden dark:border-neutral-600">
                 <div className="rounded-lg p-4 w-full flex items-center text-white bg-primary h-fit sm:min-h-24">
                     <div>
                         <p className="text-xs -mb-1">Kategori</p>
@@ -586,7 +586,7 @@ const RecomendationFormDesktop = ({
                 <ScrollArea className="max-h-[80vh] p-3">
                     <AlertDialogHeader className="m-1">
                         <AlertDialogTitle>Tambah Rekomendasi</AlertDialogTitle>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <AddRecomendationForm
                             formik={formik}
                             assessmentFails={assessmentFails}

@@ -14,13 +14,11 @@ import { fetcher } from "@/utils/fetcher";
 import BirthHistoryYN from "../questions/BirthHistoryYN";
 import BirthHistoryThreeNumber from "../questions/BirthHistoryThreeNumber";
 import BirthHistoryOneNumber from "../questions/BirthHistoryOneNumber";
-import BirthHistoryOption from "../questions/BirthHealthOption";
 import BirthHistoryNumberText from "../questions/BirthHistoryNumberText";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { ChildrenData } from "@/app/t/students/add/page";
 import BirthHealthOption from "../questions/BirthHealthOption";
-import { getSubCurrentStage } from "@/utils/converters";
+import { ChildrenData } from "@/types/childrenData.type";
 
 interface Props {
     handleNextStage: () => void;

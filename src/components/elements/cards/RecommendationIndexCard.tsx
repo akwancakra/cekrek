@@ -1,4 +1,5 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Badge } from "@/components/ui/badge";
 import { MonitorChildRecommendation } from "@/types/monitorChildRecommendation.type";
 import { Recommendation } from "@/types/recommendation.type";
 import { truncateString } from "@/utils/converters";
@@ -61,9 +62,9 @@ export default function RecommendationIndexCard({
                         className="text-small"
                     />
                     {/* <p className="text-small">{recommendation.description}</p> */}
-                    <div className="badge badge-outline text-small">
+                    <Badge variant="outline">
                         {isFinished ? "Selesai" : "Belum dilakukan"}
-                    </div>
+                    </Badge>
                 </div>
             </div>
         </>

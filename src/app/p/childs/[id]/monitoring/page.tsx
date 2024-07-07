@@ -38,13 +38,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import axios from "axios";
 import Image from "next/image";
 import useProfile from "@/utils/useProfile";
+import { Separator } from "@/components/ui/separator";
 
 export default function MonitoringRecommendationsParent() {
     const [student, setStudent] = useState<Child>();
     const { count, setCount, increment, decrement } = useCounter(1);
     const [answers, setAnswers] = useState<string[]>([]);
     const [isSubmit, setIsSubmit] = useState(false);
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const today = formattedDateStripYearFirst(new Date().toString());
     const { id } = useParams();
@@ -54,7 +55,9 @@ export default function MonitoringRecommendationsParent() {
     const date = searchParams.get("date") || today;
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/parents/${profile?.id}/children/${id}/recommendations?date=${date}`,
+        isReady &&
+            profile?.id &&
+            `/api/parents/${profile?.id}/children/${id}/recommendations?date=${date}`,
         fetcher
     );
 
@@ -207,15 +210,16 @@ export default function MonitoringRecommendationsParent() {
                                     {formattedDate(new Date().toString())}
                                 </p>
                             </div>
-                            <div className="divider my-1"></div>
+                            <Separator className="my-1" />
+                            {/* <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600 dark:!border-neutral-600"></div> */}
                             <div className="sm:flex group-[.open]:block md;group-[.open]:flex">
                                 <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                                    <div className="border border-gray-300 rounded-lg p-3 mb-3">
+                                    <div className="border border-gray-300 rounded-lg p-3 mb-3 dark:border-neutral-600">
                                         <div>
                                             <p className="text-medium font-semibold">
                                                 Biodata
                                             </p>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                         </div>
                                         <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                                             <div className="mb-3">
@@ -254,12 +258,12 @@ export default function MonitoringRecommendationsParent() {
                                         </div>
                                     </div>
 
-                                    <div className="border border-gray-300 rounded-lg p-3">
+                                    <div className="border border-gray-300 rounded-lg p-3 dark:border-neutral-600">
                                         <div>
                                             <p className="text-medium font-semibold">
                                                 Hasil monitoring
                                             </p>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                             <div>
                                                 {student?.child_recommendations?.map(
                                                     (rec, idx) =>
@@ -280,7 +284,7 @@ export default function MonitoringRecommendationsParent() {
                                                         ) : null
                                                 )}
                                             </div>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                             <div className="flex justify-end">
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
@@ -401,7 +405,7 @@ export default function MonitoringRecommendationsParent() {
     //             <p className="font-semibold tracking-tighter text-xl sm:text-2xl">
     //                 Monitor {today}
     //             </p>
-    //             <div className="divider my-1"></div>
+    //             <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
     //         </div>
     //     </>
     // )}

@@ -39,10 +39,12 @@ const validationSchema = Yup.object().shape({
     email: Yup.string()
         .email("Format email tidak valid")
         .required("Email harus diisi"),
-    type: Yup.string().oneOf(
-        ["ayah", "ibu", "wali"],
-        "Tipe harus salah satu dari ayah, ibu, atau wali"
-    ),
+    type: Yup.string()
+        .oneOf(
+            ["ayah", "ibu", "wali"],
+            "Tipe harus salah satu dari ayah, ibu, atau wali"
+        )
+        .required("Tipe harus dipilih"),
     place_birth: Yup.string(),
     date_birth: Yup.date(),
     religion: Yup.string(),
@@ -88,7 +90,7 @@ export default function AddParentPage() {
         "parent-data",
         {} as UserAdd
     );
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const searchParams = useSearchParams();
     const callback = searchParams.get("callback");
@@ -98,7 +100,7 @@ export default function AddParentPage() {
         data,
         isLoading,
     }: { data: { status: string; parent: User }; isLoading: boolean } = useSWR(
-        `/api/parents/${profile?.id}`,
+        isReady && profile?.id && `/api/parents/${profile?.id}`,
         fetcher
     );
 
@@ -116,7 +118,10 @@ export default function AddParentPage() {
 
             const submitPromise = new Promise<void>(async (resolve, reject) => {
                 try {
-                    await axios.put(`/api/parents/${profile?.id}`, values);
+                    await axios.put(
+                        isReady && profile?.id && `/api/parents/${profile?.id}`,
+                        values
+                    );
 
                     resolve();
                 } catch (error) {
@@ -136,7 +141,11 @@ export default function AddParentPage() {
                     }
                     return "Data orang tua telah diubah!";
                 },
-                error: "Something went wrong",
+                error: (error) => {
+                    return (
+                        error?.response?.data?.message || "Gagal mengubah data"
+                    );
+                },
             });
         },
     });
@@ -176,7 +185,7 @@ export default function AddParentPage() {
                 <p className="font-semibold tracking-tighter text-xl sm:text-2xl">
                     Ubah Akun
                 </p>
-                <div className="divider my-1"></div>
+                <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                 <div className="sm:flex group-[.open]:block md:group-[.open]:flex">
                     <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
                         {isLoading ? (
@@ -285,7 +294,10 @@ export default function AddParentPage() {
                                                 </span>
                                             </div>
                                             <Select
-                                                value={formik.values.type}
+                                                value={formik.values.type || ""}
+                                                defaultValue={
+                                                    formik.values.type || ""
+                                                }
                                                 onValueChange={(value) =>
                                                     formik.setFieldValue(
                                                         "type",
@@ -387,8 +399,13 @@ export default function AddParentPage() {
                                                     </span>
                                                 </div>
                                                 <Select
+                                                    value={
+                                                        formik.values
+                                                            .religion || ""
+                                                    }
                                                     defaultValue={
-                                                        formik.values.religion
+                                                        formik.values
+                                                            .religion || ""
                                                     }
                                                     onValueChange={(value) =>
                                                         formik.setFieldValue(
@@ -448,8 +465,13 @@ export default function AddParentPage() {
                                                     </span>
                                                 </div>
                                                 <Select
+                                                    value={
+                                                        formik.values
+                                                            .education || ""
+                                                    }
                                                     defaultValue={
-                                                        formik.values.education
+                                                        formik.values
+                                                            .education || ""
                                                     }
                                                     onValueChange={(value) =>
                                                         formik.setFieldValue(
@@ -664,7 +686,7 @@ export default function AddParentPage() {
                             </FormikProvider>
                         )}
                     </div>
-                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                         {isLoading ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">

@@ -114,7 +114,7 @@ export default function BirthHistoryOneNumber({
 
     return (
         <>
-            <div className="bg-gray-400 rounded-lg w-full">
+            <div className="bg-gray-400 rounded-lg w-full dark:bg-neutral-900">
                 <AspectRatio ratio={16 / 9}>
                     <Image
                         src={"/static/images/default.jpg"}
@@ -126,10 +126,10 @@ export default function BirthHistoryOneNumber({
                 </AspectRatio>
             </div>
             <div className="my-3">
-                <p className="text-gray-700 text-center text-medium font-semibold">
+                <p className="text-gray-700 text-center text-medium font-semibold dark:text-neutral-200">
                     {question?.question}
                 </p>
-                <p className="text-gray-500 text-center text-small">
+                <p className="text-gray-500 text-center text-small dark:text-neutral-400">
                     {question?.example_answer &&
                         "co: " + question?.example_answer}
                 </p>

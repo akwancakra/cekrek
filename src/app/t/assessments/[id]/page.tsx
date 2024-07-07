@@ -32,7 +32,7 @@ import useProfile from "@/utils/useProfile";
 
 export default function AssessmentDetail({}) {
     const [data, setData] = useState<Child>();
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
 
     const searchParams = useSearchParams();
     const date = searchParams.get("date");
@@ -42,7 +42,9 @@ export default function AssessmentDetail({}) {
         data: childAssesment,
         isLoading,
     }: { data: { status: string; child: Child }; isLoading: boolean } = useSWR(
-        `/api/teachers/${profile?.id}/assesments/${id}?date=${date}`,
+        isReady &&
+            profile?.id &&
+            `/api/teachers/${profile?.id}/assesments/${id}?date=${date}`,
         fetcher
     );
 
@@ -185,7 +187,7 @@ export default function AssessmentDetail({}) {
                             </div>
                             <div className="w-full mt-3 group-[.open]:w-full group-[.open]:mt-3 lg:group-[.open]:w-2/3 lg:group-[.open]:mt-0 md:w-2/3 md:mt-0">
                                 {/* PROFILE DATA */}
-                                <div className="border border-gray-300 p-2 rounded-lg my-3">
+                                <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                                     <div>
                                         <div className="flex justify-between items-center">
                                             <p className="font-semibold tracking-tight text-large">
@@ -247,7 +249,7 @@ export default function AssessmentDetail({}) {
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
-                                        <div className="divider my-1" />
+                                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
 
                                         <Alert
                                             text={`Kategori ${getRiskCategory({
@@ -263,7 +265,7 @@ export default function AssessmentDetail({}) {
 
                                         <div className="w-full grid grid-cols-3 gap-2">
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Nama
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -271,7 +273,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Nama Panggilan
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -279,7 +281,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Jenis Kelamin
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -291,7 +293,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Agama
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -303,7 +305,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Tempat Lahir
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -311,7 +313,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Tanggal Lahir
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -323,7 +325,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Pendengaran
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -335,7 +337,7 @@ export default function AssessmentDetail({}) {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Jumlah Saudara
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -347,11 +349,11 @@ export default function AssessmentDetail({}) {
                                     </div>
                                 </div>
 
-                                <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
+                                <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden dark:border-neutral-600">
                                     <p className="text-large font-semibold tracking-tight">
                                         Rangkuman
                                     </p>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     <div className="flex justify-between gap-2 mb-3">
                                         <div>
                                             <p className="font-medium tracking-tight text-medium">
@@ -433,7 +435,7 @@ export default function AssessmentDetail({}) {
                                     </div> */}
                                 </div>
 
-                                <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden">
+                                <div className="w-full border border-gray-300 rounded-lg p-2 mt-3 overflow-hidden dark:border-neutral-600">
                                     <div className="">
                                         <p className="text-small text-gray-400 -mb-1">
                                             Skoring Soal
@@ -443,7 +445,7 @@ export default function AssessmentDetail({}) {
                                         </p>
                                         {/* Awal */}
                                     </div>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     {!childAssessmentIsExist({
                                         childAssessment:
                                             data?.child_assesments?.[0]
@@ -473,7 +475,7 @@ export default function AssessmentDetail({}) {
                                             Asesmen Follow Up
                                         </p>
                                     </div>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     {!childAssessmentIsExist({
                                         childAssessment:
                                             data?.child_assesments?.[0]
@@ -498,7 +500,7 @@ export default function AssessmentDetail({}) {
                                     <p className="text-large font-semibold tracking-tight">
                                         Rekomendasi Aktifitas
                                     </p>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
 
                                     {data?.child_recommendations?.length ==
                                     0 ? (

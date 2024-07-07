@@ -38,7 +38,7 @@ export default function AddAccountDrawer({
                 <ScrollArea className="max-h-[70vh] p-0">
                     <DrawerHeader className="text-left">
                         <DrawerTitle>Tambah Akun</DrawerTitle>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <div>
                             <label className="form-control w-full mb-3">
                                 <div className="label">

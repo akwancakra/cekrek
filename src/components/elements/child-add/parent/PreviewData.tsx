@@ -17,6 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChildrenData } from "@/types/childrenData.type";
 import { getImageUrl } from "@/utils/converters";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import useProfile from "@/utils/useProfile";
 import axios from "axios";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -37,6 +38,7 @@ export default function PreviewData({
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
     const [data, setData] = useState<ChildrenData>();
+    const { profile, isReady } = useProfile();
 
     const router = useRouter();
     const { id } = useParams();
@@ -54,13 +56,13 @@ export default function PreviewData({
         } else {
             if (isSubmit) {
                 setIsSubmit(false);
-                router.push("a/students");
+                router.push("/p/childs");
             }
 
             setIsSubmit(false);
 
             if (id) {
-                router.push(`/a/students/${id}/edit?stage=biodata`);
+                router.push(`/p/childs/${id}/edit?stage=biodata`);
             }
         }
         setIsLoading(false);
@@ -70,22 +72,35 @@ export default function PreviewData({
         setIsSubmit(true);
 
         const finalData = {
-            teacher_id: 1,
+            // teacher_id: profile?.id,
             ...data?.biodata,
+            parent_dad: (profile?.type == "ayah" && profile?.id) || "",
+            parent_mother: (profile?.type == "ibu" && profile?.id) || "",
+            parent_wali: (profile?.type == "wali" && profile?.id) || "",
             ...data?.birthHistory,
             ...data?.expertExamination,
             ...data?.healthStatus,
         };
 
+        console.log(finalData);
+
         const submitPromise = new Promise<void>(async (resolve, reject) => {
             try {
-                if (id) {
-                    await axios.put(
-                        `/api/teachers/${data?.biodata.teacher_id}/students/${id}`,
-                        finalData
-                    );
-                } else {
-                    await axios.post("/api/admin/children", finalData);
+                if (isReady) {
+                    if (id) {
+                        if (data?.biodata.teacher_id) {
+                            await axios.put(
+                                `/api/teachers/${data?.biodata.teacher_id}/students/${id}`,
+                                finalData
+                            );
+                        } else {
+                            toast.error(
+                                "Pastikan guru sudah dipilih terlebih dahulu"
+                            );
+                        }
+                    } else {
+                        await axios.post("/api/children", finalData);
+                    }
                 }
                 resolve();
             } catch (error) {
@@ -98,20 +113,15 @@ export default function PreviewData({
             success: () => {
                 // setIsSubmit(false);
                 resetLocal({ push: true });
-                router.push("/a/students");
+                router.push("/p/childs");
                 // if (id) {
                 return "Berhasil menyimpan data!";
                 // }
             },
-            error: (data) => {
+            error: (error) => {
                 setIsSubmit(false);
-                if (data?.response?.status === 400) {
-                    return data?.response?.data?.message;
-                } else if (data?.response?.status === 500) {
-                    return "Server Error";
-                } else {
-                    return "Terjadi kesalahan";
-                }
+
+                return error?.response?.data?.message || "Gagal mengubah data";
             },
         });
     };

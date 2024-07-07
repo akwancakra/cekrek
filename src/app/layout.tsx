@@ -5,6 +5,7 @@ import "./globals.css";
 import "./globalsIcons.css";
 import "react-day-picker/dist/style.css";
 import NextAuthProvider from "@/utils/NextAuthProvider";
+import { ThemeProvider } from "@/components/elements/ThemeProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,16 @@ export default function RootLayout({
     return (
         <html lang="en" className="scroll-smooth">
             <body className={inter.className}>
-                <NextAuthProvider>{children}</NextAuthProvider>
+                <NextAuthProvider>
+                    <ThemeProvider
+                        attribute="class"
+                        defaultTheme="light"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        {children}
+                    </ThemeProvider>
+                </NextAuthProvider>
                 <Toaster richColors />
             </body>
         </html>

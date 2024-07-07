@@ -117,7 +117,7 @@ export default function BirthHistoryThreeNumber({
 
     return (
         <>
-            <div className="bg-gray-400 rounded-lg w-full">
+            <div className="bg-gray-400 rounded-lg w-full dark:bg-neutral-900">
                 <AspectRatio ratio={16 / 9}>
                     <Image
                         src={"/static/images/default.jpg"}
@@ -129,17 +129,17 @@ export default function BirthHistoryThreeNumber({
                 </AspectRatio>
             </div>
             <div className="my-3">
-                <p className="text-gray-700 text-center text-medium font-semibold">
+                <p className="text-gray-700 text-center text-medium font-semibold dark:text-neutral-200">
                     {question.question}
                 </p>
-                <p className="text-gray-500 text-center text-small">
+                <p className="text-gray-500 text-center text-small dark:text-neutral-400">
                     {question?.example_answer &&
                         "co: " + question?.example_answer}
                 </p>
             </div>
             <div className="w-full">
                 <p className="font-medium text-small mb-1">Jawaban</p>
-                <div className="border border-gray-300 rounded-lg p-2">
+                <div className="border border-gray-300 rounded-lg p-2 dark:border-neutral-600">
                     <p className="font-semibold text-medium">Panduan</p>
                     <p className="text-medium">
                         Gunakan koma &quot;,&quot; untuk memberikan nilai

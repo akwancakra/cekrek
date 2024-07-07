@@ -36,7 +36,7 @@ export default function Assessments() {
 
                     <div className="flex items-center gap-2">
                         <form className="w-full" onSubmit={handleSearch}>
-                            <label className="input w-full input-bordered rounded-lg flex items-center gap-2 py-2 px-3 text-sm h-fit min-h-fit sm:w-fit group-[.open]:w-full md:group-[.open]:w-fit">
+                            <label className="input w-full input-bordered rounded-lg flex items-center gap-2 py-2 px-3 text-sm h-fit min-h-fit sm:w-fit group-[.open]:w-full md:group-[.open]:w-fit dark:bg-neutral-800 dark:border-neutral-600">
                                 <input
                                     type="text"
                                     className="grow"

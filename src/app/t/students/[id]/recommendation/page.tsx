@@ -37,7 +37,6 @@ import { fetcher } from "@/utils/fetcher";
 import { useParams, useSearchParams } from "next/navigation";
 import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
-import { Recommendation } from "@/types/recommendation.type";
 import useProfile from "@/utils/useProfile";
 import { Child } from "@/types/customChild.types";
 
@@ -91,7 +90,7 @@ const datasets1 = [
 
 export default function RecomendationStudent({}) {
     const [date, setDate] = useState<Date>(new Date());
-    const profile = useProfile();
+    const { profile, isReady } = useProfile();
     // const [recommendations, setRecommendations] = useState<
     //     ChildRecommendation[]
     // >([]);
@@ -105,11 +104,13 @@ export default function RecomendationStudent({}) {
     const { id } = useParams();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
-        `/api/teachers/${
-            profile?.id
-        }/students/${id}/recommendations?date=${formattedDateStripYearFirst(
-            date.toString()
-        )}`,
+        isReady &&
+            profile?.id &&
+            `/api/teachers/${
+                profile?.id
+            }/students/${id}/recommendations?date=${formattedDateStripYearFirst(
+                date.toString()
+            )}`,
         fetcher
     );
 
@@ -141,130 +142,170 @@ export default function RecomendationStudent({}) {
                     Kembali
                 </Link>
             </Button>
-            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between items-center block group-[.open]:block lg:group-[.open]:flex sm:flex">
+            <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between items-center block group-[.open]:block lg:group-[.open]:flex sm:flex dark:border-neutral-600">
                 <div>
                     <p className="text-gray-400 text-small">
                         Monitoring Asesmen M-Chart-R/F
                     </p>
-                    <p className="text-header">{student?.full_name || "N/A"}</p>
-                    <Badge
-                        variant={"default"}
-                        className={`${
-                            (student?.risk_category &&
-                                getVariant(student.risk_category)) ||
-                            "bg-primary hover:bg-primary-foreground"
-                        }`}
-                    >
-                        Tingkat {student?.risk_category || "N/A"}
-                    </Badge>
+                    {isLoading ? (
+                        <div className="flex flex-col gap-1">
+                            <div className="skeleton h-4 w-36 rounded-lg"></div>
+                            <div className="skeleton h-5 w-24 rounded-lg"></div>
+                        </div>
+                    ) : (
+                        <>
+                            <p className="text-header">
+                                {student?.full_name || "N/A"}
+                            </p>
+                            <Badge
+                                variant={"default"}
+                                className={`${
+                                    (student?.risk_category &&
+                                        getVariant(student.risk_category)) ||
+                                    "bg-primary hover:bg-primary-foreground"
+                                }`}
+                            >
+                                Tingkat {student?.risk_category || "N/A"}
+                            </Badge>
+                        </>
+                    )}
                 </div>
                 <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
-                    <Button variant={"outline"}>
-                        <Link href={`/t/students/${id}/recommendation/compare`}>
-                            Bandingkan hasil monitoring versi orang tua{" "}
-                            <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
-                                arrow_forward
-                            </span>
-                        </Link>
-                    </Button>
+                    {isLoading ? (
+                        <div>
+                            <div className="skeleton h-9 w-44 rounded-lg"></div>
+                        </div>
+                    ) : (
+                        <Button variant={"outline"}>
+                            <Link
+                                href={`/t/students/${id}/recommendation/compare`}
+                                className="flex gap-1 items-center"
+                            >
+                                Bandingkan hasil monitoring versi orang tua{" "}
+                                <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
+                                    arrow_forward
+                                </span>
+                            </Link>
+                        </Button>
+                    )}
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
-                <div className="w-full border border-gray-300 p-2 rounded-lg">
-                    <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <p className="text-medium font-medium tracking-tight">
-                            Mengikuti Perintah
-                        </p>
-                        <Select disabled={isLoading}>
-                            <SelectTrigger className="w-fit min-w-24">
-                                <SelectValue placeholder="Pilih Minggu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light" defaultChecked>
-                                    Min 1 - Mar
-                                </SelectItem>
-                                <SelectItem value="dark">
-                                    Min 2 - Mar
-                                </SelectItem>
-                                <SelectItem value="system">
-                                    Min 3 - Mar
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="w-full">
-                        <AspectRatio ratio={16 / 9}>
-                            <Line
-                                options={getOptions()}
-                                data={getData(datasets1)}
-                                // className="!h-full"
-                            />
-                        </AspectRatio>
-                    </div>
-                </div>
-                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60">
-                    <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <p className="font-medium tracking-tight">Nama Aspek</p>
-                        <Select disabled={isLoading}>
-                            <SelectTrigger className="w-fit min-w-24">
-                                <SelectValue placeholder="Pilih Minggu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light">
-                                    Min 1 - Mar
-                                </SelectItem>
-                                <SelectItem value="dark" defaultChecked={true}>
-                                    Min 2 - Mar
-                                </SelectItem>
-                                <SelectItem value="system">
-                                    Min 3 - Mar
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="w-full">
-                        <AspectRatio ratio={16 / 9}>
-                            <Line
-                                options={getOptions()}
-                                data={getData(datasets1)}
-                                // className="!h-full"
-                            />
-                        </AspectRatio>
-                    </div>
-                </div>
-                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60">
-                    <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <p className="font-medium tracking-tight">Nama Aspek</p>
-                        <Select disabled={isLoading}>
-                            <SelectTrigger className="w-fit min-w-24">
-                                <SelectValue placeholder="Pilih Minggu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light">
-                                    Min 1 - Mar
-                                </SelectItem>
-                                <SelectItem value="dark">
-                                    Min 2 - Mar
-                                </SelectItem>
-                                <SelectItem
-                                    value="system"
-                                    defaultChecked={true}
-                                >
-                                    Min 3 - Mar
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="w-full">
-                        <AspectRatio ratio={16 / 9}>
-                            <Line
-                                options={getOptions()}
-                                data={getData(datasets1)}
-                                // className="!h-full"
-                            />
-                        </AspectRatio>
-                    </div>
-                </div>
+                {isLoading ? (
+                    <>
+                        <div className="skeleton w-full h-48 rounded-lg"></div>
+                        <div className="skeleton w-full h-48 rounded-lg"></div>
+                        <div className="skeleton w-full h-48 rounded-lg"></div>
+                    </>
+                ) : (
+                    <>
+                        <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                            <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
+                                <p className="text-medium font-medium tracking-tight">
+                                    Mengikuti Perintah
+                                </p>
+                                <Select disabled={isLoading}>
+                                    <SelectTrigger className="w-fit min-w-24">
+                                        <SelectValue placeholder="Pilih Minggu" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem
+                                            value="light"
+                                            defaultChecked
+                                        >
+                                            Min 1 - Mar
+                                        </SelectItem>
+                                        <SelectItem value="dark">
+                                            Min 2 - Mar
+                                        </SelectItem>
+                                        <SelectItem value="system">
+                                            Min 3 - Mar
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="w-full">
+                                <AspectRatio ratio={16 / 9}>
+                                    <Line
+                                        options={getOptions()}
+                                        data={getData(datasets1)}
+                                        // className="!h-full"
+                                    />
+                                </AspectRatio>
+                            </div>
+                        </div>
+                        <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                            <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
+                                <p className="font-medium tracking-tight">
+                                    Nama Aspek
+                                </p>
+                                <Select disabled={isLoading}>
+                                    <SelectTrigger className="w-fit min-w-24">
+                                        <SelectValue placeholder="Pilih Minggu" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="light">
+                                            Min 1 - Mar
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="dark"
+                                            defaultChecked={true}
+                                        >
+                                            Min 2 - Mar
+                                        </SelectItem>
+                                        <SelectItem value="system">
+                                            Min 3 - Mar
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="w-full">
+                                <AspectRatio ratio={16 / 9}>
+                                    <Line
+                                        options={getOptions()}
+                                        data={getData(datasets1)}
+                                        // className="!h-full"
+                                    />
+                                </AspectRatio>
+                            </div>
+                        </div>
+                        <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                            <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
+                                <p className="font-medium tracking-tight">
+                                    Nama Aspek
+                                </p>
+                                <Select disabled={isLoading}>
+                                    <SelectTrigger className="w-fit min-w-24">
+                                        <SelectValue placeholder="Pilih Minggu" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="light">
+                                            Min 1 - Mar
+                                        </SelectItem>
+                                        <SelectItem value="dark">
+                                            Min 2 - Mar
+                                        </SelectItem>
+                                        <SelectItem
+                                            value="system"
+                                            defaultChecked={true}
+                                        >
+                                            Min 3 - Mar
+                                        </SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="w-full">
+                                <AspectRatio ratio={16 / 9}>
+                                    <Line
+                                        options={getOptions()}
+                                        data={getData(datasets1)}
+                                        // className="!h-full"
+                                    />
+                                </AspectRatio>
+                            </div>
+                        </div>
+                    </>
+                )}
             </div>
             <div className="rounded-lg p-4 w-full flex items-center text-white bg-primary h-fit mb-3 sm:min-h-24">
                 <div>
@@ -274,8 +315,8 @@ export default function RecomendationStudent({}) {
                     </p>
                 </div>
             </div>
-            <div className="border border-gray-300 rounded-lg overflow-hidden">
-                <div className="bg-purple-50 flex justify-between items-center p-2 !text-sm sm:text-base">
+            <div className="border border-gray-300 rounded-lg overflow-hidden dark:border-neutral-600">
+                <div className="bg-purple-50 flex justify-between items-center p-2 !text-sm sm:text-base dark:bg-purple-900">
                     <p className="font-semibold tracking-tight text-medium">
                         Rekomendasi Aktifitas
                     </p>
@@ -310,7 +351,7 @@ export default function RecomendationStudent({}) {
                     </Popover>
                 </div>
                 <div className="p-2">
-                    <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2">
+                    <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
                         <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                             <p className="text-small">
                                 Aktifitas belum dilakukan
@@ -330,25 +371,27 @@ export default function RecomendationStudent({}) {
                         Berbicara (2)
                     </p> */}
                     <div className="flex flex-col gap-2">
-                        {student?.child_recommendations?.length == 0 && (
-                            <div className="text-center">
-                                <p>Tidak ada data rekomendasi</p>
-                                <p>Lakukan asesmen jika belum melakukan</p>
-                            </div>
-                        )}
+                        {!isLoading &&
+                            student?.child_recommendations?.length == 0 && (
+                                <div className="text-center">
+                                    <p>Tidak ada data rekomendasi</p>
+                                    <p>Lakukan asesmen jika belum melakukan</p>
+                                </div>
+                            )}
 
-                        {student?.child_recommendations?.map((rec, idx) =>
-                            rec?.recommendations ? (
-                                <RecomendationCard
-                                    key={idx}
-                                    recommendation={rec.recommendations}
-                                    isDone={
-                                        rec?.isFinished ||
-                                        rec?.isFinishedByTeacher
-                                    }
-                                />
-                            ) : null
-                        )}
+                        {!isLoading &&
+                            student?.child_recommendations?.map((rec, idx) =>
+                                rec?.recommendations ? (
+                                    <RecomendationCard
+                                        key={idx}
+                                        recommendation={rec.recommendations}
+                                        isDone={
+                                            rec?.isFinished ||
+                                            rec?.isFinishedByTeacher
+                                        }
+                                    />
+                                ) : null
+                            )}
                     </div>
                 </div>
                 <div className="flex justify-end items-center p-2">
