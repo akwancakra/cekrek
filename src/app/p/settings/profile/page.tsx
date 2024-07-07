@@ -104,7 +104,7 @@ export default function ParentProfilePage() {
                                 </div>
                             </div>
                             <div className="w-full mt-3 group-[.open]:w-full group-[.open]:mt-3 lg:group-[.open]:w-2/3 lg:group-[.open]:mt-0 md:w-2/3 md:mt-0">
-                                <div className="w-full justify-between items-center sm:flex">
+                                <div className="w-full justify-between items-center flex">
                                     <div>
                                         <p className="text-gray-400 text-xs">
                                             Profil

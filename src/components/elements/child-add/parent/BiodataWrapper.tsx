@@ -32,7 +32,6 @@ import { cn } from "@/lib/utils";
 import { useIsClient } from "usehooks-ts";
 import { User } from "@/types/user.types";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { getImageUrl } from "@/utils/converters";
 import { ChildrenData } from "@/types/childrenData.type";
 import useSWR from "swr";
@@ -121,6 +120,9 @@ export default function BiodataWrapper({
     const initialValues: { [key: string]: string } = {
         teacher_id: "",
         risk_category: "",
+        parent_dad: "",
+        parent_mother: "",
+        parent_wali: "",
         full_name: "",
         nick_name: "",
         gender: "",
@@ -136,6 +138,9 @@ export default function BiodataWrapper({
     const fields: (keyof typeof initialValues)[] = [
         "teacher_id",
         "risk_category",
+        "parent_wali",
+        "parent_dad",
+        "parent_mother",
         "full_name",
         "nick_name",
         "gender",
@@ -166,6 +171,9 @@ export default function BiodataWrapper({
                     // id: values.id,
                     teacher_id: values.teacher_id,
                     risk_category: values.risk_category,
+                    parent_dad: values.parent_dad,
+                    parent_mother: values.parent_mother,
+                    parent_wali: values.parent_wali,
                     full_name: values.full_name,
                     nick_name: values.nick_name,
                     gender: values.gender,
@@ -203,7 +211,11 @@ export default function BiodataWrapper({
 
                 formik.setValues({
                     // ...formik.values,
+                    teacher_id: latestData.teacher_id || "",
                     risk_category: latestData.risk_category || "",
+                    parent_dad: latestData.parent_dad || "",
+                    parent_mother: latestData.parent_mother || "",
+                    parent_wali: latestData.parent_wali || "",
                     full_name: latestData.full_name || "",
                     nick_name: latestData.nick_name || "",
                     gender: latestData.gender || "",
@@ -425,7 +437,7 @@ export default function BiodataWrapper({
                                             placeholder="Anit..."
                                             className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
                                             {...formik.getFieldProps(
-                                                "nickname"
+                                                "nick_name"
                                             )}
                                             // value={formik.values.name}
                                             // onChange={formik.handleChange}

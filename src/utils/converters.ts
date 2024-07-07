@@ -298,7 +298,7 @@ const getUrlFromRole = (role: string) => {
     return url.find((u) => u.role === role)?.url || "/";
 };
 
-const getImageUrl = (image: any) => {
+const getImageUrl = (image?: any) => {
     if (image instanceof File) {
         return URL.createObjectURL(image);
     } else if (typeof image === "string" && image.startsWith("data:image")) {
@@ -307,6 +307,18 @@ const getImageUrl = (image: any) => {
         return `/uploads/children/${image}`;
     } else {
         return "/static/images/user-default.jpg";
+    }
+};
+
+const getRecommendationImageUrl = (image?: any) => {
+    if (image instanceof File) {
+        return URL.createObjectURL(image);
+    } else if (typeof image === "string" && image.startsWith("data:image")) {
+        return image; // This handles base64 images directly
+    } else if (typeof image === "string" && image) {
+        return `/uploads/recommendations/${image}`;
+    } else {
+        return "/static/images/default.jpg";
     }
 };
 
@@ -323,4 +335,5 @@ export {
     questionsBirthHealth,
     getUrlFromRole,
     getImageUrl,
+    getRecommendationImageUrl,
 };

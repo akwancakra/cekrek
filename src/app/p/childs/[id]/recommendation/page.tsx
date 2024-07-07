@@ -154,120 +154,133 @@ export default function RecomendationStudent({}) {
                         Tingkat {student?.risk_category || "N/A"}
                     </Badge>
                 </div>
-                <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
-                    <Button variant={"outline"} asChild>
-                        <Link
-                            href={`/p/childs/${id}/recommendation/compare?date=${
-                                formattedDateStripYearFirst(date.toString()) ||
-                                today
-                            }`}
-                            className="flex gap-1 items-center"
-                        >
-                            Bandingkan hasil monitoring versi guru{" "}
-                            <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
-                                arrow_forward
-                            </span>
-                        </Link>
-                    </Button>
-                </div>
+                {student?.child_recommendations?.length > 0 && (
+                    <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
+                        <Button variant={"outline"} asChild>
+                            <Link
+                                href={`/p/childs/${id}/recommendation/compare?date=${
+                                    formattedDateStripYearFirst(
+                                        date.toString()
+                                    ) || today
+                                }`}
+                                className="flex gap-1 items-center"
+                            >
+                                Bandingkan hasil monitoring versi guru{" "}
+                                <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
+                                    arrow_forward
+                                </span>
+                            </Link>
+                        </Button>
+                    </div>
+                )}
             </div>
-            <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
-                <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
-                    <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <p className="text-medium font-medium tracking-tight">
-                            Mengikuti Perintah
-                        </p>
-                        <Select disabled={isLoading}>
-                            <SelectTrigger className="w-fit min-w-24">
-                                <SelectValue placeholder="Pilih Minggu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light" defaultChecked>
-                                    Min 1 - Mar
-                                </SelectItem>
-                                <SelectItem value="dark">
-                                    Min 2 - Mar
-                                </SelectItem>
-                                <SelectItem value="system">
-                                    Min 3 - Mar
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
+
+            {student?.child_recommendations?.length > 0 && (
+                <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
+                    <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                        <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
+                            <p className="text-medium font-medium tracking-tight">
+                                Mengikuti Perintah
+                            </p>
+                            <Select disabled={isLoading}>
+                                <SelectTrigger className="w-fit min-w-24">
+                                    <SelectValue placeholder="Pilih Minggu" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="light" defaultChecked>
+                                        Min 1 - Mar
+                                    </SelectItem>
+                                    <SelectItem value="dark">
+                                        Min 2 - Mar
+                                    </SelectItem>
+                                    <SelectItem value="system">
+                                        Min 3 - Mar
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="w-full">
+                            <AspectRatio ratio={16 / 9}>
+                                <Line
+                                    options={getOptions()}
+                                    data={getData(datasets1)}
+                                    // className="!h-full"
+                                />
+                            </AspectRatio>
+                        </div>
                     </div>
-                    <div className="w-full">
-                        <AspectRatio ratio={16 / 9}>
-                            <Line
-                                options={getOptions()}
-                                data={getData(datasets1)}
-                                // className="!h-full"
-                            />
-                        </AspectRatio>
+                    <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
+                        <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
+                            <p className="font-medium tracking-tight">
+                                Nama Aspek
+                            </p>
+                            <Select disabled={isLoading}>
+                                <SelectTrigger className="w-fit min-w-24">
+                                    <SelectValue placeholder="Pilih Minggu" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="light">
+                                        Min 1 - Mar
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="dark"
+                                        defaultChecked={true}
+                                    >
+                                        Min 2 - Mar
+                                    </SelectItem>
+                                    <SelectItem value="system">
+                                        Min 3 - Mar
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="w-full">
+                            <AspectRatio ratio={16 / 9}>
+                                <Line
+                                    options={getOptions()}
+                                    data={getData(datasets1)}
+                                    // className="!h-full"
+                                />
+                            </AspectRatio>
+                        </div>
+                    </div>
+                    <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
+                        <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
+                            <p className="font-medium tracking-tight">
+                                Nama Aspek
+                            </p>
+                            <Select disabled={isLoading}>
+                                <SelectTrigger className="w-fit min-w-24">
+                                    <SelectValue placeholder="Pilih Minggu" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="light">
+                                        Min 1 - Mar
+                                    </SelectItem>
+                                    <SelectItem value="dark">
+                                        Min 2 - Mar
+                                    </SelectItem>
+                                    <SelectItem
+                                        value="system"
+                                        defaultChecked={true}
+                                    >
+                                        Min 3 - Mar
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="w-full">
+                            <AspectRatio ratio={16 / 9}>
+                                <Line
+                                    options={getOptions()}
+                                    data={getData(datasets1)}
+                                    // className="!h-full"
+                                />
+                            </AspectRatio>
+                        </div>
                     </div>
                 </div>
-                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
-                    <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <p className="font-medium tracking-tight">Nama Aspek</p>
-                        <Select disabled={isLoading}>
-                            <SelectTrigger className="w-fit min-w-24">
-                                <SelectValue placeholder="Pilih Minggu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light">
-                                    Min 1 - Mar
-                                </SelectItem>
-                                <SelectItem value="dark" defaultChecked={true}>
-                                    Min 2 - Mar
-                                </SelectItem>
-                                <SelectItem value="system">
-                                    Min 3 - Mar
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="w-full">
-                        <AspectRatio ratio={16 / 9}>
-                            <Line
-                                options={getOptions()}
-                                data={getData(datasets1)}
-                                // className="!h-full"
-                            />
-                        </AspectRatio>
-                    </div>
-                </div>
-                <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
-                    <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                        <p className="font-medium tracking-tight">Nama Aspek</p>
-                        <Select disabled={isLoading}>
-                            <SelectTrigger className="w-fit min-w-24">
-                                <SelectValue placeholder="Pilih Minggu" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="light">
-                                    Min 1 - Mar
-                                </SelectItem>
-                                <SelectItem value="dark">
-                                    Min 2 - Mar
-                                </SelectItem>
-                                <SelectItem
-                                    value="system"
-                                    defaultChecked={true}
-                                >
-                                    Min 3 - Mar
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="w-full">
-                        <AspectRatio ratio={16 / 9}>
-                            <Line
-                                options={getOptions()}
-                                data={getData(datasets1)}
-                                // className="!h-full"
-                            />
-                        </AspectRatio>
-                    </div>
-                </div>
-            </div>
+            )}
             <div className="rounded-lg p-4 w-full flex items-center text-white bg-primary h-fit mb-3 sm:min-h-24">
                 <div>
                     <p className="text-small -mb-1">Informasi</p>
@@ -281,35 +294,37 @@ export default function RecomendationStudent({}) {
                     <p className="font-semibold tracking-tight text-medium">
                         Rekomendasi Aktifitas
                     </p>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                    "justify-start text-left font-normal text-small",
-                                    !date && "text-muted-foreground"
-                                )}
-                            >
-                                <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
-                                    calendar_month
-                                </span>
-                                {date ? (
-                                    format(date, "PPP")
-                                ) : (
-                                    <span>Pilih tanggal</span>
-                                )}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                            <Calendar
-                                mode="single"
-                                selected={date}
-                                onSelect={handleDateSelect}
-                                initialFocus
-                                lang="id"
-                            />
-                        </PopoverContent>
-                    </Popover>
+                    {student?.child_recommendations?.length > 0 && (
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "justify-start text-left font-normal text-small",
+                                        !date && "text-muted-foreground"
+                                    )}
+                                >
+                                    <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
+                                        calendar_month
+                                    </span>
+                                    {date ? (
+                                        format(date, "PPP")
+                                    ) : (
+                                        <span>Pilih tanggal</span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar
+                                    mode="single"
+                                    selected={date}
+                                    onSelect={handleDateSelect}
+                                    initialFocus
+                                    lang="id"
+                                />
+                            </PopoverContent>
+                        </Popover>
+                    )}
                 </div>
                 <div className="p-2">
                     <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
@@ -333,9 +348,11 @@ export default function RecomendationStudent({}) {
                     </p> */}
                     <div className="flex flex-col gap-2">
                         {student?.child_recommendations?.length == 0 && (
-                            <div>
-                                <p className="text-center">
-                                    Tidak ada data rekomendasi
+                            <div className="text-center">
+                                <p>Tidak ada data rekomendasi</p>
+                                <p className="text-gray-400 dark:text-neutral-300">
+                                    Hubungi guru untuk melakukan asesmen agar
+                                    mendapatkan rekomendasi aktifitas
                                 </p>
                             </div>
                         )}
@@ -357,18 +374,19 @@ export default function RecomendationStudent({}) {
                 <div className="flex justify-end items-center p-2">
                     <Button asChild variant={"outline"} disabled={isLoading}>
                         {today ==
-                            formattedDateStripYearFirst(date.toString()) && (
-                            <Link
-                                href={`/p/childs/${id}/monitoring?date=${formattedDateStripYearFirst(
-                                    date.toString()
-                                )}`}
-                            >
-                                Cek Hari Ini
-                                <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                                    chevron_right
-                                </span>
-                            </Link>
-                        )}
+                            formattedDateStripYearFirst(date.toString()) &&
+                            student?.child_recommendations?.length > 0 && (
+                                <Link
+                                    href={`/p/childs/${id}/monitoring?date=${formattedDateStripYearFirst(
+                                        date.toString()
+                                    )}`}
+                                >
+                                    Cek Hari Ini
+                                    <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                                        chevron_right
+                                    </span>
+                                </Link>
+                            )}
                     </Button>
                 </div>
             </div>

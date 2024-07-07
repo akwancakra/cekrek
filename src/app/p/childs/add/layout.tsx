@@ -1,3 +1,4 @@
+import CustomSuspense from "@/components/elements/suspsenses/CustomSuspense";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -5,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function AddChild({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return <CustomSuspense>{children}</CustomSuspense>;
 }

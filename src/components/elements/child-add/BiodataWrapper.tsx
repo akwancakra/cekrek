@@ -686,7 +686,7 @@ export default function BiodataWrapper({
                                             placeholder="Anit..."
                                             className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
                                             {...formik.getFieldProps(
-                                                "nickname"
+                                                "nick_name"
                                             )}
                                             // value={formik.values.name}
                                             // onChange={formik.handleChange}

@@ -155,7 +155,7 @@ export default function Home() {
                         <div className="lg:w-2/3 text-center mx-auto">
                             <h1 className="text-gray-900 dark:text-white font-bold text-5xl md:text-6xl xl:text-7xl">
                                 Rekomendasi Tepat,{" "}
-                                <span className="text-primary dark:text-white">
+                                <span className="text-primary dark:text-purple-400">
                                     Hasil Hebat
                                 </span>
                             </h1>
@@ -204,7 +204,7 @@ export default function Home() {
                                     <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
                                         Integrasi
                                     </h6>
-                                    <p className="mt-2 text-gray-500">
+                                    <p className="mt-2 text-gray-500 dark:text-gray-400">
                                         Integrasi antara guru dan orang tua
                                     </p>
                                 </div>
@@ -212,7 +212,7 @@ export default function Home() {
                                     <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
                                         Kesesuaian
                                     </h6>
-                                    <p className="mt-2 text-gray-500">
+                                    <p className="mt-2 text-gray-500 dark:text-gray-400">
                                         Rekomendasi yang otomatis dan sesuai
                                     </p>
                                 </div>
@@ -220,7 +220,7 @@ export default function Home() {
                                     <h6 className="text-lg font-semibold text-gray-700 dark:text-white">
                                         Mudah
                                     </h6>
-                                    <p className="mt-2 text-gray-500">
+                                    <p className="mt-2 text-gray-500 dark:text-gray-400">
                                         Tampilan yang mudah untuk digunakan
                                     </p>
                                 </div>

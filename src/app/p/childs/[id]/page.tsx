@@ -99,6 +99,7 @@ type Child = {
     count_of_siblings?: number;
     child_recommendations?: ChildRecommendation[];
     last_assesment?: string;
+    teacher?: User;
     parent?: User[];
     monitoringChildRecommendations?: MonitorRecommendationWrap[];
     birth_history?: BirthHistory;
@@ -283,7 +284,7 @@ export default function Template({}) {
                         </div>
                         <div className="w-full mt-3 group-[.open]:w-full group-[.open]:mt-3 lg:group-[.open]:w-2/3 lg:group-[.open]:mt-0 md:w-2/3 md:mt-0">
                             {/* PROFILE */}
-                            <div className="w-full justify-between items-center sm:flex">
+                            <div className="w-full justify-between items-center flex">
                                 <div>
                                     <p className="text-gray-400 text-xs">
                                         Profile
@@ -339,19 +340,19 @@ export default function Template({}) {
                                                 Rekomendasi harian
                                             </Link>
                                         </DropdownMenuItem> */}
-                                            {/* <DropdownMenuItem
-                                            className="cursor-pointer"
-                                            asChild
-                                        >
-                                            <Link
-                                                href={`/p/childs/${profile?.id}/edit`}
+                                            <DropdownMenuItem
+                                                className="cursor-pointer"
+                                                asChild
                                             >
-                                                <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
-                                                    edit
-                                                </span>{" "}
-                                                Ubah anak
-                                            </Link>
-                                        </DropdownMenuItem> */}
+                                                <Link
+                                                    href={`/p/childs/${id}/edit`}
+                                                >
+                                                    <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
+                                                        edit
+                                                    </span>{" "}
+                                                    Ubah anak
+                                                </Link>
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
                                                 asChild
@@ -442,7 +443,7 @@ export default function Template({}) {
                                     <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     <div className="w-full grid grid-cols-3 gap-2">
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Nama
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -450,7 +451,7 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Nama Panggilan
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -458,7 +459,7 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Jenis Kelamin
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -470,7 +471,7 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Agama
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -482,7 +483,7 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Tempat Lahir
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -490,7 +491,7 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Tanggal Lahir
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -502,7 +503,7 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Pendengaran
                                             </p>
                                             <p className="text-medium font-semibold">
@@ -514,11 +515,20 @@ export default function Template({}) {
                                             </p>
                                         </div>
                                         <div className="my-1">
-                                            <p className="text-xs to-gray-400">
+                                            <p className="text-xs text-gray-400">
                                                 Jumlah Saudara
                                             </p>
                                             <p className="text-medium font-semibold">
                                                 {profile?.count_of_siblings ||
+                                                    "N/A"}
+                                            </p>
+                                        </div>
+                                        <div className="my-1 col-span-3">
+                                            <p className="text-xs text-gray-400">
+                                                Guru
+                                            </p>
+                                            <p className="text-medium font-semibold">
+                                                {profile?.teacher?.name ||
                                                     "N/A"}
                                             </p>
                                         </div>
@@ -573,7 +583,7 @@ export default function Template({}) {
 
                                             return (
                                                 <div key={key} className="my-1">
-                                                    <p className="text-xs to-gray-400">
+                                                    <p className="text-xs text-gray-400">
                                                         {translatedKey.replace(
                                                             "_",
                                                             " "
@@ -631,7 +641,7 @@ export default function Template({}) {
 
                                             return (
                                                 <div key={key} className="my-1">
-                                                    <p className="text-xs to-gray-400">
+                                                    <p className="text-xs text-gray-400">
                                                         {translatedKey.replace(
                                                             "_",
                                                             " "
@@ -704,7 +714,7 @@ export default function Template({}) {
 
                                             return (
                                                 <div key={key} className="my-1">
-                                                    <p className="text-xs to-gray-400">
+                                                    <p className="text-xs text-gray-400">
                                                         {translatedKeyHealth.replace(
                                                             "_",
                                                             " "

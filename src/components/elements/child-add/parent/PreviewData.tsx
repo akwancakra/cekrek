@@ -74,20 +74,33 @@ export default function PreviewData({
         const finalData = {
             // teacher_id: profile?.id,
             ...data?.biodata,
+            parent_dad: (profile?.type == "ayah" && profile?.id) || "",
+            parent_mother: (profile?.type == "ibu" && profile?.id) || "",
+            parent_wali: (profile?.type == "wali" && profile?.id) || "",
             ...data?.birthHistory,
             ...data?.expertExamination,
             ...data?.healthStatus,
         };
 
+        console.log(finalData);
+
         const submitPromise = new Promise<void>(async (resolve, reject) => {
             try {
-                if (id && isReady && profile?.id) {
-                    await axios.put(
-                        `/api/teachers/${profile.id}/students/${id}`,
-                        finalData
-                    );
-                } else {
-                    await axios.post("/api/children", finalData);
+                if (isReady) {
+                    if (id) {
+                        if (data?.biodata.teacher_id) {
+                            await axios.put(
+                                `/api/teachers/${data?.biodata.teacher_id}/students/${id}`,
+                                finalData
+                            );
+                        } else {
+                            toast.error(
+                                "Pastikan guru sudah dipilih terlebih dahulu"
+                            );
+                        }
+                    } else {
+                        await axios.post("/api/children", finalData);
+                    }
                 }
                 resolve();
             } catch (error) {
