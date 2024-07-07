@@ -8,6 +8,7 @@ const publicRoutes = [
     "/api",
     "/_next/static",
     "/_next/image",
+    "/terms",
     "/static/images",
     "/.*svg",
     "/.*png",

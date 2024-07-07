@@ -11,7 +11,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
     title: "CekRek | Cek Rekomendasi",
-    description: "First page of CekRek",
+    description:
+        "Sebuah sistem informasi yang memudahkan guru dan orang tua dalam memonitoring anak mereka",
 };
 
 export default function RootLayout({

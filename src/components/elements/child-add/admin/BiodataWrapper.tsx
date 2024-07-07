@@ -800,7 +800,10 @@ export default function BiodataWrapper({
                                         </option>
                                     </select> */}
                                         <Select
-                                            value={formik.values.gender}
+                                            value={formik.values.gender || ""}
+                                            defaultValue={
+                                                formik.values.gender || ""
+                                            }
                                             onValueChange={(value) =>
                                                 formik.setFieldValue(
                                                     "gender",

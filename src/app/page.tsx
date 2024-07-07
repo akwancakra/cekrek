@@ -239,8 +239,8 @@ export default function Home() {
                             </div>
                             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
                                 <Image
-                                    src="/static/images/logo-satria.jpg"
-                                    className="h-max max-h-10 w-auto mx-auto"
+                                    src="/static/images/logo-satria.svg"
+                                    className="h-max max-h-10 w-auto mx-auto dark:fill-white fill-black"
                                     loading="lazy"
                                     alt="client logo"
                                     width="100"
