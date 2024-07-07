@@ -249,7 +249,7 @@ export default function AssessmentDetail({}) {
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </div>
-                                        <div className="divider my-1" />
+                                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
 
                                         <Alert
                                             text={`Kategori ${getRiskCategory({
@@ -353,7 +353,7 @@ export default function AssessmentDetail({}) {
                                     <p className="text-large font-semibold tracking-tight">
                                         Rangkuman
                                     </p>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     <div className="flex justify-between gap-2 mb-3">
                                         <div>
                                             <p className="font-medium tracking-tight text-medium">
@@ -445,7 +445,7 @@ export default function AssessmentDetail({}) {
                                         </p>
                                         {/* Awal */}
                                     </div>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     {!childAssessmentIsExist({
                                         childAssessment:
                                             data?.child_assesments?.[0]
@@ -475,7 +475,7 @@ export default function AssessmentDetail({}) {
                                             Asesmen Follow Up
                                         </p>
                                     </div>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                     {!childAssessmentIsExist({
                                         childAssessment:
                                             data?.child_assesments?.[0]
@@ -500,7 +500,7 @@ export default function AssessmentDetail({}) {
                                     <p className="text-large font-semibold tracking-tight">
                                         Rekomendasi Aktifitas
                                     </p>
-                                    <div className="divider my-1" />
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
 
                                     {data?.child_recommendations?.length ==
                                     0 ? (

@@ -1,6 +1,5 @@
 "use client";
 
-import { ChildrenData } from "@/app/t/students/add/page";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -9,6 +8,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { ChildrenData } from "@/types/childrenData.type";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -102,14 +102,14 @@ export default function ExpertWrapper({
     });
 
     const initialValues: { [key: string]: string } = {
-        pediatrician: "-",
-        pediatrician_other: "-",
-        rehabilitation: "-",
-        rehabilitation_other: "-",
-        psychologist: "-",
-        psychologist_other: "-",
-        therapist: "-",
-        therapist_other: "-",
+        pediatrician: "Tidak Tahu",
+        pediatrician_other: "",
+        rehabilitation: "Tidak Tahu",
+        rehabilitation_other: "",
+        psychologist: "Tidak Tahu",
+        psychologist_other: "",
+        therapist: "Tidak Tahu",
+        therapist_other: "",
     };
 
     const data: { [key: string]: string } =

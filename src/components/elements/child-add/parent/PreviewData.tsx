@@ -56,13 +56,13 @@ export default function PreviewData({
         } else {
             if (isSubmit) {
                 setIsSubmit(false);
-                router.push("/t");
+                router.push("/p/childs");
             }
 
             setIsSubmit(false);
 
             if (id) {
-                router.push(`/t/students/${id}/edit?stage=biodata`);
+                router.push(`/p/childs/${id}/edit?stage=biodata`);
             }
         }
         setIsLoading(false);
@@ -72,7 +72,7 @@ export default function PreviewData({
         setIsSubmit(true);
 
         const finalData = {
-            teacher_id: profile?.id,
+            // teacher_id: profile?.id,
             ...data?.biodata,
             ...data?.birthHistory,
             ...data?.expertExamination,
@@ -100,7 +100,7 @@ export default function PreviewData({
             success: () => {
                 // setIsSubmit(false);
                 resetLocal({ push: true });
-                router.push("/t");
+                router.push("/p/childs");
                 // if (id) {
                 return "Berhasil menyimpan data!";
                 // }

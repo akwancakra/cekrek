@@ -36,7 +36,7 @@ export default function AddAccountDialog({
                 <ScrollArea className="max-h-[80vh] p-3">
                     <AlertDialogHeader className="m-1">
                         <AlertDialogTitle>Tambah Akun</AlertDialogTitle>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <div>
                             <label className="form-control w-full mb-3">
                                 <div className="label">

@@ -31,7 +31,7 @@ export default function Home() {
                                     className="flex space-x-2 items-center"
                                 >
                                     <Image
-                                        src={"/static/images/logo.png"}
+                                        src={"/static/images/logo-cekrek.png"}
                                         alt="Logo CekRek"
                                         width={35}
                                         height={35}

@@ -6,7 +6,8 @@ import { signIn } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import * as Yup from "yup";
 
 const validationSchema = Yup.object().shape({
@@ -22,7 +23,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const Page = () => {
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [showPasswordConf, setShowPasswordConf] = useState(false);
 
@@ -71,6 +72,11 @@ const Page = () => {
             //         setIsLoading(false);
             //     });
         },
+    });
+
+    useEffect(() => {
+        toast.error("Anda tidak boleh mengakses halaman ini");
+        router.push("/login");
     });
 
     return (

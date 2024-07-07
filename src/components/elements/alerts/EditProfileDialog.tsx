@@ -15,9 +15,9 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Session } from "@/types/userSession.type";
 import axios from "axios";
-import { Field, Form, FormikProvider, useFormik } from "formik";
+import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as Yup from "yup";
 
@@ -38,7 +38,9 @@ export default function EditProfileDialog({
     profile: Session;
 }) {
     const [isSubmit, setIsSubmit] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const roles = ["admin", "teacher", "parent"];
 
     const formik = useFormik({
         initialValues: {
@@ -60,7 +62,7 @@ export default function EditProfileDialog({
             const submitPromise = new Promise<void>(async (resolve, reject) => {
                 try {
                     await axios.put(apiUrl, values);
-
+                    setIsOpen(false);
                     resolve();
                 } catch (error) {
                     reject(error);
@@ -75,29 +77,43 @@ export default function EditProfileDialog({
                     router.push("/p/settings/profile");
                     return "Data orang tua telah diubah!";
                 },
-                error: "Something went wrong",
+                error: (error) => {
+                    return (
+                        error?.response?.data?.message || "Gagal mengubah data"
+                    );
+                },
             });
         },
     });
 
+    useEffect(() => {
+        if (profile?.email !== formik.values.email) {
+            formik.setFieldValue("email", profile?.email);
+        }
+    }, [profile]);
+
     return (
-        <AlertDialog>
+        <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
             <AlertDialogTrigger asChild>
-                <Button
-                    variant={"default"}
-                    className="bg-yellow-300 text-yellow-800 gap-1 hover:bg-yellow-400 hover:text-yellow-900"
-                >
-                    <span>Ubah</span>
-                    <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                        edit
-                    </span>
-                </Button>
+                {roles.some((r) => r === profile?.role) ? (
+                    <Button
+                        variant={"default"}
+                        className="bg-yellow-300 text-yellow-800 gap-1 hover:bg-yellow-400 hover:text-yellow-900"
+                    >
+                        <span>Ubah</span>
+                        <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                            edit
+                        </span>
+                    </Button>
+                ) : (
+                    <div className="skeleton rounded-lg w-36 h-9"></div>
+                )}
             </AlertDialogTrigger>
             <AlertDialogContent className="p-0">
                 <ScrollArea className="max-h-[80vh] p-3">
                     <AlertDialogHeader className="m-1">
                         <AlertDialogTitle>Ubah Profil</AlertDialogTitle>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <div>
                             <FormikProvider value={formik}>
                                 <Form>
@@ -115,6 +131,11 @@ export default function EditProfileDialog({
                                             {...formik.getFieldProps("email")}
                                         />
                                     </label>
+                                    <ErrorMessage
+                                        name="email"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                     <label className="form-control w-full mb-3">
                                         <div className="label">
                                             <span className="label-text">
@@ -131,6 +152,11 @@ export default function EditProfileDialog({
                                             )}
                                         />
                                     </label>
+                                    <ErrorMessage
+                                        name="password"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                     <label className="form-control w-full mb-3">
                                         <div className="label">
                                             <span className="label-text">
@@ -154,6 +180,11 @@ export default function EditProfileDialog({
                                             )}
                                         />
                                     </label>
+                                    <ErrorMessage
+                                        name="confirmPassword"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                 </Form>
                             </FormikProvider>
                         </div>
@@ -166,7 +197,7 @@ export default function EditProfileDialog({
                                 variant={"default"}
                                 onClick={() => formik.submitForm()}
                                 className="bg-yellow-300 text-yellow-800 hover:bg-yellow-400 hover:text-yellow-900"
-                                disabled={isSubmit}
+                                disabled={isSubmit || !formik.isValid}
                             >
                                 Ubah
                             </Button>

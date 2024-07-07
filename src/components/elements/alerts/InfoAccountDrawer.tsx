@@ -11,9 +11,15 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { User } from "@/types/user.types";
+import { formattedDate } from "@/utils/formattedDate";
 import { useState } from "react";
 
-export default function InfoAccountDrawer({}) {
+interface Props {
+    profile: User;
+}
+
+export default function InfoAccountDrawer({ profile }: Props) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -33,39 +39,99 @@ export default function InfoAccountDrawer({}) {
                             <div className="col-span-3">
                                 <p className="text-small -mb-1">Nama</p>
                                 <p className="text-medium font-semibold tracking-tight">
-                                    Sumarni
+                                    {profile?.name || "N/A"}
                                 </p>
                             </div>
-                            <div className="divider my-1"></div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div className="grid grid-cols-3 gap-2 justify-between">
                                 <div>
                                     <p className="text-small -mb-1">E-mail</p>
                                     <p className="text-medium font-semibold tracking-tight">
-                                        sumarni@mail.com
+                                        {profile?.email || "N/A"}
                                     </p>
                                 </div>
                                 <div>
                                     <p className="text-small -mb-1">
-                                        Jenis Kelamin
+                                        Peran Akun
                                     </p>
                                     <p className="text-medium font-semibold tracking-tight">
-                                        Perempuan
+                                        {profile?.role || "N/A"}
                                     </p>
                                 </div>
-                                <div>
-                                    <p className="text-small -mb-1">
-                                        Total Anak
-                                    </p>
-                                    <p className="text-medium font-semibold tracking-tight">
-                                        3 Anak
-                                    </p>
-                                </div>
-                                <div className="col-span-3">
-                                    <p className="text-small -mb-1">Alamat</p>
-                                    <p className="text-medium font-semibold tracking-tight">
-                                        Jl. H. Pukis No.13
-                                    </p>
-                                </div>
+                                {profile?.role === "parent" && (
+                                    <div>
+                                        <p className="text-small -mb-1">Tipe</p>
+                                        <p className="text-medium font-semibold tracking-tight">
+                                            {profile?.type || "N/A"}
+                                        </p>
+                                    </div>
+                                )}
+                                {profile?.role != "admin" && (
+                                    <>
+                                        <div>
+                                            <p className="text-small -mb-1">
+                                                Agama
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.religion || "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-small -mb-1">
+                                                Pendidikan
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.education || "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-small -mb-1">
+                                                Pekerjaan
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.job || "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-small -mb-1">
+                                                Tempat Lahir
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.place_birth || "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-small -mb-1">
+                                                Tgl Lahir
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.date_time_birth &&
+                                                typeof profile?.date_time_birth !=
+                                                    "string"
+                                                    ? formattedDate(
+                                                          profile?.date_time_birth.toString()
+                                                      )
+                                                    : "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-small -mb-1">
+                                                No. Tlp
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.phone || "N/A"}
+                                            </p>
+                                        </div>
+                                        <div className="col-span-3">
+                                            <p className="text-small -mb-1">
+                                                Alamat
+                                            </p>
+                                            <p className="text-medium font-semibold tracking-tight">
+                                                {profile?.address || "N/A"}
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         </DrawerDescription>
                     </DrawerHeader>

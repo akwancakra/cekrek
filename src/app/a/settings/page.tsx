@@ -15,14 +15,25 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { User } from "@/types/user.types";
+import { fetcher } from "@/utils/fetcher";
 import useProfile from "@/utils/useProfile";
 import { signOut } from "next-auth/react";
 import { toast } from "sonner";
+import useSWR from "swr";
 import { useMediaQuery } from "usehooks-ts";
 
 export default function AdminSettings({}) {
     const { profile, isReady } = useProfile();
     const isDesktop = useMediaQuery("(min-width: 768px)");
+
+    const {
+        data,
+        isLoading,
+    }: { data: { status: string; user: User }; isLoading: boolean } = useSWR(
+        isReady && profile?.id && `/api/users/${profile?.id}`,
+        fetcher
+    );
 
     const removeAccountButton = () => {
         toast.success("Akun berhasil dihapus！");
@@ -104,7 +115,13 @@ export default function AdminSettings({}) {
                             informations
                         </p>
                     </div>
-                    {isDesktop ? <InfoAccountDialog /> : <InfoAccountDrawer />}
+                    {isLoading || !data ? (
+                        <div className="skeleton rounded-lg h-9 w-32"></div>
+                    ) : isDesktop ? (
+                        <InfoAccountDialog profile={data?.user} />
+                    ) : (
+                        <InfoAccountDrawer profile={data?.user} />
+                    )}
                 </div>
                 <div className="flex justify-between items-center my-3">
                     <div>

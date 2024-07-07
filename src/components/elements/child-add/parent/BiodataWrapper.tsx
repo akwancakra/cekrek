@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { DatePicker } from "../inputs/datepicker";
+import { DatePicker } from "../../inputs/datepicker";
 import { useEffect, useMemo, useState } from "react";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { toast } from "sonner";
@@ -30,45 +30,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsClient } from "usehooks-ts";
-import useSWR from "swr";
-import { fetcher } from "@/utils/fetcher";
 import { User } from "@/types/user.types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/converters";
 import { ChildrenData } from "@/types/childrenData.type";
-
-const oneOfThreeRequired = (fields: any) => {
-    return Yup.string().test(
-        "at-least-one",
-        "Ayah, Ibu, atau Wali wajib dipilih",
-        function (value) {
-            const { parent_dad, parent_mother, parent_wali } = this.parent;
-            return (
-                (parent_dad && parent_dad !== "0") ||
-                (parent_mother && parent_mother !== "0") ||
-                (parent_wali && parent_wali !== "0")
-            );
-        }
-    );
-};
+import useSWR from "swr";
+import { fetcher } from "@/utils/fetcher";
 
 const validationSchema = Yup.object().shape({
-    parent_dad: oneOfThreeRequired([
-        "parent_dad",
-        "parent_mother",
-        "parent_wali",
-    ]),
-    parent_mother: oneOfThreeRequired([
-        "parent_dad",
-        "parent_mother",
-        "parent_wali",
-    ]),
-    parent_wali: oneOfThreeRequired([
-        "parent_dad",
-        "parent_mother",
-        "parent_wali",
-    ]),
+    teacher_id: Yup.string().required("Guru hapus dipilih"),
     full_name: Yup.string()
         .required("Nama tidak boleh kosong") // Required field with custom error message
         .trim() // Remove leading/trailing whitespace
@@ -138,116 +109,18 @@ export default function BiodataWrapper({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [parentsData, setParentsData] = useState<User[]>([]);
+    const [teachersData, setTeachersData] = useState<User[]>([]);
     const isClient = useIsClient();
 
     const {
-        data: parentsRaw,
-        isLoading: isLoadingParent,
-    }: { data: { status: string; parents: User[] }; isLoading: boolean } =
-        useSWR("/api/parents?plain=true", fetcher);
-
-    // const initialValues: { [key: string]: any } = {
-    //     // id: "",
-    //     risk_category: "",
-    //     parent_dad: "",
-    //     parent_mother: "",
-    //     parent_wali: "",
-    //     full_name: "",
-    //     nick_name: "",
-    //     gender: "",
-    //     religion: "",
-    //     place_birth: city,
-    //     date_birth: date,
-    //     hearing: "",
-    //     count_of_siblings: 0,
-    //     picture: "",
-    // };
-
-    // const data: { [key: string]: any } = localData?.biodata || {};
-
-    // const initialValues = useMemo(() => {
-    //     const values: {
-    //         risk_category: string;
-    //         parent_dad: string;
-    //         parent_mother: string;
-    //         parent_wali: string;
-    //         full_name: string;
-    //         nick_name: string;
-    //         gender: string;
-    //         religion: string;
-    //         place_birth: string;
-    //         date_birth: Date | undefined;
-    //         hearing: string;
-    //         count_of_siblings: number;
-    //         picture: any;
-    //     } = {
-    // risk_category: "",
-    // parent_dad: "",
-    // parent_mother: "",
-    // parent_wali: "",
-    // full_name: "",
-    // nick_name: "",
-    // gender: "",
-    // religion: "",
-    // place_birth: city,
-    // date_birth: date,
-    // hearing: "",
-    // count_of_siblings: 0,
-    // picture: "",
-    //     };
-
-    //     const data = localData?.biodata || {};
-    //     const fields: (keyof typeof values)[] = [
-    //         "risk_category",
-    //         "parent_dad",
-    //         "parent_mother",
-    //         "parent_wali",
-    //         "full_name",
-    //         "nick_name",
-    //         "gender",
-    //         "religion",
-    //         "place_birth",
-    //         "date_birth",
-    //         "hearing",
-    //         "count_of_siblings",
-    //     ];
-
-    //     fields.forEach((field) => {
-    //         if (data[field] !== undefined) {
-    //             values[field] = data[field];
-    //         }
-    //     });
-
-    //     return values;
-    // }, [localData, city, date]);
-
-    // const fields: (keyof typeof initialValues)[] = [
-    //     // "id",
-    // "risk_category",
-    // "parent_dad",
-    // "parent_mother",
-    // "full_name",
-    // "nick_name",
-    // "gender",
-    // "religion",
-    // "place_birth",
-    // "date_birth",
-    // "hearing",
-    // "count_of_siblings",
-    // ];
-
-    // fields.forEach((field) => {
-    // if (data[field] !== undefined) {
-    //     initialValues[field] = data[field];
-    // }
-    // });
+        data: teachersRaw,
+        isLoading: isLoadingTeachers,
+    }: { data: { status: string; teachers: User[] }; isLoading: boolean } =
+        useSWR("/api/teachers?plain=true", fetcher);
 
     const initialValues: { [key: string]: string } = {
+        teacher_id: "",
         risk_category: "",
-        parent_dad: "",
-        parent_mother: "",
-        parent_wali: "",
         full_name: "",
         nick_name: "",
         gender: "",
@@ -261,10 +134,8 @@ export default function BiodataWrapper({
 
     const data: { [key: string]: string } = localData?.biodata || ({} as any);
     const fields: (keyof typeof initialValues)[] = [
+        "teacher_id",
         "risk_category",
-        "parent_wali",
-        "parent_dad",
-        "parent_mother",
         "full_name",
         "nick_name",
         "gender",
@@ -290,13 +161,11 @@ export default function BiodataWrapper({
             values = { ...values, picture: selectedImage };
 
             try {
-                console.log(values);
+                // console.log(values);
                 saveAllAnswers("biodata", {
                     // id: values.id,
+                    teacher_id: values.teacher_id,
                     risk_category: values.risk_category,
-                    parent_dad: values.parent_dad,
-                    parent_mother: values.parent_mother,
-                    parent_wali: values.parent_wali,
                     full_name: values.full_name,
                     nick_name: values.nick_name,
                     gender: values.gender,
@@ -335,9 +204,6 @@ export default function BiodataWrapper({
                 formik.setValues({
                     // ...formik.values,
                     risk_category: latestData.risk_category || "",
-                    parent_dad: latestData.parent_dad || "",
-                    parent_mother: latestData.parent_mother || "",
-                    parent_wali: latestData.parent_wali || "",
                     full_name: latestData.full_name || "",
                     nick_name: latestData.nick_name || "",
                     gender: latestData.gender || "",
@@ -351,69 +217,6 @@ export default function BiodataWrapper({
             }
         }
     }, [localData]);
-
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         setIsLoading(true);
-
-    //         if (localData && localData.biodata) {
-    //             const data = localData.biodata;
-
-    //             setSelectedImage(data.picture || null);
-    //             setCity(data.place_birth || "");
-    //             setDate(
-    //                 data.date_birth ? new Date(data.date_birth) : undefined
-    //             );
-
-    //             const fields: (keyof typeof data)[] = [
-    //                 "risk_category",
-    //                 "parent_dad",
-    //                 "parent_mother",
-    //                 "parent_wali",
-    //                 "full_name",
-    //                 "nick_name",
-    //                 "gender",
-    //                 "religion",
-    //                 "place_birth",
-    //                 "date_birth",
-    //                 "hearing",
-    //                 "count_of_siblings",
-    //             ];
-
-    //             fields.forEach((field) => {
-    //                 formik.setFieldValue(field, data[field]);
-    //             });
-
-    //             console.log("Updated Formik values:", formik.values);
-    //         }
-
-    //         setIsLoading(false);
-    //     };
-
-    //     fetchData();
-    // }, [localData]);
-
-    // useEffect(() => {
-    //     const data = localData?.biodata;
-    //     console.log("Data baru");
-    //     if (data) {
-    //         if (data.picture) setSelectedImage(data.picture);
-    //         if (data.place_birth) setCity(data.place_birth);
-    //         if (data.date_birth) setDate(new Date(data.date_birth));
-
-    //         formik.setValues({
-    //             full_name: data.full_name || "",
-    //             nick_name: data.nick_name || "",
-    //             gender: data.gender || "",
-    //             religion: data.religion || "",
-    //             place_birth: data.place_birth || "",
-    //             date_birth: new Date(data.date_birth) || new Date(),
-    //             hearing: data.hearing || "",
-    //             count_of_siblings: data.count_of_siblings || 0,
-    //             picture: null,
-    //         });
-    //     }
-    // }, [localData]);
 
     const resetForm = () => {
         formik.resetForm();
@@ -454,10 +257,10 @@ export default function BiodataWrapper({
     }, [date, city]);
 
     useEffect(() => {
-        if (parentsRaw?.parents?.length > 0) {
-            setParentsData(parentsRaw.parents);
+        if (teachersRaw?.teachers) {
+            setTeachersData(teachersRaw.teachers);
         }
-    }, [parentsRaw]);
+    }, [teachersRaw]);
 
     if (!isClient) {
         return null;
@@ -465,7 +268,7 @@ export default function BiodataWrapper({
 
     return (
         <>
-            {(isLoading || isLoadingParent || !isClient) && (
+            {(isLoading || isLoadingTeachers || !isClient) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -508,7 +311,7 @@ export default function BiodataWrapper({
                 </>
             )}
 
-            {!isLoading && !isLoadingParent && isClient && (
+            {!isLoading && !isLoadingTeachers && isClient && (
                 <FormikProvider value={formik}>
                     <Form>
                         <div>
@@ -553,91 +356,27 @@ export default function BiodataWrapper({
                                     <label className="form-control w-full">
                                         <div className="label ps-0">
                                             <span className="label-text">
-                                                Ayah
-                                                {formik.errors.parent_dad && (
+                                                Guru
+                                                {formik.errors.teacher_id && (
                                                     <span className="text-red-500 text-xs italic">
                                                         *wajib dipilih
                                                     </span>
                                                 )}
                                             </span>
                                         </div>
-                                        <ParentPicker
-                                            parentType="ayah"
-                                            parentId={formik.values.parent_dad}
-                                            setParentId={(value) =>
+                                        <TeacherPicker
+                                            teacherId={formik.values.teacher_id}
+                                            setTeacherId={(value) =>
                                                 formik.setFieldValue(
-                                                    "parent_dad",
+                                                    "teacher_id",
                                                     value
                                                 )
                                             }
-                                            parentsData={parentsData}
+                                            teachersData={teachersData}
                                         />
                                     </label>
                                     <ErrorMessage
-                                        name="parent_dad"
-                                        component="div"
-                                        className="text-red-500 text-xs sm:text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="form-control w-full">
-                                        <div className="label ps-0">
-                                            <span className="label-text">
-                                                Ibu
-                                                {formik.errors
-                                                    .parent_mother && (
-                                                    <span className="text-red-500 text-xs italic">
-                                                        *wajib dipilih
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
-                                        <ParentPicker
-                                            parentType="ibu"
-                                            parentId={
-                                                formik.values.parent_mother
-                                            }
-                                            setParentId={(value) =>
-                                                formik.setFieldValue(
-                                                    "parent_mother",
-                                                    value
-                                                )
-                                            }
-                                            parentsData={parentsData}
-                                        />
-                                    </label>
-                                    <ErrorMessage
-                                        name="parent_mother"
-                                        component="div"
-                                        className="text-red-500 text-xs sm:text-sm"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="form-control w-full">
-                                        <div className="label ps-0">
-                                            <span className="label-text">
-                                                Wali
-                                                {formik.errors.parent_wali && (
-                                                    <span className="text-red-500 text-xs italic">
-                                                        *wajib dipilih
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
-                                        <ParentPicker
-                                            parentType="wali"
-                                            parentId={formik.values.parent_wali}
-                                            setParentId={(value) =>
-                                                formik.setFieldValue(
-                                                    "parent_wali",
-                                                    value
-                                                )
-                                            }
-                                            parentsData={parentsData}
-                                        />
-                                    </label>
-                                    <ErrorMessage
-                                        name="parent_wali"
+                                        name="teacher_id"
                                         component="div"
                                         className="text-red-500 text-xs sm:text-sm"
                                     />
@@ -1302,31 +1041,27 @@ const CityPicker = ({ city, setCity }: CityPickerProps) => {
     );
 };
 
-interface ParentPickerProps {
-    parentType: "ayah" | "ibu" | "wali";
-    parentId: string;
-    setParentId: (parentId: string) => void;
-    parentsData: User[];
+interface TeacherPickerProps {
+    teacherId: string;
+    setTeacherId: (teacherId: string) => void;
+    teachersData: User[];
 }
 
-const ParentPicker = ({
-    parentType,
-    parentId,
-    setParentId,
-    parentsData,
-}: ParentPickerProps) => {
+const TeacherPicker = ({
+    teacherId,
+    setTeacherId,
+    teachersData,
+}: TeacherPickerProps) => {
     const [open, setOpen] = useState(false);
     const router = useRouter();
     const isClient = useIsClient();
     const currentUrl =
         typeof window !== "undefined" ? window.location.href : "";
 
-    const parentOptions = parentsData
-        .filter((parent) => parent.type === parentType)
-        .map((parent) => ({
-            label: parent.name,
-            value: parent.id.toString(),
-        }));
+    const parentOptions = teachersData.map((parent) => ({
+        label: parent.name,
+        value: parent.id.toString(),
+    }));
 
     if (!isClient) {
         return null;
@@ -1341,63 +1076,30 @@ const ParentPicker = ({
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {parentId
+                    {teacherId
                         ? parentOptions.find(
-                              (parent) => parent.value === parentId
+                              (parent) => parent.value === teacherId
                           )?.label
-                        : `Pilih ${
-                              parentType.charAt(0).toUpperCase() +
-                              parentType.slice(1)
-                          }...`}
+                        : `Pilih Guru...`}
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         unfold_more
                     </span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className=" p-0" align="start">
+            <PopoverContent className="p-0 border-neutral-600" align="start">
                 <Command>
-                    <CommandInput placeholder={`Cari ${parentType}...`} />
+                    <CommandInput placeholder={`Cari Guru...`} />
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
-                        <CommandEmpty asChild>
-                            <Link
-                                href={`/t/parents/add?callback=${encodeURIComponent(
-                                    currentUrl
-                                )}`}
-                                className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                            >
-                                <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                    add
-                                </span>
-                                Tambah{" "}
-                                {parentType.charAt(0).toUpperCase() +
-                                    parentType.slice(1)}
-                            </Link>
-                        </CommandEmpty>
-                        {parentOptions.length === 0 && (
-                            <CommandItem value="add-new" asChild>
-                                <Link
-                                    href={`/t/parents/add?callback=${encodeURIComponent(
-                                        currentUrl
-                                    )}`}
-                                    className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                                >
-                                    <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                        add
-                                    </span>
-                                    Tambah{" "}
-                                    {parentType.charAt(0).toUpperCase() +
-                                        parentType.slice(1)}
-                                </Link>
-                            </CommandItem>
-                        )}
+                        <CommandEmpty>Guru tidak ditemukan</CommandEmpty>
                         <CommandGroup>
                             {parentOptions.map((parent, index) => (
                                 <CommandItem
                                     key={index}
                                     value={parent.value}
+                                    defaultValue={parent.value}
                                     onSelect={(currentValue) => {
-                                        setParentId(
-                                            currentValue === parentId
+                                        setTeacherId(
+                                            currentValue === teacherId
                                                 ? ""
                                                 : currentValue
                                         );
@@ -1409,9 +1111,9 @@ const ParentPicker = ({
                                             "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
                                             {
                                                 "opacity-100":
-                                                    parent.value === parentId,
+                                                    parent.value === teacherId,
                                                 "opacity-0":
-                                                    parent.value !== parentId,
+                                                    parent.value !== teacherId,
                                             }
                                         )}
                                     >

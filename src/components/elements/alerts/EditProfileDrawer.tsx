@@ -14,9 +14,9 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Session } from "@/types/userSession.type";
 import axios from "axios";
-import { Field, Form, FormikProvider, useFormik } from "formik";
+import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import * as Yup from "yup";
 
@@ -37,6 +37,7 @@ export default function EditProfileDrawer({
 }) {
     const [open, setOpen] = useState(false);
     const [isSubmit, setIsSubmit] = useState(false);
+    const roles = ["admin", "teacher", "parent"];
 
     const router = useRouter();
 
@@ -60,7 +61,7 @@ export default function EditProfileDrawer({
             const submitPromise = new Promise<void>(async (resolve, reject) => {
                 try {
                     await axios.put(apiUrl, values);
-
+                    setOpen(false);
                     resolve();
                 } catch (error) {
                     reject(error);
@@ -75,29 +76,43 @@ export default function EditProfileDrawer({
                     router.push("/p/settings/profile");
                     return "Data orang tua telah diubah!";
                 },
-                error: "Something went wrong",
+                error: (error) => {
+                    return (
+                        error?.response?.data?.message || "Gagal mengubah data"
+                    );
+                },
             });
         },
     });
 
+    useEffect(() => {
+        if (profile?.email !== formik.values.email) {
+            formik.setFieldValue("email", profile?.email);
+        }
+    }, [profile]);
+
     return (
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
-                <Button
-                    variant={"default"}
-                    className="bg-yellow-300 text-yellow-800 gap-1 hover:bg-yellow-400 hover:text-yellow-900"
-                >
-                    <span>Ubah</span>
-                    <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
-                        edit
-                    </span>
-                </Button>
+                {roles.some((r) => r === profile?.role) ? (
+                    <Button
+                        variant={"default"}
+                        className="bg-yellow-300 text-yellow-800 gap-1 hover:bg-yellow-400 hover:text-yellow-900"
+                    >
+                        <span>Ubah</span>
+                        <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
+                            edit
+                        </span>
+                    </Button>
+                ) : (
+                    <div className="skeleton rounded-lg w-36 h-9"></div>
+                )}
             </DrawerTrigger>
             <DrawerContent className="p-0">
                 <ScrollArea className="max-h-[70vh] p-0">
                     <DrawerHeader className="text-left">
                         <DrawerTitle>Ubah profil</DrawerTitle>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <div>
                             {/* <label className="form-control w-full mb-3">
                                 <div className="label">
@@ -126,6 +141,11 @@ export default function EditProfileDrawer({
                                             {...formik.getFieldProps("email")}
                                         />
                                     </label>
+                                    <ErrorMessage
+                                        name="email"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                     <label className="form-control w-full mb-3">
                                         <div className="label">
                                             <span className="label-text">
@@ -142,6 +162,11 @@ export default function EditProfileDrawer({
                                             )}
                                         />
                                     </label>
+                                    <ErrorMessage
+                                        name="password"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                     <label className="form-control w-full mb-3">
                                         <div className="label">
                                             <span className="label-text">
@@ -165,6 +190,11 @@ export default function EditProfileDrawer({
                                             )}
                                         />
                                     </label>
+                                    <ErrorMessage
+                                        name="confirmPassword"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                 </Form>
                             </FormikProvider>
                         </div>
@@ -175,7 +205,7 @@ export default function EditProfileDrawer({
                             variant={"default"}
                             onClick={formik.submitForm}
                             className="bg-yellow-300 text-yellow-800 hover:bg-yellow-400 hover:text-yellow-900"
-                            disabled={isSubmit}
+                            disabled={isSubmit || !formik.isValid}
                         >
                             Ubah
                         </Button>

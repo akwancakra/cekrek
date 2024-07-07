@@ -179,7 +179,7 @@ export default function AddRecommendatioPage() {
                                             Data Rekomendasi
                                         </p>
                                     </div>
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <FormikProvider value={formik}>
                                         <Form>
                                             <div className="flex flex-col">
@@ -415,7 +415,7 @@ export default function AddRecommendatioPage() {
                                             </div>
                                         </Form>
                                     </FormikProvider>
-                                    <div className="divider my-1"></div>
+                                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                     <div className="flex justify-end gap-2">
                                         <Button
                                             variant={"outline"}

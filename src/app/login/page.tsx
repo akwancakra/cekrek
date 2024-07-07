@@ -80,9 +80,9 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
                         </Link>
                     </div>
                     <div className="text-center mb-8">
-                        <p className="text-header">Hello There</p>
+                        <p className="text-header">Halo di CekRek</p>
                         <p className="text-gray-400">
-                            Login and access all the features
+                            Masuk dan coba semua fitur yang ada
                         </p>
                     </div>
                     <label className="form-control w-full">
@@ -176,12 +176,12 @@ const LoginForm = ({ callbackUrl }: { callbackUrl: string }) => {
                             </>
                         )}
                     </Button>
-                    <p className="text-sm text-gray-400 text-center mt-3">
+                    {/* <p className="text-sm text-gray-400 text-center mt-3">
                         Belum memiliki akun?{" "}
                         <Link href={"/register"} className="hover:text-primary">
                             Buat sekarang
                         </Link>
-                    </p>
+                    </p> */}
                 </form>
             </div>
         </main>

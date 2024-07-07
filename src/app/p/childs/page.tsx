@@ -1,9 +1,11 @@
 "use client";
 
 import ChildCard from "@/components/elements/cards/ChildCard";
+import { Button } from "@/components/ui/button";
 import { Child } from "@/types/children.types";
 import { fetcher } from "@/utils/fetcher";
 import useProfile from "@/utils/useProfile";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
@@ -51,7 +53,7 @@ export default function Template({}) {
                                     <p className="text-center mb-2">
                                         Tidak ada data anak yang anda miliki
                                     </p>
-                                    {/* <Button
+                                    <Button
                                         variant={"default"}
                                         className="w-full"
                                         asChild
@@ -59,10 +61,10 @@ export default function Template({}) {
                                         <Link href={"/p/childs/add"}>
                                             Tambah Anak{" "}
                                             <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
-                                                folder_open
+                                                person_add
                                             </span>
                                         </Link>
-                                    </Button> */}
+                                    </Button>
                                 </div>
                             </div>
                         ))}

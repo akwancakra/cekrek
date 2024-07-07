@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import useProfile from "@/utils/useProfile";
 import { signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";

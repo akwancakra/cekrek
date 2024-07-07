@@ -161,6 +161,7 @@ export default function RecomendationStudent({}) {
                                 formattedDateStripYearFirst(date.toString()) ||
                                 today
                             }`}
+                            className="flex gap-1 items-center"
                         >
                             Bandingkan hasil monitoring versi guru{" "}
                             <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">

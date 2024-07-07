@@ -43,7 +43,7 @@ export default function HomeAdmin() {
                         <p className="text-gray-500 font-semibold text-small">
                             29 Juni 2024
                         </p>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
                         <div className="border border-gray-300 rounded-lg overflow-hidden w-16">
@@ -106,7 +106,7 @@ export default function HomeAdmin() {
                         <p className="text-gray-500 font-semibold text-small">
                             29 Juni 2024
                         </p>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
                         <div className="border border-gray-300 rounded-lg overflow-hidden w-16">

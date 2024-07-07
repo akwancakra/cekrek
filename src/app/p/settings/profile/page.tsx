@@ -157,7 +157,7 @@ export default function ParentProfilePage() {
                                                         >
                                                             <button
                                                                 type="button"
-                                                                className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
+                                                                className="w-full text-small py-1.5 rounded-md px-2 gap-1 flex justify-start items-center cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600 dark:bg-red-600 dark:text-red-100 dark:hover:!bg-red-700 dark:hover:!text-red-200"
                                                             >
                                                                 <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                                                     delete
@@ -245,10 +245,10 @@ export default function ParentProfilePage() {
                                         <p className="font-semibold tracking-tight text-lg">
                                             Biodata
                                         </p>
-                                        <div className="divider my-1" />
+                                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                                         <div className="w-full grid grid-cols-3 gap-2">
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Nama
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -256,7 +256,7 @@ export default function ParentProfilePage() {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     E-mail
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -264,7 +264,7 @@ export default function ParentProfilePage() {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Pendidikan
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -273,7 +273,7 @@ export default function ParentProfilePage() {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Pekerjaan
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -281,7 +281,7 @@ export default function ParentProfilePage() {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Agama
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -290,7 +290,7 @@ export default function ParentProfilePage() {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     No. Telp
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -298,15 +298,16 @@ export default function ParentProfilePage() {
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Tempat Lahir
                                                 </p>
                                                 <p className="text-medium font-semibold">
-                                                    {parentData?.phone || "-"}
+                                                    {parentData?.place_birth ||
+                                                        "-"}
                                                 </p>
                                             </div>
                                             <div className="my-1">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Tanggal Lahir
                                                 </p>
                                                 <p className="text-medium font-semibold">

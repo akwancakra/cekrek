@@ -55,7 +55,6 @@ import { fetcher, getChildrenImage } from "@/utils/fetcher";
 import useSWR from "swr";
 import { useParams, useRouter } from "next/navigation";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
-import axios from "axios";
 import { toast } from "sonner";
 import { Recommendation } from "@/types/recommendation.type";
 import {
@@ -368,12 +367,12 @@ export default function StudentDetails({}) {
                         </DropdownMenu>
                     </div>
                     {/* PROFILE DATA */}
-                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <div>
                             <p className="font-semibold tracking-tight text-lg">
                                 Biodata
                             </p>
-                            <div className="divider my-1" />
+                            <div className="divider my-1 dark:before:!bg-neutral-600" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 <div className="my-1">
                                     <p className="text-xs text-gray-400">
@@ -465,12 +464,12 @@ export default function StudentDetails({}) {
                         </div>
                     </div>
 
-                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <div>
                             <p className="font-semibold tracking-tight text-lg">
                                 Riwayat Kehamilan/Kelahiran
                             </p>
-                            <div className="divider my-1" />
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 {!data?.birth_history && (
                                     <div className="col-span-3 text-center py-3 text-small">
@@ -530,12 +529,12 @@ export default function StudentDetails({}) {
                         </div>
                     </div>
 
-                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <div>
                             <p className="font-semibold tracking-tight text-lg">
                                 Hasil Pemeriksaan Ahli
                             </p>
-                            <div className="divider my-1" />
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 {!data?.expert_examination && (
                                     <div className="col-span-3 text-center py-3 text-small">
@@ -582,12 +581,12 @@ export default function StudentDetails({}) {
                         </div>
                     </div>
 
-                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <div>
                             <p className="font-semibold tracking-tight text-lg">
                                 Kesehatan
                             </p>
-                            <div className="divider my-1" />
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 {!data?.health_status && (
                                     <div className="col-span-3 text-center py-3 text-small">
@@ -655,11 +654,11 @@ export default function StudentDetails({}) {
                     </div>
 
                     {/* ASESMEN HISTORY */}
-                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <p className="font-semibold tracking-tight text-lg">
                             Riwayat Asesmen
                         </p>
-                        <div className="divider my-1" />
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
@@ -771,11 +770,11 @@ export default function StudentDetails({}) {
                         </div>
                     </div>
 
-                    <div className="border border-gray-300 p-2 rounded-lg my-3">
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <p className="font-semibold tracking-tight text-lg">
                             Monitoring rekomendasi
                         </p>
-                        <div className="divider my-1" />
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                         <Table>
                             <TableHeader>
                                 <TableRow>

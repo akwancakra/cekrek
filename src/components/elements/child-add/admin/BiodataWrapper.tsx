@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import Image from "next/image";
-import { DatePicker } from "../inputs/datepicker";
+import { DatePicker } from "../../inputs/datepicker";
 import { useEffect, useMemo, useState } from "react";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import { toast } from "sonner";
@@ -273,6 +273,7 @@ export default function BiodataWrapper({
     const fields: (keyof typeof initialValues)[] = [
         "teacher_id",
         "risk_category",
+        "parent_wali",
         "parent_dad",
         "parent_mother",
         "full_name",

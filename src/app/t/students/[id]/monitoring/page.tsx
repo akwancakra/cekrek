@@ -227,7 +227,7 @@ export default function MonitoringRecommendations() {
                                     {formattedDate(new Date().toString())}
                                 </p>
                             </div>
-                            <div className="divider my-1"></div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div className="sm:flex group-[.open]:block md;group-[.open]:flex">
                                 <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
                                     <div className="border border-gray-300 rounded-lg p-3 mb-3">
@@ -235,7 +235,7 @@ export default function MonitoringRecommendations() {
                                             <p className="text-medium font-semibold">
                                                 Biodata
                                             </p>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                         </div>
                                         <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                                             <div className="mb-3">
@@ -279,7 +279,7 @@ export default function MonitoringRecommendations() {
                                             <p className="text-medium font-semibold">
                                                 Hasil monitoring
                                             </p>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                             <div>
                                                 {student?.child_recommendations?.map(
                                                     (rec, idx) =>
@@ -300,7 +300,7 @@ export default function MonitoringRecommendations() {
                                                         ) : null
                                                 )}
                                             </div>
-                                            <div className="divider my-1"></div>
+                                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                                             <div className="flex justify-end">
                                                 <AlertDialog>
                                                     <AlertDialogTrigger asChild>
@@ -421,7 +421,7 @@ export default function MonitoringRecommendations() {
     //             <p className="font-semibold tracking-tighter text-xl sm:text-2xl">
     //                 Monitor {today}
     //             </p>
-    //             <div className="divider my-1"></div>
+    //             <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
     //         </div>
     //     </>
     // )}

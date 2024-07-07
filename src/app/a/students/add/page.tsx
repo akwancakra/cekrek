@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import BiodataWrapper from "@/components/elements/child-form-admin/BiodataWrapper";
-import BirthWrapper from "@/components/elements/child-form-admin/BirthWrapper";
-import ExpertWrapper from "@/components/elements/child-form-admin/ExpertWrapper";
-import HealthWrapper from "@/components/elements/child-form-admin/HealthWrapper";
-import PreviewData from "@/components/elements/child-form-admin/PreviewData";
+import BiodataWrapper from "@/components/elements/child-add/admin/BiodataWrapper";
+// import BirthWrapper from "@/components/elements/child-add/admin/BirthWrapper";
+// import ExpertWrapper from "@/components/elements/child-add/admin/ExpertWrapper";
+// import HealthWrapper from "@/components/elements/child-add/admin/HealthWrapper";
+import PreviewData from "@/components/elements/child-add/admin/PreviewData";
 import { useLocalStorage } from "usehooks-ts";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -13,6 +13,9 @@ import Image from "next/image";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import { toast } from "sonner";
 import { ChildrenData } from "@/types/childrenData.type";
+import BirthWrapper from "@/components/elements/child-add/BirthWrapper";
+import ExpertWrapper from "@/components/elements/child-add/ExpertWrapper";
+import HealthWrapper from "@/components/elements/child-add/HealthWrapper";
 
 export default function AddStudentPage() {
     const [currentStage, setCurrentStage] = useState(1);
@@ -251,7 +254,7 @@ export default function AddStudentPage() {
                 <p className="font-semibold tracking-tighter text-xl sm:text-2xl">
                     Tambah siswa
                 </p>
-                <div className="divider my-1"></div>
+                <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
 
                 <div className="flex justify-center mb-3">
                     <ul className="steps w-full">

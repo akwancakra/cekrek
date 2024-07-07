@@ -87,7 +87,7 @@ export default function CompareMonitoringParentLayout() {
                         <p className="text-large font-semibold tracking-tight">
                             Monitoring yang saya lakukan
                         </p>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
                             <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                                 <p className="text-small">
@@ -110,7 +110,7 @@ export default function CompareMonitoringParentLayout() {
                         <p className="text-large font-semibold tracking-tight">
                             Monitoring yang dilakukan guru
                         </p>
-                        <div className="divider my-1"></div>
+                        <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                         <div className="border border-gray-300 rounded-lg p-2 grid gap-2 text-center justify-evenly mb-2 grid-cols-1 sm:grid-cols-2 dark:border-neutral-600">
                             <div className="flex flex-col justify-center items-center h-20 sm:h-32">
                                 <p className="text-small">
