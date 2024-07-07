@@ -14,22 +14,23 @@ datasource db {
 }
 
 model users {
-  id              Int       @id @default(autoincrement())
-  email           String    @unique
-  password        String
-  role            String // admin, teacher, parent
-  name            String
-  type            String? // ayah, ibu, wali
-  place_birth     String?
-  date_time_birth DateTime? @db.Date
-  religion        String?
-  education       String?
-  job             String?
-  address         String?
-  phone           String?
-  is_google       Boolean   @default(false)
-  created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  password          String
+  role              String // admin, teacher, parent
+  name              String
+  type              String? // ayah, ibu, wali
+  place_birth       String?
+  date_time_birth   DateTime? @db.Date
+  religion          String?
+  education         String?
+  job               String?
+  address           String?
+  phone             String?
+  is_google         Boolean   @default(false)
+  email_verified_at DateTime? @db.Date
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
 
   children children[]
 }
@@ -48,6 +49,8 @@ model children {
   risk_category     String? // rendah, sedang, tinggi (enum)
   // Riwayat hasil tes pendengaran. soal no 2 MCHAT
   hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
 
   parent                users[]
   child_recommendations child_recommendations[]
@@ -55,6 +58,7 @@ model children {
   expert_examination    expert_examination?
   health_status         health_status?
   child_assesments      child_assesment[]
+
   // monitor_child_recommendations monitor_child_recommendation[]
 }
 
@@ -178,7 +182,7 @@ model assesments {
 
 model child_assesment {
   id             Int      @id @default(autoincrement())
-  teacher_id    Int?
+  teacher_id     Int?
   assesment_type String   @default("awal") // awal, follow-up (enum)
   children_id    Int
   assesment_id   Int
