@@ -164,9 +164,12 @@ export default function CreateRecomendationCard({
                     className="bg-red-500 text-white hover:bg-red-600 hover:text-white"
                     onClick={() =>
                         onDelete(
-                            recommendation?.id?.toString() ||
-                                typeof recommendation?.assesment_number ===
-                                    "number"
+                            recommendation?.id &&
+                                typeof recommendation?.id === "number"
+                                ? recommendation?.id.toString()
+                                : recommendation?.id ||
+                                  typeof recommendation?.assesment_number ===
+                                      "number"
                                 ? recommendation?.assesment_number.toString()
                                 : recommendation?.assesment_number
                         )

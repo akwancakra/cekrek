@@ -196,12 +196,14 @@ export default function AssessmentGetRecommendations({
     // };
 
     const removeRecommendation = (id: string) => {
+        console.log("Assessment Removed", id, recommendations);
         setRecommendations((prevRecommendations) =>
             prevRecommendations.filter((item) => item.id.toString() !== id)
         );
     };
 
     const removeNewRecommendation = (id: string) => {
+        console.log("Assessment New Removed", id, newRecommendations);
         setNewRecommendations((prevNewRecommendations) =>
             prevNewRecommendations.filter(
                 (item) => item.assesment_number !== id
