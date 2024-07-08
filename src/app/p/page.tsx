@@ -186,10 +186,10 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
             <div className="group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12">
                 <AspectRatio ratio={8 / 9} className="bg-muted">
                     <Image
-                        src={getRecommendationImageUrl(
-                            data[0]?.child_recommendations[0]?.recommendations
-                                .icon
-                        )}
+                        src={getRecommendationImageUrl({
+                            image: data[0]?.child_recommendations[0]
+                                ?.recommendations.icon,
+                        })}
                         alt="Recomendation Image"
                         fill={true}
                         className="rounded-xl object-cover"
@@ -321,10 +321,11 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                             <div className="group-[.open]:w-full sm:w-5/12 md:group-[.open]:w-5/12">
                                 <AspectRatio ratio={8 / 9} className="bg-muted">
                                     <Image
-                                        src={getRecommendationImageUrl(
-                                            child?.child_recommendations[0]
-                                                ?.recommendations.icon
-                                        )}
+                                        src={getRecommendationImageUrl({
+                                            image: child
+                                                ?.child_recommendations[0]
+                                                ?.recommendations.icon,
+                                        })}
                                         alt="Recomendation Image"
                                         fill={true}
                                         className="rounded-xl object-cover"
