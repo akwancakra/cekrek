@@ -237,7 +237,7 @@ export default function RecomendationStudent({}) {
                         <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
                             <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                                 <p className="font-medium tracking-tight">
-                                    Nama Aspek
+                                    Motorik Halus
                                 </p>
                                 <Select disabled={isLoading}>
                                     <SelectTrigger className="w-fit min-w-24">
@@ -272,7 +272,7 @@ export default function RecomendationStudent({}) {
                         <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
                             <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
                                 <p className="font-medium tracking-tight">
-                                    Nama Aspek
+                                    Kognitif
                                 </p>
                                 <Select disabled={isLoading}>
                                     <SelectTrigger className="w-fit min-w-24">

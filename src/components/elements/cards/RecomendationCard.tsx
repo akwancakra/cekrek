@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Recommendation } from "@/types/recommendation.type";
+import { getRecommendationImageUrl } from "@/utils/converters";
 import { AspectRatio } from "@radix-ui/react-aspect-ratio";
 import Image from "next/image";
 
@@ -28,10 +29,12 @@ export default function RecomendationCard({
             <div className="collapse-title p-0 min-h-fit">
                 <div className="flex justify-between items-center mb-1">
                     <div className="flex items-center gap-2">
-                        <div className="bg-gray-300 rounded-lg hidden overflow-hidden sm:block sm:w-16">
+                        <div className="bg-gray-300 rounded-lg hidden overflow-hidden sm:block sm:w-16 dark:bg-neutral-600">
                             <AspectRatio ratio={1 / 1}>
                                 <Image
-                                    src={"/static/images/default.jpg"}
+                                    src={getRecommendationImageUrl({
+                                        image: recommendation?.icon,
+                                    })}
                                     alt="Recomendation Image"
                                     fill={true}
                                     className="rounded-lg object-cover"

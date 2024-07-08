@@ -60,9 +60,9 @@ type Recommendation = {
 const formSchema = Yup.object().shape({
     teacher_id: Yup.string(),
     title: Yup.string().required("Judul wajib diisi"),
-    assesment_number: Yup.string(),
+    assesment_number: Yup.string().required("Nomor asesment wajib dipilih"),
     description: Yup.string(), //.required("Deskripsi wajib diisi")
-    icon: Yup.string(),
+    icon: Yup.string().required("Gambar tidak boleh kosong"),
     frequency: Yup.string().required("Frekuensi wajib diisi"),
     risk_category: Yup.string().required("Kategori risiko wajib diisi"),
 });
@@ -176,6 +176,7 @@ export default function AssessmentGetRecommendations({
         return {
             child_id: child?.id || null,
             date_time: currentDate,
+            riskCategory,
             assessmentsAnswer,
             childRecommendations,
         };

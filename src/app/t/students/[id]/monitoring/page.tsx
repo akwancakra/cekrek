@@ -230,7 +230,7 @@ export default function MonitoringRecommendations() {
                             <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div className="sm:flex group-[.open]:block md;group-[.open]:flex">
                                 <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                                    <div className="border border-gray-300 rounded-lg p-3 mb-3">
+                                    <div className="border border-gray-300 rounded-lg p-3 mb-3 dark:border-neutral-600">
                                         <div>
                                             <p className="text-medium font-semibold">
                                                 Biodata
@@ -274,7 +274,7 @@ export default function MonitoringRecommendations() {
                                         </div>
                                     </div>
 
-                                    <div className="border border-gray-300 rounded-lg p-3">
+                                    <div className="border border-gray-300 rounded-lg p-3 dark:border-neutral-600">
                                         <div>
                                             <p className="text-medium font-semibold">
                                                 Hasil monitoring

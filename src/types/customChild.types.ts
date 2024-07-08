@@ -36,4 +36,6 @@ export type Child = {
     unfinishedRecommendations?: number;
     finishedRecommendationsByTeacher?: number;
     unfinishedRecommendationsByTeacher?: number;
+    finishedRecommendationsByParent?: number;
+    unfinishedRecommendationsByParent?: number;
 };

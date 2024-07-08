@@ -15,7 +15,28 @@ import {
 } from "@/components/ui/select";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
-import { useCounter } from "usehooks-ts";
+import { useCounter, useMediaQuery } from "usehooks-ts";
+import {
+    AlertDialog,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
 
 interface AssessmentChoiceProps {
     isLoading?: boolean;
@@ -124,26 +145,29 @@ export default function AssessmentChoice({
                     key={assessments[count - 1]?.id}
                     className="mx-auto max-w-lg flex flex-col justify-center items-center min-h-svh h-full gap-2 p-2"
                 >
-                    <Select
-                        value={count.toString()}
-                        defaultValue={count.toString()}
-                        onValueChange={(e) => setCount(parseInt(e))}
-                        disabled={isLoading || isLoadingData}
-                    >
-                        <SelectTrigger className="w-fit min-w-24">
-                            <SelectValue placeholder="Pilih Nomor" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {assessments?.map((element, idx) => (
-                                <SelectItem
-                                    key={idx}
-                                    value={element.assesment_number.toString()}
-                                >
-                                    Soal {element.assesment_number}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
+                    <div className="flex gap-2 justify-center">
+                        <Select
+                            value={count.toString()}
+                            defaultValue={count.toString()}
+                            onValueChange={(e) => setCount(parseInt(e))}
+                            disabled={isLoading || isLoadingData}
+                        >
+                            <SelectTrigger className="w-fit min-w-24">
+                                <SelectValue placeholder="Pilih Nomor" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {assessments?.map((element, idx) => (
+                                    <SelectItem
+                                        key={idx}
+                                        value={element.assesment_number.toString()}
+                                    >
+                                        Soal {element.assesment_number}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                        <HelpQuestion index={count} />
+                    </div>
                     <p className="text-gray-500 text-center text-small dark:text-gray-300">
                         {assessments[count - 1]?.question}
                     </p>
@@ -238,3 +262,94 @@ export default function AssessmentChoice({
         </>
     );
 }
+
+const HelpQuestion = ({ index }: { index: number }) => {
+    const [open, setOpen] = useState(false);
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+
+    if (isDesktop) {
+        return (
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant={"outline"} className="gap-1">
+                        <span>Info</span>
+                        <span className="material-symbols-outlined !text-lg !leading-none pointer-events-none">
+                            info
+                        </span>
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="p-0">
+                    <ScrollArea className="max-h-[80vh] p-3">
+                        <AlertDialogHeader className="m-1">
+                            <AlertDialogTitle className="hidden">
+                                Bantuan
+                            </AlertDialogTitle>
+                            Bantuan Pertanyaan {index}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
+                            <div className="relative rounded-lg bg-gray-400 w-full dark:bg-neutral-800">
+                                <AspectRatio
+                                    ratio={3 / 4}
+                                    className="rounded-lg overflow-hidden"
+                                >
+                                    <Image
+                                        src={`/static/images/assessments/question-${index}.png`}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="object-contain"
+                                        draggable={false}
+                                    />
+                                </AspectRatio>
+                            </div>
+                            <AlertDialogDescription />
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Tutup</AlertDialogCancel>
+                        </AlertDialogFooter>
+                    </ScrollArea>
+                </AlertDialogContent>
+            </AlertDialog>
+        );
+    }
+    return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
+                <Button variant={"outline"} className="gap-1">
+                    <span>Info</span>
+                    <span className="material-symbols-outlined !text-lg !leading-none pointer-events-none">
+                        info
+                    </span>
+                </Button>
+            </DrawerTrigger>
+            <DrawerContent className="p-0">
+                {/* <ScrollArea className="max-h-[70vh] p-0"> */}
+                <DrawerHeader className="text-left">
+                    <DrawerTitle>Bantuan Pertanyaan {index}</DrawerTitle>
+                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
+                    <div className="relative rounded-lg bg-gray-400 w-full dark:bg-neutral-800">
+                        <AspectRatio
+                            ratio={3 / 4}
+                            className="rounded-lg overflow-hidden"
+                        >
+                            <Image
+                                src={`/static/images/assessments/question-${index}.png`}
+                                alt="Recomendation Image"
+                                fill={true}
+                                className="object-contain"
+                                draggable={false}
+                            />
+                        </AspectRatio>
+                    </div>
+                    <DrawerDescription />
+                </DrawerHeader>
+                <DrawerFooter className="pt-2">
+                    <DrawerClose asChild>
+                        <Button variant="outline" className="text-medium">
+                            Tutup
+                        </Button>
+                    </DrawerClose>
+                </DrawerFooter>
+                {/* </ScrollArea> */}
+            </DrawerContent>
+        </Drawer>
+    );
+};

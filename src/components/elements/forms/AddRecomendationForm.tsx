@@ -10,6 +10,11 @@ import { cn } from "@/lib/utils";
 import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { Form, Field, ErrorMessage, FormikProvider, FormikProps } from "formik";
+import ImageRecommendationPicker from "../alerts/ImageRecommendationPicker";
+import { iconsOptions } from "@/utils/fetcher";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { getRecommendationImageUrl } from "@/utils/converters";
+import Image from "next/image";
 
 interface Props {
     formik: FormikProps<Recommendation>;
@@ -81,6 +86,35 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                             component="div"
                             className="text-small text-red-500"
                         />
+                    </div>
+                    <div>
+                        <div className="label">
+                            <span className="label-text">Gambar</span>
+                        </div>
+                        <ImageRecommendationPicker
+                            images={iconsOptions || []}
+                            image={formik.values.icon}
+                            setImage={(image) =>
+                                formik.setFieldValue("icon", image)
+                            }
+                        />
+                        {formik.values.icon && (
+                            <div className="relative rounded-lg bg-gray-200 max-w-xs w-full lg:max-w-64 mt-4">
+                                <AspectRatio
+                                    ratio={1 / 1}
+                                    className="rounded-lg overflow-hidden"
+                                >
+                                    <Image
+                                        src={getRecommendationImageUrl({
+                                            image: formik.values.icon,
+                                        })}
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                        className="object-cover"
+                                    />
+                                </AspectRatio>
+                            </div>
+                        )}
                     </div>
                     <div>
                         <label className="form-control w-full">

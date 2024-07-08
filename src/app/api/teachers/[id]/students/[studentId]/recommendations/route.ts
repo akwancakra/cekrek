@@ -49,12 +49,26 @@ export async function GET(req: any, { params }: any) {
         const unfinishedRecommendations =
             child.child_recommendations.length - finishedRecommendations;
 
+        const finishedRecommendationsByParent = monitors.filter(
+            (monitor) => monitor.is_done && monitor.with_whom === "parent"
+        ).length;
+
+        const unfinishedRecommendationsByParent =
+            child.child_recommendations.length -
+            finishedRecommendationsByParent;
+
         // Process and combine the recommendations and monitors
         const processed_recommendations = {
             ...child,
             child_recommendations: child.child_recommendations.map((rec) => ({
                 ...rec,
-                isFinished: monitors.some(
+                isFinishedByParent: monitors.some(
+                    (monitor) =>
+                        monitor.child_recommendations.id === rec.id &&
+                        monitor.is_done &&
+                        monitor.with_whom === "parent"
+                ),
+                isFinishedByTeacher: monitors.some(
                     (monitor) =>
                         monitor.child_recommendations.id === rec.id &&
                         monitor.is_done &&
@@ -77,6 +91,8 @@ export async function GET(req: any, { params }: any) {
             })),
             unfinishedRecommendations,
             finishedRecommendations,
+            unfinishedRecommendationsByParent,
+            finishedRecommendationsByParent,
         };
 
         return NextResponse.json(

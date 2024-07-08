@@ -94,8 +94,13 @@ export async function POST(req: NextRequest) {
         const data = await req.json();
 
         // Destructure data from request body
-        const { child_id, date_time, assessmentsAnswer, childRecommendations } =
-            data;
+        const {
+            child_id,
+            date_time,
+            riskCategory,
+            assessmentsAnswer,
+            childRecommendations,
+        } = data;
 
         // const newDate = new Date(date_time);
 
@@ -164,8 +169,9 @@ export async function POST(req: NextRequest) {
             await prisma.children.update({
                 where: { id: child_id },
                 data: {
-                    risk_category:
-                        assessmentsAnswer?.[0]?.risk_category || null,
+                    risk_category: riskCategory
+                        ? riskCategory
+                        : assessmentsAnswer?.[0]?.risk_category || null,
                 },
             });
 
