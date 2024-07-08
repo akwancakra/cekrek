@@ -20,6 +20,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getRecommendationImageUrl } from "@/utils/converters";
 import Image from "next/image";
 
 // type Recommendation = {
@@ -56,14 +57,14 @@ export default function CreateRecomendationCard({
     onDelete,
 }: CreateRecomendationCardProps) {
     return (
-        <div className="rounded-lg border border-gray-300 p-2 flex justify-between items-center gap-2">
+        <div className="rounded-lg border border-gray-300 p-2 flex justify-between items-center gap-2 dark:border-neutral-600">
             <div className="flex gap-2 items-center">
-                <div className="bg-gray-400 rounded-lg w-14 hidden sm:block sm:w-24">
+                <div className="bg-gray-400 rounded-lg w-14 hidden sm:block sm:w-24 dark:bg-neutral-600">
                     <AspectRatio ratio={1 / 1}>
                         <Image
-                            src={`/static/images/${
-                                recommendation?.icon || "default.jpg"
-                            }`}
+                            src={getRecommendationImageUrl({
+                                image: recommendation?.icon,
+                            })}
                             alt="Recomendation Image"
                             fill={true}
                             className="rounded-lg object-cover"
@@ -100,10 +101,9 @@ export default function CreateRecomendationCard({
                                     <div className="bg-gray-300 rounded-lg overflow-hidden">
                                         <AspectRatio ratio={1 / 1}>
                                             <Image
-                                                src={`/static/images/${
-                                                    recommendation?.icon ||
-                                                    "default.jpg"
-                                                }`}
+                                                src={getRecommendationImageUrl({
+                                                    image: recommendation?.icon,
+                                                })}
                                                 alt="Recomendation Image"
                                                 fill={true}
                                                 className="rounded-lg object-cover"
@@ -220,10 +220,11 @@ export default function CreateRecomendationCard({
                                                 <div className="bg-gray-300 rounded-lg overflow-hidden">
                                                     <AspectRatio ratio={1 / 1}>
                                                         <Image
-                                                            src={`/static/images/${
-                                                                recommendation?.icon ||
-                                                                "default.jpg"
-                                                            }`}
+                                                            src={getRecommendationImageUrl(
+                                                                {
+                                                                    image: recommendation?.icon,
+                                                                }
+                                                            )}
                                                             alt="Recomendation Image"
                                                             fill={true}
                                                             className="rounded-lg object-cover"

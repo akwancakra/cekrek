@@ -2,6 +2,7 @@ import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
 import { ChildAssesment } from "@/types/childAssesment.type";
 import { AssesmentWrap, Child } from "@/types/children.types";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
+import { iconsOptions } from "./fetcher";
 
 const processMultiChildAssessments = (
     childs: Child[]
@@ -310,16 +311,55 @@ const getImageUrl = (image?: any) => {
     }
 };
 
-const getRecommendationImageUrl = (image?: any) => {
+const getRecommendationImageUrl = ({
+    localImages = iconsOptions,
+    image,
+}: {
+    localImages?: { label: string; value: string }[];
+    image?: any;
+}) => {
+    const totalDefaultImage = 27;
+    // const defaultImagePrefix = "icon-cekrek (";
+    // const defaultImageSuffix = ").png";
+
+    if (
+        localImages?.length > 0 &&
+        image &&
+        typeof image === "string" &&
+        image !== ""
+    ) {
+        const matchLocal = localImages.filter((img) => {
+            return img.value === image;
+        });
+
+        if (matchLocal.length > 0) {
+            return `/static/images/recommendations/${image}`;
+        }
+    }
+
+    if (typeof image === "string") {
+        // Check if the image name is in the range of default images
+        // const match = image.match(/icon-cekrek \((\d+)\)\.png/);
+        // if (
+        //     match &&
+        //     parseInt(match[1]) > 0 &&
+        //     parseInt(match[1]) <= totalDefaultImage
+        // ) {
+        //     return `/static/images/recommendations/${image}`;
+        // }
+
+        if (image.startsWith("data:image")) {
+            return image; // This handles base64 images directly
+        }
+
+        return `/uploads/recommendations/${image}`;
+    }
+
     if (image instanceof File) {
         return URL.createObjectURL(image);
-    } else if (typeof image === "string" && image.startsWith("data:image")) {
-        return image; // This handles base64 images directly
-    } else if (typeof image === "string" && image) {
-        return `/uploads/recommendations/${image}`;
-    } else {
-        return "/static/images/default.jpg";
     }
+
+    return "/static/images/default.jpg";
 };
 
 export {

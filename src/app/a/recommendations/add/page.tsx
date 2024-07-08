@@ -1,5 +1,6 @@
 "use client";
 
+import ImageRecommendationPicker from "@/components/elements/alerts/ImageRecommendationPicker";
 import { MinimalTiptapEditor } from "@/components/minimal-tiptap";
 import {
     AlertDialog,
@@ -12,6 +13,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import {
     Command,
@@ -37,10 +39,11 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { Assessment } from "@/types/assessment.types";
-import { truncateString } from "@/utils/converters";
-import { fetcher } from "@/utils/fetcher";
+import { getRecommendationImageUrl, truncateString } from "@/utils/converters";
+import { fetcher, iconsOptions } from "@/utils/fetcher";
 import axios from "axios";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -57,7 +60,7 @@ const validationSchema = Yup.object().shape({
     description: Yup.string()
         .min(3, "Deskripsi minimal 3 karakter")
         .required("Deskripsi wajib diisi"),
-    icon: Yup.string(),
+    icon: Yup.string().required("Gambar tidak boleh kosong"),
     is_main: Yup.boolean(),
     assesment_number: Yup.string().required("Nomor asessment wajib dipilih"),
     frequency: Yup.string().required("Frekuensi wajib diisi"),
@@ -131,7 +134,7 @@ export default function AddRecommendatioPage() {
     useEffect(() => {
         if (!isLoading && data?.assesments) {
             setAssessments(data?.assesments || []);
-            console.log(data?.assesments);
+            // console.log(data?.assesments);
         }
     }, [data, isLoading]);
 
@@ -252,6 +255,58 @@ export default function AddRecommendatioPage() {
                                                         component="div"
                                                         className="text-red-500 text-xs sm:text-sm"
                                                     />
+                                                </div>
+                                                <div>
+                                                    <div className="label">
+                                                        <span className="label-text">
+                                                            Gambar
+                                                        </span>
+                                                    </div>
+                                                    {/* {imagesIsLoading ? (
+                                                        <>
+                                                            <div className="skeleton h-9 w-32"></div>
+                                                        </>
+                                                    ) : (
+                                                        <> */}
+                                                    <ImageRecommendationPicker
+                                                        images={
+                                                            iconsOptions || []
+                                                        }
+                                                        image={
+                                                            formik.values.icon
+                                                        }
+                                                        setImage={(image) =>
+                                                            formik.setFieldValue(
+                                                                "icon",
+                                                                image
+                                                            )
+                                                        }
+                                                    />
+                                                    {formik.values.icon && (
+                                                        <div className="relative rounded-lg bg-gray-200 max-w-xs w-full lg:max-w-64 mt-4">
+                                                            <AspectRatio
+                                                                ratio={1 / 1}
+                                                                className="rounded-lg overflow-hidden"
+                                                            >
+                                                                <Image
+                                                                    src={getRecommendationImageUrl(
+                                                                        {
+                                                                            image: formik
+                                                                                .values
+                                                                                .icon,
+                                                                            localImages:
+                                                                                iconsOptions,
+                                                                        }
+                                                                    )}
+                                                                    alt="Recomendation Image"
+                                                                    fill={true}
+                                                                    className="object-cover"
+                                                                />
+                                                            </AspectRatio>
+                                                        </div>
+                                                    )}
+                                                    {/* </>
+                                                    )} */}
                                                 </div>
                                                 <div>
                                                     <label className="form-control w-full">

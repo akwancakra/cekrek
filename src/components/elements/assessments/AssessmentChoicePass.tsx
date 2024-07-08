@@ -1,6 +1,7 @@
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { Recommendation } from "@/types/recommendation.type";
+import { getRecommendationImageUrl } from "@/utils/converters";
 import Image from "next/image";
 
 type ChildRecommendation = {
@@ -30,14 +31,12 @@ Props) {
             <div className="max-w-lg bg-gray-400 rounded-lg w-full">
                 <AspectRatio ratio={16 / 9}>
                     <Image
-                        src={
-                            recommendation?.recommendations?.icon
-                                ? `/uploads/recommendations/${recommendation?.recommendations?.icon}`
-                                : "/static/images/default.jpg"
-                        }
+                        src={getRecommendationImageUrl({
+                            image: recommendation?.recommendations?.icon,
+                        })}
                         alt="Recomendation Image"
                         fill={true}
-                        className="rounded-lg object-cover"
+                        className="rounded-lg object-scale-down"
                         draggable={false}
                     />
                 </AspectRatio>
@@ -49,7 +48,7 @@ Props) {
                 dangerouslySetInnerHTML={{
                     __html: recommendation?.recommendations?.description ?? "",
                 }}
-                className="text-gray-500 text-small"
+                className="text-gray-500 text-small dark:text-neutral-300"
             />
             {/* <p className="text-gray-500 text-center text-small">
                 {recommendation?.recommendations?.description}

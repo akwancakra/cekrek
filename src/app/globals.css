@@ -142,7 +142,8 @@
 }
 
 .dark input.input,
-.dark textarea.textarea {
+.dark textarea.textarea,
+.dark input.file-input {
     --tw-bg-opacity: 1;
     background-color: rgb(38 38 38 / var(--tw-bg-opacity));
     /* background-color: transparent; */
@@ -150,14 +151,17 @@
 .dark input.input:focus,
 .dark input.input:hover,
 .dark textarea.textarea:focus,
-.dark textarea.textarea:hover {
+.dark textarea.textarea:hover,
+.dark input.file-input:focus,
+.dark input.file-input:hover {
     --tw-bg-opacity: 1;
     outline: 2px solid transparent;
     outline-offset: 2px;
     background-color: rgb(20 20 20 / var(--tw-bg-opacity));
 }
 .dark .input-bordered,
-.dark .textarea-bordered {
+.dark .textarea-bordered,
+.dark .file-input-bordered {
     --tw-border-opacity: 1;
     border-color: rgb(75 85 99 / var(--tw-border-opacity));
 }

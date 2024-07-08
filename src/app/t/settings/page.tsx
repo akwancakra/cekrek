@@ -97,8 +97,8 @@ export default function TeacherSettings({}) {
                     <div>
                         <p className="text-medium">Ubah akun</p>
                         <p className="text-gray-400 text-small">
-                            This action will remove your account permanently,
-                            and can’t undo
+                            Ini untuk melakukan perubahan terhadap email dan
+                            password anda.
                         </p>
                     </div>
                     {isDesktop ? (
@@ -111,8 +111,8 @@ export default function TeacherSettings({}) {
                     <div>
                         <p className="text-medium">Info detil akun</p>
                         <p className="text-gray-400 text-small">
-                            This will show you about your full account
-                            informations
+                            Ini akan menampilkan seluruh informasi akun anda
+                            secara detil.
                         </p>
                     </div>
                     {isDesktop ? (
@@ -125,8 +125,8 @@ export default function TeacherSettings({}) {
                     <div>
                         <p className="text-medium">Hapus akun saya</p>
                         <p className="text-gray-400 text-small">
-                            This action will remove your account permanently,
-                            and can’t undo
+                            Hapus akun akan menghapus semua data anda dan data
+                            yang berkaitan dengan akun anda.
                         </p>
                     </div>
                     {isDesktop ? (

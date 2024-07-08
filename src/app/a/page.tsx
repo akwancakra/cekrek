@@ -38,7 +38,7 @@ export default function HomeAdmin() {
                     </div> */}
                 </div>
 
-                <div className="border border-gray-300 rounded-lg p-3">
+                <div className="border border-gray-300 rounded-lg p-3 dark:border-neutral-600">
                     <div>
                         <p className="text-gray-500 font-semibold text-small">
                             29 Juni 2024
@@ -46,7 +46,7 @@ export default function HomeAdmin() {
                         <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
-                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16">
+                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16 dark:border-neutral-600">
                             <AspectRatio
                                 ratio={1 / 1}
                                 className="w-full h-full"
@@ -65,7 +65,7 @@ export default function HomeAdmin() {
                         </div>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
-                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16">
+                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16 dark:border-neutral-600">
                             <AspectRatio
                                 ratio={1 / 1}
                                 className="w-full h-full"
@@ -84,7 +84,7 @@ export default function HomeAdmin() {
                         </div>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
-                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16">
+                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16 dark:border-neutral-600">
                             <AspectRatio
                                 ratio={1 / 1}
                                 className="w-full h-full"
@@ -109,7 +109,7 @@ export default function HomeAdmin() {
                         <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                     </div>
                     <div className="flex gap-2 items-center mb-3">
-                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16">
+                        <div className="border border-gray-300 rounded-lg overflow-hidden w-16 dark:border-neutral-600">
                             <AspectRatio
                                 ratio={1 / 1}
                                 className="w-full h-full"

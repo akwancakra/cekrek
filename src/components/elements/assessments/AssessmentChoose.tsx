@@ -87,7 +87,7 @@ export default function AssessmentChoose({
                         <div className="bg-gray-400 w-full rounded-lg">
                             <AspectRatio ratio={4 / 5}>
                                 <Image
-                                    src={"/static/images/default.jpg"}
+                                    src={"/static/images/asesmen-umum.png"}
                                     alt="Recomendation Image"
                                     fill={true}
                                     className="rounded-lg object-cover"
@@ -101,7 +101,7 @@ export default function AssessmentChoose({
                                     Asesmen Umum
                                 </p>
                                 <p className="text-gray-400 text-small">
-                                    General assessment adalah bla bla bla...
+                                    Adalah asesmen untuk semua anak
                                 </p>
                             </div>
                             <Button
@@ -121,7 +121,7 @@ export default function AssessmentChoose({
                         <div className="bg-gray-400 w-full rounded-lg">
                             <AspectRatio ratio={4 / 5}>
                                 <Image
-                                    src={"/static/images/default.jpg"}
+                                    src={"/static/images/asesmen-mchart.png"}
                                     alt="Recomendation Image"
                                     fill={true}
                                     className="rounded-lg object-cover"
@@ -134,7 +134,8 @@ export default function AssessmentChoose({
                                 Asesmen M-Chart-R/F
                             </p>
                             <p className="text-gray-400 text-small">
-                                General assessment adalah bla bla bla...
+                                Asesmen yang dilakukan jika terdapat indikasi
+                                autis
                             </p>
                             <Button
                                 variant={"outline"}
