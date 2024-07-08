@@ -15,6 +15,7 @@ import { iconsOptions } from "@/utils/fetcher";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { getRecommendationImageUrl } from "@/utils/converters";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 interface Props {
     formik: FormikProps<Recommendation>;
@@ -63,7 +64,7 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                             <SelectTrigger
                                 name="assesment_number"
                                 onBlur={formik.handleBlur}
-                                className="w-full max-w-[480px]"
+                                className="w-full sm:max-w-[480px]"
                             >
                                 <SelectValue placeholder="Pilih Nomor Asesmen" />
                             </SelectTrigger>
@@ -115,6 +116,11 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                                 </AspectRatio>
                             </div>
                         )}
+                        <ErrorMessage
+                            name="icon"
+                            component="div"
+                            className="text-small text-red-500"
+                        />
                     </div>
                     <div>
                         <label className="form-control w-full">

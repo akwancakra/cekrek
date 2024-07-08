@@ -528,14 +528,13 @@ const RecomendationForm = ({
                 <ScrollArea className="p-0 max-h-svh overflow-auto">
                     <DrawerHeader className="text-left">
                         <DrawerTitle>Tambah Rekomendasi</DrawerTitle>
-                        <DrawerDescription>
-                            <div>
-                                <AddRecomendationForm
-                                    formik={formik}
-                                    assessmentFails={assessmentFails}
-                                />
-                            </div>
-                        </DrawerDescription>
+                        <div>
+                            <AddRecomendationForm
+                                formik={formik}
+                                assessmentFails={assessmentFails}
+                            />
+                        </div>
+                        <DrawerDescription></DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter className="pt-2">
                         <Button

@@ -30,7 +30,7 @@ model users {
   is_google         Boolean   @default(false)
   email_verified_at DateTime? @db.Date
   created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  updated_at        DateTime?  @updatedAt
 
   children children[]
 }
@@ -50,7 +50,7 @@ model children {
   // Riwayat hasil tes pendengaran. soal no 2 MCHAT
   hearing_test      String? // pendengaran dalam batas normal, pendenganran di bawah normal, hasil tidak menyakinkan atau tidak definitif
   created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  updated_at        DateTime?  @updatedAt
 
   parent                users[]
   child_recommendations child_recommendations[]

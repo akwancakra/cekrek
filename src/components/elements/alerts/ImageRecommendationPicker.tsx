@@ -22,6 +22,16 @@ import {
     CommandList,
 } from "@/components/ui/command";
 import {
+    Drawer,
+    DrawerClose,
+    DrawerContent,
+    DrawerDescription,
+    DrawerFooter,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
     Popover,
     PopoverContent,
     PopoverTrigger,
@@ -36,6 +46,7 @@ import {
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useMediaQuery } from "usehooks-ts";
 
 const getBase64 = (file: File) => {
     return new Promise((resolve, reject) => {
@@ -57,7 +68,9 @@ export default function ImageRecommendationPicker({
     image,
     setImage,
 }: Props) {
+    const [open, setOpen] = useState(false);
     const [type, setType] = useState<"upload" | "choose" | "">("");
+    const isDesktop = useMediaQuery("(min-width: 768px)");
     // const [image, setImage] = useState<string>("");
     // const totalImage = 27;
 
@@ -85,10 +98,10 @@ export default function ImageRecommendationPicker({
         setImage("");
     };
 
-    return (
-        <>
+    if (isDesktop) {
+        return (
             <AlertDialog>
-                <AlertDialogTrigger asChild>
+                <AlertDialogTrigger className="block" asChild>
                     <div className="flex items-center gap-2">
                         <Button
                             variant={"outline"}
@@ -107,8 +120,9 @@ export default function ImageRecommendationPicker({
                     <ScrollArea className="max-h-[80vh] p-3">
                         <AlertDialogHeader>
                             <AlertDialogTitle>
-                                {type === "upload" && "Unggah Gambar"}
-                                {type === "choose" && "Pilih Gambar"}
+                                {type === "upload"
+                                    ? "Unggah Gambar"
+                                    : "Pilih Gambar"}
                             </AlertDialogTitle>
                             {type === "upload" && (
                                 <>
@@ -122,9 +136,7 @@ export default function ImageRecommendationPicker({
                                         <input
                                             type="file"
                                             className="file-input file-input-bordered w-full rounded-lg h-9 text-sm min-h-fit"
-                                            onChange={(e) =>
-                                                handleImageChange(e)
-                                            }
+                                            onChange={handleImageChange}
                                         />
                                     </label>
                                     {image && (
@@ -186,9 +198,7 @@ export default function ImageRecommendationPicker({
                                             className="rounded-lg overflow-hidden mt-1"
                                         >
                                             <Image
-                                                src={
-                                                    "/static/images/default.jpg"
-                                                }
+                                                src="/static/images/default.jpg"
                                                 alt="Recomendation Image"
                                                 fill={true}
                                             />
@@ -205,9 +215,7 @@ export default function ImageRecommendationPicker({
                                             className="rounded-lg overflow-hidden mt-1"
                                         >
                                             <Image
-                                                src={
-                                                    "/static/images/default.jpg"
-                                                }
+                                                src="/static/images/default.jpg"
                                                 alt="Recomendation Image"
                                                 fill={true}
                                             />
@@ -217,7 +225,6 @@ export default function ImageRecommendationPicker({
                                 </div>
                             )}
                             <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
-                            <AlertDialogDescription />
                         </AlertDialogHeader>
                         <AlertDialogFooter>
                             <AlertDialogCancel
@@ -233,7 +240,160 @@ export default function ImageRecommendationPicker({
                     </ScrollArea>
                 </AlertDialogContent>
             </AlertDialog>
-        </>
+        );
+    }
+
+    // Debugging log
+    console.log("Mobile view rendering");
+
+    return (
+        <Drawer open={open} onOpenChange={setOpen}>
+            <DrawerTrigger asChild>
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant={"outline"}
+                        className="gap-1 text-small sm:inline-flex group-[.open]:hidden md:group-[.open]:inline-flex"
+                        type="button"
+                    >
+                        <span>Pilih gambar</span>
+                        <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                            add_a_photo
+                        </span>
+                    </Button>
+                    {image && <p>{truncateString(image, 20)}</p>}
+                </div>
+            </DrawerTrigger>
+            <DrawerContent className="p-0">
+                {/* <ScrollArea className="max-h-[70vh] p-0"> */}
+                <DrawerHeader className="text-left">
+                    <DrawerTitle>
+                        {type === "upload" ? "Unggah Gambar" : "Pilih Gambar"}
+                    </DrawerTitle>
+                    {type === "upload" && (
+                        <>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
+                            <label className="form-control w-full mb-3">
+                                <div className="label">
+                                    <span className="label-text">
+                                        Unggah sebuah gambar
+                                    </span>
+                                </div>
+                                <input
+                                    type="file"
+                                    className="file-input file-input-bordered w-full rounded-lg h-9 text-sm min-h-fit"
+                                    onChange={handleImageChange}
+                                />
+                            </label>
+                            {image && (
+                                <div className="relative rounded-lg bg-gray-400 max-w-xs w-full lg:max-w-64 dark:bg-neutral-800">
+                                    <AspectRatio
+                                        ratio={1 / 1}
+                                        className="rounded-lg overflow-hidden"
+                                    >
+                                        <Image
+                                            src={getImageUrl(image)}
+                                            alt="Recomendation Image"
+                                            fill={true}
+                                            className="object-cover"
+                                        />
+                                    </AspectRatio>
+                                </div>
+                            )}
+                        </>
+                    )}
+                    {type === "choose" && (
+                        <>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
+                            <ImagePicker
+                                images={images}
+                                image={image}
+                                setImage={setImage}
+                            />
+                            {image && (
+                                <div className="relative rounded-lg bg-gray-200 max-w-xs w-full lg:max-w-64 mt-4">
+                                    <AspectRatio
+                                        ratio={1 / 1}
+                                        className="rounded-lg overflow-hidden"
+                                    >
+                                        <Image
+                                            src={getRecommendationImageUrl({
+                                                image,
+                                                localImages: images,
+                                            })}
+                                            alt="Recomendation Image"
+                                            fill={true}
+                                            className="object-cover"
+                                        />
+                                    </AspectRatio>
+                                </div>
+                            )}
+                        </>
+                    )}
+                    {!type && (
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button
+                                variant="outline"
+                                className="flex-col h-fit gap-1"
+                                onClick={() => setType("upload")}
+                            >
+                                <AspectRatio
+                                    ratio={1 / 1}
+                                    className="rounded-lg overflow-hidden mt-1"
+                                >
+                                    <Image
+                                        src="/static/images/default.jpg"
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                    />
+                                </AspectRatio>{" "}
+                                <span>Unggah Gambar</span>
+                            </Button>
+                            <Button
+                                variant="outline"
+                                className="flex-col h-fit gap-1"
+                                onClick={() => setType("choose")}
+                            >
+                                <AspectRatio
+                                    ratio={1 / 1}
+                                    className="rounded-lg overflow-hidden mt-1"
+                                >
+                                    <Image
+                                        src="/static/images/default.jpg"
+                                        alt="Recomendation Image"
+                                        fill={true}
+                                    />
+                                </AspectRatio>{" "}
+                                <span>Pilih Gambar</span>
+                            </Button>
+                        </div>
+                    )}
+                    <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
+                </DrawerHeader>
+                <DrawerFooter>
+                    {image && (
+                        <DrawerClose asChild>
+                            <Button
+                                variant="default"
+                                className="text-white bg-primary"
+                                type="button"
+                            >
+                                Simpan
+                            </Button>
+                        </DrawerClose>
+                    )}
+                    <DrawerClose asChild>
+                        <Button
+                            variant="ghost"
+                            onClick={resetIcon}
+                            type="button"
+                        >
+                            Batal
+                        </Button>
+                    </DrawerClose>
+                </DrawerFooter>
+                {/* </ScrollArea> */}
+            </DrawerContent>
+        </Drawer>
     );
 }
 
