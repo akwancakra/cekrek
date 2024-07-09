@@ -131,6 +131,7 @@ export async function POST(req: NextRequest) {
                                 `/uploads/recommendations/${imageName}`
                             );
 
+                            // Pindahkan operasi fs.writeFileSync ke luar transaksi
                             fs.writeFileSync(fullPath, buffer);
                             updatedPicture = imageName;
                         }
@@ -147,9 +148,7 @@ export async function POST(req: NextRequest) {
                                     icon: updatedPicture || null,
                                     frequency: recommendation.frequency,
                                     risk_category:
-                                        risk_category ||
-                                        recommendation.risk_category ||
-                                        null,
+                                        recommendation.risk_category || null,
                                     is_main: false,
                                     teacher_id:
                                         (typeof teacher_id == "string" &&
@@ -189,7 +188,7 @@ export async function POST(req: NextRequest) {
                 await prisma.children.update({
                     where: { id: child_id },
                     data: {
-                        risk_category: risk_category,
+                        risk_category,
                     },
                 });
 
