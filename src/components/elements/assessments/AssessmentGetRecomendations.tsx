@@ -290,6 +290,7 @@ export default function AssessmentGetRecommendations({
             teacher_id: profile?.id,
             child_id: data.child_id,
             date_time: data.date_time,
+            risk_category: riskCategory,
             assessmentsAnswer: data.assessmentsAnswer,
             childRecommendations: [
                 ...data.childRecommendations,
@@ -331,7 +332,8 @@ export default function AssessmentGetRecommendations({
                 duration: 1000,
             });
         } catch (error: any) {
-            console.error("Error sending recommendation:", error.message);
+            console.log(error);
+            console.error("Error sending recommendation:", error?.message);
         } finally {
             setIsLoadingPost(false);
         }

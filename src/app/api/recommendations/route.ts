@@ -95,9 +95,10 @@ export async function POST(req: NextRequest) {
 
         // Destructure data from request body
         const {
+            teacher_id,
             child_id,
             date_time,
-            riskCategory,
+            risk_category,
             assessmentsAnswer,
             childRecommendations,
         } = data;
@@ -137,7 +138,9 @@ export async function POST(req: NextRequest) {
                                     recommendation.risk_category || null,
                                 is_main: false,
                                 teacher_id:
-                                    parseInt(recommendation.teacher_id) || null,
+                                    parseInt(recommendation.teacher_id) ||
+                                    teacher_id ||
+                                    null,
                             },
                         });
 
@@ -169,9 +172,7 @@ export async function POST(req: NextRequest) {
             await prisma.children.update({
                 where: { id: child_id },
                 data: {
-                    risk_category: riskCategory
-                        ? riskCategory
-                        : assessmentsAnswer?.[0]?.risk_category || null,
+                    risk_category: risk_category,
                 },
             });
 
@@ -187,7 +188,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json(
             {
                 status: "error",
-                message: error.message || "Internal Server Error",
+                // message: error.message || "Internal Server Error",
+                message: error,
             },
             { status: 500 }
         );
