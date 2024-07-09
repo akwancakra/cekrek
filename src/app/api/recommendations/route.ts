@@ -206,6 +206,7 @@ export async function POST(req: NextRequest) {
             { status: 201 }
         );
     } catch (error: any) {
+        // print error
         console.error(error);
         return NextResponse.json(
             {
