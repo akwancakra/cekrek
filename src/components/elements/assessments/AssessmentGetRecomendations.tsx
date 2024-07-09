@@ -226,6 +226,9 @@ export default function AssessmentGetRecommendations({
                         );
                     }
 
+                    toast.success("Berhasil mendapatkan rekomendasi AI!", {
+                        duration: 1000,
+                    });
                     console.log(newRecommendationsFinal);
                 })
                 .catch((error) => {
