@@ -92,27 +92,20 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const data = await req.json();
+    try {
+        const data = await req.json();
+        const {
+            teacher_id,
+            child_id,
+            date_time,
+            risk_category,
+            assessmentsAnswer,
+            childRecommendations,
+        } = data;
 
-    // Destructure data from request body
-    const {
-        teacher_id,
-        child_id,
-        date_time,
-        risk_category,
-        assessmentsAnswer,
-        childRecommendations,
-    } = data;
-
-    const savedImages = [];
-
-    // Process and save images before starting the transaction
-    for (const recommendation of childRecommendations) {
-        if (
-            typeof recommendation?.icon === "string" &&
-            recommendation?.icon.startsWith("data:image")
-        ) {
-            const base64Data = recommendation.icon.replace(
+        // Helper function to handle image saving
+        const saveImage = (base64Image: string) => {
+            const base64Data = base64Image.replace(
                 /^data:image\/\w+;base64,/,
                 ""
             );
@@ -121,98 +114,99 @@ export async function POST(req: NextRequest) {
             const fullPath = path.join(
                 process.cwd(),
                 "public",
-                `/uploads/recommendations/${imageName}`
+                "uploads",
+                "recommendations",
+                imageName
             );
-
             fs.writeFileSync(fullPath, buffer);
-            savedImages.push(fullPath);
-            recommendation.icon = imageName;
-        }
-    }
+            return imageName;
+        };
 
-    try {
-        const createdRecommendations = await prisma.$transaction(
-            async (prisma) => {
-                const recommendations = [];
+        const transaction = await prisma.$transaction(async (prisma) => {
+            const createdRecommendations = [];
 
-                for (const recommendation of childRecommendations) {
-                    let recommendationId = recommendation.recommendation_id;
+            // Handle child recommendations
+            for (const recommendation of childRecommendations) {
+                if (recommendation.recommendation_id) {
+                    const childRecommendation =
+                        await prisma.child_recommendations.create({
+                            data: {
+                                recommendation_id:
+                                    recommendation.recommendation_id,
+                                children_id: child_id,
+                            },
+                        });
+                    createdRecommendations.push(childRecommendation);
+                } else {
+                    const updatedPicture =
+                        typeof recommendation.icon === "string" &&
+                        recommendation.icon.startsWith("data:image")
+                            ? saveImage(recommendation.icon)
+                            : recommendation.icon || null;
 
-                    if (!recommendationId) {
-                        const newRecommendation =
-                            await prisma.recommendations.create({
-                                data: {
-                                    title: recommendation.title,
-                                    assesment_number: parseInt(
-                                        recommendation.assesment_number
-                                    ),
-                                    description:
-                                        recommendation.description || null,
-                                    icon: recommendation.icon || null,
-                                    frequency: recommendation.frequency,
-                                    risk_category:
-                                        recommendation.risk_category || null,
-                                    is_main: false,
-                                    teacher_id:
-                                        (typeof teacher_id == "string" &&
-                                            parseInt(teacher_id)) ||
-                                        teacher_id ||
-                                        parseInt(recommendation.teacher_id) ||
-                                        null,
-                                },
-                            });
-
-                        recommendationId = newRecommendation.id;
-                    }
+                    const newRecommendation =
+                        await prisma.recommendations.create({
+                            data: {
+                                title: recommendation.title,
+                                assesment_number: parseInt(
+                                    recommendation.assesment_number
+                                ),
+                                description: recommendation.description || null,
+                                icon: updatedPicture,
+                                frequency: recommendation.frequency,
+                                risk_category:
+                                    recommendation.risk_category || null,
+                                is_main: false,
+                                teacher_id:
+                                    (typeof teacher_id == "string" &&
+                                        parseInt(teacher_id)) ||
+                                    teacher_id ||
+                                    parseInt(recommendation.teacher_id) ||
+                                    null,
+                            },
+                        });
 
                     const childRecommendation =
                         await prisma.child_recommendations.create({
                             data: {
-                                recommendation_id: recommendationId,
+                                recommendation_id: newRecommendation.id,
                                 children_id: child_id,
                             },
                         });
-
-                    recommendations.push(childRecommendation);
+                    createdRecommendations.push(childRecommendation);
                 }
+            }
 
-                for (const assessment of assessmentsAnswer) {
-                    await prisma.child_assesment.create({
-                        data: {
-                            answer: assessment.answer,
-                            assesment_id: parseInt(assessment.assessment_id),
-                            date_time: new Date(),
-                            children_id: child_id,
-                            assesment_type: "awal",
-                        },
-                    });
-                }
-
-                await prisma.children.update({
-                    where: { id: child_id },
+            // Handle child assessments
+            for (const assessment of assessmentsAnswer) {
+                await prisma.child_assesment.create({
                     data: {
-                        risk_category: risk_category,
+                        answer: assessment.answer,
+                        assesment_id: parseInt(assessment.assessment_id),
+                        date_time: new Date(),
+                        children_id: child_id,
+                        assesment_type: "awal",
                     },
                 });
-
-                return recommendations;
             }
-        );
+
+            // Update child data
+            await prisma.children.update({
+                where: { id: child_id },
+                data: {
+                    risk_category: risk_category,
+                },
+            });
+
+            return createdRecommendations;
+        });
 
         return NextResponse.json(
-            { status: "success", createdRecommendations },
+            { status: "success", createdRecommendations: transaction },
             { status: 201 }
         );
-    } catch (error) {
-        console.log(error);
-
-        // Clean up saved images if transaction fails
-        for (const imagePath of savedImages) {
-            if (fs.existsSync(imagePath)) {
-                fs.unlinkSync(imagePath);
-            }
-        }
-
+    } catch (error: any) {
+        console.error(error);
         return NextResponse.json(
             {
                 status: "error",
@@ -222,6 +216,138 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
+// export async function POST(req: NextRequest) {
+//     const data = await req.json();
+
+//     // Destructure data from request body
+//     const {
+//         teacher_id,
+//         child_id,
+//         date_time,
+//         risk_category,
+//         assessmentsAnswer,
+//         childRecommendations,
+//     } = data;
+
+//     const savedImages = [];
+
+//     // Process and save images before starting the transaction
+//     for (const recommendation of childRecommendations) {
+//         if (
+//             typeof recommendation?.icon === "string" &&
+//             recommendation?.icon.startsWith("data:image")
+//         ) {
+//             const base64Data = recommendation.icon.replace(
+//                 /^data:image\/\w+;base64,/,
+//                 ""
+//             );
+//             const buffer = Buffer.from(base64Data, "base64");
+//             const imageName = `${Date.now()}_rekomendasi_image.png`;
+//             const fullPath = path.join(
+//                 process.cwd(),
+//                 "public",
+//                 `/uploads/recommendations/${imageName}`
+//             );
+
+//             fs.writeFileSync(fullPath, buffer);
+//             savedImages.push(fullPath);
+//             recommendation.icon = imageName;
+//         }
+//     }
+
+//     try {
+//         const createdRecommendations = await prisma.$transaction(
+//             async (prisma) => {
+//                 const recommendations = [];
+
+//                 for (const recommendation of childRecommendations) {
+//                     let recommendationId = recommendation.recommendation_id;
+
+//                     if (!recommendationId) {
+//                         const newRecommendation =
+//                             await prisma.recommendations.create({
+//                                 data: {
+//                                     title: recommendation.title,
+//                                     assesment_number: parseInt(
+//                                         recommendation.assesment_number
+//                                     ),
+//                                     description:
+//                                         recommendation.description || null,
+//                                     icon: recommendation.icon || null,
+//                                     frequency: recommendation.frequency,
+//                                     risk_category:
+//                                         recommendation.risk_category || null,
+//                                     is_main: false,
+//                                     teacher_id:
+//                                         (typeof teacher_id == "string" &&
+//                                             parseInt(teacher_id)) ||
+//                                         teacher_id ||
+//                                         parseInt(recommendation.teacher_id) ||
+//                                         null,
+//                                 },
+//                             });
+
+//                         recommendationId = newRecommendation.id;
+//                     }
+
+//                     const childRecommendation =
+//                         await prisma.child_recommendations.create({
+//                             data: {
+//                                 recommendation_id: recommendationId,
+//                                 children_id: child_id,
+//                             },
+//                         });
+
+//                     recommendations.push(childRecommendation);
+//                 }
+
+//                 for (const assessment of assessmentsAnswer) {
+//                     await prisma.child_assesment.create({
+//                         data: {
+//                             answer: assessment.answer,
+//                             assesment_id: parseInt(assessment.assessment_id),
+//                             date_time: new Date(),
+//                             children_id: child_id,
+//                             assesment_type: "awal",
+//                         },
+//                     });
+//                 }
+
+//                 await prisma.children.update({
+//                     where: { id: child_id },
+//                     data: {
+//                         risk_category: risk_category,
+//                     },
+//                 });
+
+//                 return recommendations;
+//             }
+//         );
+
+//         return NextResponse.json(
+//             { status: "success", createdRecommendations },
+//             { status: 201 }
+//         );
+//     } catch (error) {
+//         console.log(error);
+
+//         // Clean up saved images if transaction fails
+//         for (const imagePath of savedImages) {
+//             if (fs.existsSync(imagePath)) {
+//                 fs.unlinkSync(imagePath);
+//             }
+//         }
+
+//         return NextResponse.json(
+//             {
+//                 status: "error",
+//                 message: error.message || "Internal Server Error",
+//             },
+//             { status: 500 }
+//         );
+//     }
+// }
 
 // export async function POST(req: NextRequest) {
 //     try {
