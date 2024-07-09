@@ -92,19 +92,45 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+    const data = await req.json();
+
+    // Destructure data from request body
+    const {
+        teacher_id,
+        child_id,
+        date_time,
+        risk_category,
+        assessmentsAnswer,
+        childRecommendations,
+    } = data;
+
+    const savedImages = [];
+
+    // Process and save images before starting the transaction
+    for (const recommendation of childRecommendations) {
+        if (
+            typeof recommendation?.icon === "string" &&
+            recommendation?.icon.startsWith("data:image")
+        ) {
+            const base64Data = recommendation.icon.replace(
+                /^data:image\/\w+;base64,/,
+                ""
+            );
+            const buffer = Buffer.from(base64Data, "base64");
+            const imageName = `${Date.now()}_rekomendasi_image.png`;
+            const fullPath = path.join(
+                process.cwd(),
+                "public",
+                `/uploads/recommendations/${imageName}`
+            );
+
+            fs.writeFileSync(fullPath, buffer);
+            savedImages.push(fullPath);
+            recommendation.icon = imageName;
+        }
+    }
+
     try {
-        const data = await req.json();
-
-        // Destructure data from request body
-        const {
-            teacher_id,
-            child_id,
-            date_time,
-            risk_category,
-            assessmentsAnswer,
-            childRecommendations,
-        } = data;
-
         const createdRecommendations = await prisma.$transaction(
             async (prisma) => {
                 const recommendations = [];
@@ -113,29 +139,6 @@ export async function POST(req: NextRequest) {
                     let recommendationId = recommendation.recommendation_id;
 
                     if (!recommendationId) {
-                        let updatedPicture = recommendation.icon;
-
-                        if (
-                            typeof recommendation.icon === "string" &&
-                            recommendation.icon.startsWith("data:image")
-                        ) {
-                            const base64Data = recommendation.icon.replace(
-                                /^data:image\/\w+;base64,/,
-                                ""
-                            );
-                            const buffer = Buffer.from(base64Data, "base64");
-                            const imageName = `${Date.now()}_rekomendasi_image.png`;
-                            const fullPath = path.join(
-                                process.cwd(),
-                                "public",
-                                `/uploads/recommendations/${imageName}`
-                            );
-
-                            // Pindahkan operasi fs.writeFileSync ke luar transaksi
-                            fs.writeFileSync(fullPath, buffer);
-                            updatedPicture = imageName;
-                        }
-
                         const newRecommendation =
                             await prisma.recommendations.create({
                                 data: {
@@ -145,7 +148,7 @@ export async function POST(req: NextRequest) {
                                     ),
                                     description:
                                         recommendation.description || null,
-                                    icon: updatedPicture || null,
+                                    icon: recommendation.icon || null,
                                     frequency: recommendation.frequency,
                                     risk_category:
                                         recommendation.risk_category || null,
@@ -188,7 +191,7 @@ export async function POST(req: NextRequest) {
                 await prisma.children.update({
                     where: { id: child_id },
                     data: {
-                        risk_category,
+                        risk_category: risk_category,
                     },
                 });
 
@@ -202,6 +205,14 @@ export async function POST(req: NextRequest) {
         );
     } catch (error) {
         console.log(error);
+
+        // Clean up saved images if transaction fails
+        for (const imagePath of savedImages) {
+            if (fs.existsSync(imagePath)) {
+                fs.unlinkSync(imagePath);
+            }
+        }
+
         return NextResponse.json(
             {
                 status: "error",
