@@ -12,6 +12,7 @@
         "api-docs": "npx serve ./api-docs"
     },
     "dependencies": {
+        "@google/generative-ai": "^0.14.1",
         "@prisma/client": "^5.13.0",
         "@radix-ui/react-alert-dialog": "^1.1.0",
         "@radix-ui/react-aspect-ratio": "^1.0.3",

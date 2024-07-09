@@ -244,7 +244,7 @@ export default function ImageRecommendationPicker({
     }
 
     // Debugging log
-    console.log("Mobile view rendering");
+    // console.log("Mobile view rendering");
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>

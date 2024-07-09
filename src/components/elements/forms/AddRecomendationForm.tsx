@@ -16,6 +16,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { getRecommendationImageUrl, truncateString } from "@/utils/converters";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { useMediaQuery } from "usehooks-ts";
 
 interface Props {
     formik: FormikProps<Recommendation>;
@@ -35,6 +36,8 @@ type Recommendation = {
 };
 
 export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+
     return (
         <FormikProvider value={formik}>
             <Form className="w-full space-y-6">
@@ -80,7 +83,7 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                                             Asesmen {fail?.assesment_id}:{" "}
                                             {truncateString(
                                                 fail?.assesment?.question,
-                                                35
+                                                isDesktop ? 35 : 20
                                             )}
                                         </SelectItem>
                                     ))}

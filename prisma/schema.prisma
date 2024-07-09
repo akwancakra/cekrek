@@ -134,6 +134,7 @@ model recommendations {
   teacher_id       Int?
   is_main          Boolean @default(false)
   // type          String // standar, durasi, repetisi (Enum)
+  // aspect            String @default()
   title            String
   description      String  @db.Text
   icon             String?
