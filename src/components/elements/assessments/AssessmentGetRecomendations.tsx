@@ -291,7 +291,7 @@ export default function AssessmentGetRecommendations({
         const data = createDataObjectFinal();
         let finalData = {
             teacher_id: profile?.id,
-            child_id: data.child_id,
+            child_id: data.child_id.toString(),
             date_time: data.date_time,
             risk_category: riskCategory,
             assessmentsAnswer: data.assessmentsAnswer,

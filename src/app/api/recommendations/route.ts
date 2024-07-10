@@ -101,6 +101,13 @@ export async function POST(req: NextRequest) {
             risk_category,
             assessmentsAnswer,
             childRecommendations,
+        }: {
+            teacher_id: string;
+            child_id: string;
+            date_time: any;
+            risk_category: string;
+            assessmentsAnswer: any;
+            childRecommendations: any;
         } = data;
 
         // Helper function to handle image saving
@@ -122,91 +129,153 @@ export async function POST(req: NextRequest) {
             return imageName;
         };
 
-        const transaction = await prisma.$transaction(async (prisma) => {
-            const createdRecommendations = [];
+        // Validate required fields
+        if (
+            !teacher_id ||
+            !child_id ||
+            !date_time ||
+            !risk_category ||
+            !assessmentsAnswer ||
+            !childRecommendations
+        ) {
+            return NextResponse.json(
+                { status: "error", message: "All fields are required" },
+                { status: 400 }
+            );
+        }
 
-            // Handle child recommendations
-            for (const recommendation of childRecommendations) {
-                if (recommendation.recommendation_id) {
-                    const childRecommendation =
-                        await prisma.child_recommendations.create({
-                            data: {
-                                recommendation_id:
-                                    recommendation.recommendation_id,
-                                children_id: child_id,
-                            },
-                        });
-                    createdRecommendations.push(childRecommendation);
-                } else {
-                    const updatedPicture =
-                        typeof recommendation.icon === "string" &&
-                        recommendation.icon.startsWith("data:image")
-                            ? saveImage(recommendation.icon)
-                            : recommendation.icon || null;
+        // Validate assessmentsAnswer and childRecommendations
+        for (const assessment of assessmentsAnswer) {
+            if (!assessment.assessment_id || !assessment.answer) {
+                return NextResponse.json(
+                    {
+                        status: "error",
+                        message: "All assessment fields are required",
+                    },
+                    { status: 400 }
+                );
+            }
+        }
 
-                    const newRecommendation =
-                        await prisma.recommendations.create({
-                            data: {
-                                title: recommendation.title,
-                                assesment_number: parseInt(
-                                    recommendation.assesment_number
-                                ),
-                                description: recommendation.description || null,
-                                icon: updatedPicture,
-                                frequency: recommendation.frequency,
-                                risk_category:
-                                    recommendation.risk_category || null,
-                                is_main: false,
-                                teacher_id:
-                                    (typeof teacher_id == "string" &&
-                                        parseInt(teacher_id)) ||
-                                    teacher_id ||
-                                    parseInt(recommendation.teacher_id) ||
-                                    null,
-                            },
-                        });
-
-                    const childRecommendation =
-                        await prisma.child_recommendations.create({
-                            data: {
-                                recommendation_id: newRecommendation.id,
-                                children_id: child_id,
-                            },
-                        });
-                    createdRecommendations.push(childRecommendation);
+        for (const recommendation of childRecommendations) {
+            if (recommendation.child_id || recommendation.recommendation_id) {
+                if (
+                    !recommendation.recommendation_id ||
+                    !recommendation.child_id
+                ) {
+                    return NextResponse.json(
+                        {
+                            status: "error",
+                            message: "All recommendation fields are required",
+                        },
+                        { status: 400 }
+                    );
+                }
+            } else if (
+                recommendation.title ||
+                recommendation.description ||
+                recommendation.frequency
+            ) {
+                if (
+                    !recommendation.title ||
+                    !recommendation.description ||
+                    !recommendation.frequency
+                ) {
+                    return NextResponse.json(
+                        {
+                            status: "error",
+                            message: "All recommendation fields are required",
+                        },
+                        { status: 400 }
+                    );
                 }
             }
+        }
 
-            // Handle child assessments
-            for (const assessment of assessmentsAnswer) {
-                await prisma.child_assesment.create({
+        // return NextResponse.json(
+        //     {
+        //         status: "error",
+        //         message: "Internal Server Error",
+        //     },
+        //     { status: 500 }
+        // );
+
+        // Handle images outside the transaction
+        for (let recommendation of childRecommendations) {
+            if (
+                typeof recommendation.icon === "string" &&
+                recommendation.icon.startsWith("data:image")
+            ) {
+                recommendation.icon = saveImage(recommendation.icon);
+            }
+        }
+
+        const createdRecommendations = [];
+
+        // Handle child recommendations
+        for (const recommendation of childRecommendations) {
+            if (recommendation.recommendation_id) {
+                const childRecommendation =
+                    await prisma.child_recommendations.create({
+                        data: {
+                            recommendation_id: recommendation.recommendation_id,
+                            children_id: parseInt(child_id),
+                        },
+                    });
+                createdRecommendations.push(childRecommendation);
+            } else {
+                const newRecommendation = await prisma.recommendations.create({
                     data: {
-                        answer: assessment.answer,
-                        assesment_id: parseInt(assessment.assessment_id),
-                        date_time: new Date(),
-                        children_id: child_id,
-                        assesment_type: "awal",
+                        title: recommendation.title,
+                        assesment_number: parseInt(
+                            recommendation.assesment_number
+                        ),
+                        description: recommendation.description || null,
+                        icon: recommendation.icon || null,
+                        frequency: recommendation.frequency,
+                        risk_category: recommendation.risk_category || null,
+                        is_main: false,
+                        teacher_id: parseInt(recommendation.teacher_id) || null,
                     },
                 });
-            }
 
-            // Update child data
-            await prisma.children.update({
-                where: { id: child_id },
+                const childRecommendation =
+                    await prisma.child_recommendations.create({
+                        data: {
+                            recommendation_id: newRecommendation.id,
+                            children_id: parseInt(child_id),
+                        },
+                    });
+                createdRecommendations.push(childRecommendation);
+            }
+        }
+
+        // Handle child assessments
+        for (const assessment of assessmentsAnswer) {
+            await prisma.child_assesment.create({
                 data: {
-                    risk_category: risk_category,
+                    answer: assessment.answer,
+                    assesment_id: parseInt(assessment.assessment_id),
+                    date_time: new Date(),
+                    children_id: parseInt(child_id),
+                    assesment_type: "awal",
                 },
             });
+        }
 
-            return createdRecommendations;
+        // Update child data
+        await prisma.children.update({
+            where: { id: parseInt(child_id) },
+            data: {
+                risk_category,
+            },
         });
 
         return NextResponse.json(
-            { status: "success", createdRecommendations: transaction },
+            { status: "success", createdRecommendations },
             { status: 201 }
         );
     } catch (error: any) {
-        // print error
         console.error(error);
         return NextResponse.json(
             {
