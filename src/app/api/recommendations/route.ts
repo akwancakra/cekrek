@@ -192,14 +192,6 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        // return NextResponse.json(
-        //     {
-        //         status: "error",
-        //         message: "Internal Server Error",
-        //     },
-        //     { status: 500 }
-        // );
-
         // Handle images outside the transaction
         for (let recommendation of childRecommendations) {
             if (
@@ -250,18 +242,19 @@ export async function POST(req: NextRequest) {
             }
         }
 
-        // Handle child assessments
-        for (const assessment of assessmentsAnswer) {
-            await prisma.child_assesment.create({
-                data: {
-                    answer: assessment.answer,
-                    assesment_id: parseInt(assessment.assessment_id),
-                    date_time: new Date(),
-                    children_id: parseInt(child_id),
-                    assesment_type: "awal",
-                },
-            });
-        }
+        // Prepare data for child assessments
+        const assessmentsData = assessmentsAnswer.map((assessment) => ({
+            answer: assessment.answer,
+            assesment_id: parseInt(assessment.assessment_id),
+            date_time: new Date(),
+            children_id: parseInt(child_id),
+            assesment_type: "awal",
+        }));
+
+        // Handle child assessments using createMany
+        await prisma.child_assesment.createMany({
+            data: assessmentsData,
+        });
 
         // Update child data
         await prisma.children.update({

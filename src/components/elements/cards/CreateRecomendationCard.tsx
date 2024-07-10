@@ -340,11 +340,15 @@ export default function CreateRecomendationCard({
 "
                                 onClick={() =>
                                     onDelete(
-                                        recommendation?.id?.toString() ||
-                                            typeof recommendation?.assesment_number ===
+                                        recommendation?.id &&
+                                            typeof recommendation?.id ===
                                                 "number"
-                                            ? recommendation?.assesment_number.toString()
-                                            : recommendation?.assesment_number
+                                            ? recommendation?.id.toString()
+                                            : recommendation?.id ||
+                                              typeof recommendation?.id_temp ===
+                                                  "number"
+                                            ? recommendation?.id_temp.toString()
+                                            : recommendation?.id_temp
                                     )
                                 }
                             >

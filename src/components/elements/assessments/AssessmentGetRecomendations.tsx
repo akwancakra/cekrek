@@ -562,7 +562,12 @@ export default function AssessmentGetRecommendations({
                         <Button
                             variant={"outline"}
                             className="gap-1"
-                            disabled={isLoading || isLoadingPost || isLoadingAI}
+                            disabled={
+                                isLoading ||
+                                isSubmit ||
+                                isLoadingPost ||
+                                isLoadingAI
+                            }
                         >
                             <span>Selesai &amp; Kirim</span>
                             <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
