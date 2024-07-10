@@ -121,12 +121,26 @@ export async function POST(req: NextRequest) {
             const fullPath = path.join(
                 process.cwd(),
                 "public",
-                "uploads",
-                "recommendations",
-                imageName
+                `/uploads/recommendations/${imageName}`
             );
+
             fs.writeFileSync(fullPath, buffer);
             return imageName;
+            // const base64Data = base64Image.replace(
+            //     /^data:image\/\w+;base64,/,
+            //     ""
+            // );
+            // const buffer = Buffer.from(base64Data, "base64");
+            // const imageName = `${Date.now()}_rekomendasi_image.png`;
+            // const fullPath = path.join(
+            //     process.cwd(),
+            //     "public",
+            //     "uploads",
+            //     "recommendations",
+            //     imageName
+            // );
+            // fs.writeFileSync(fullPath, buffer);
+            // return imageName;
         };
 
         // Validate required fields
