@@ -204,93 +204,67 @@ export async function POST(req: NextRequest) {
 
         const createdRecommendations = [];
 
-        // Start a transaction
-        await prisma.$transaction(async (prisma) => {
-            // Insert new recommendations
-            const newRecommendations = childRecommendations.filter(
-                (rec) => !rec.recommendation_id
-            );
-            const existingRecommendations = childRecommendations.filter(
-                (rec) => rec.recommendation_id
-            );
+        // Insert new recommendations using raw SQL query
+        for (const rec of childRecommendations) {
+            if (!rec.recommendation_id) {
+                let iconQuery = rec.icon ? `'${saveImage(rec.icon)}'` : "NULL";
 
-            if (newRecommendations.length > 0) {
-                for (const rec of newRecommendations) {
-                    const newRecommendation = await prisma.$queryRawUnsafe(
-                        `
-                        INSERT INTO recommendations (title, assesment_number, description, icon, frequency, risk_category, is_main, teacher_id)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                    `,
-                        rec.title,
-                        parseInt(rec.assesment_number),
-                        rec.description || null,
-                        rec.icon || null,
-                        rec.frequency,
-                        rec.risk_category || null,
-                        false,
-                        parseInt(rec.teacher_id) || teacher_id || null
-                    );
+                const newRecommendation: any = await prisma.$queryRaw`
+                    INSERT INTO recommendations (title, assesment_number, description, icon, frequency, risk_category, is_main, teacher_id)
+                    VALUES (${rec.title}, ${parseInt(rec.assesment_number)}, ${
+                    rec.description || null
+                }, ${iconQuery}, ${rec.frequency}, ${
+                    rec.risk_category || null
+                }, false, ${
+                    parseInt(rec.teacher_id) || parseInt(teacher_id) || null
+                })
+                `;
 
-                    const recommendationId = await prisma.$queryRawUnsafe(
-                        `SELECT LAST_INSERT_ID() AS id`
-                    );
+                createdRecommendations.push(String(newRecommendation.id));
 
-                    createdRecommendations.push(String(recommendationId[0].id)); // Convert BigInt to string
-
-                    await prisma.$queryRawUnsafe(
-                        `
-                        INSERT INTO child_recommendations (recommendation_id, children_id)
-                        VALUES (?, ?)
-                    `,
-                        recommendationId[0].id,
-                        parseInt(child_id)
-                    );
-                }
+                await prisma.$queryRaw`
+                    INSERT INTO childRecommendations (recommendation_id, children_id)
+                    VALUES (${newRecommendation.id}, ${parseInt(child_id)})
+                `;
+            } else {
+                await prisma.$queryRaw`
+                    INSERT INTO childRecommendations (recommendation_id, children_id)
+                    VALUES (${rec.recommendation_id}, ${parseInt(child_id)})
+                `;
             }
+        }
 
-            // Insert existing recommendations
-            if (existingRecommendations.length > 0) {
-                for (const rec of existingRecommendations) {
-                    await prisma.$queryRawUnsafe(
-                        `
-                        INSERT INTO child_recommendations (recommendation_id, children_id)
-                        VALUES (?, ?)
-                    `,
-                        rec.recommendation_id,
-                        parseInt(child_id)
-                    );
-                }
-            }
+        // Insert assessments using raw SQL query
+        const assessmentsData = assessmentsAnswer.map((assessment) => ({
+            answer: assessment.answer,
+            assesment_id: parseInt(assessment.assessment_id),
+            date_time: new Date(),
+            children_id: parseInt(child_id),
+            assesment_type: "awal",
+        }));
 
-            // Prepare data for child assessments
-            const assessmentsData = assessmentsAnswer.map((assessment) => [
-                assessment.answer,
-                parseInt(assessment.assessment_id),
-                new Date(),
-                parseInt(child_id),
-                "awal",
-            ]);
+        await prisma.$queryRaw`
+            INSERT INTO childAssesment (answer, assesment_id, date_time, children_id, assesment_type)
+            VALUES ${assessmentsData
+                .map(
+                    ({
+                        answer,
+                        assesment_id,
+                        date_time,
+                        children_id,
+                        assesment_type,
+                    }) =>
+                        `(${answer}, ${assesment_id}, ${date_time}, ${children_id}, ${assesment_type})`
+                )
+                .join(", ")}
+        `;
 
-            // Insert into child_assesment
-            const assessmentsQuery = `
-                INSERT INTO child_assesment (answer, assesment_id, date_time, children_id, assesment_type)
-                VALUES ${assessmentsData
-                    .map(() => "(?, ?, ?, ?, ?)")
-                    .join(", ")}
-            `;
-
-            await prisma.$queryRawUnsafe(
-                assessmentsQuery,
-                ...assessmentsData.flat()
-            );
-
-            // Update child data
-            await prisma.$queryRaw`
-                UPDATE children
-                SET risk_category = ${risk_category}
-                WHERE id = ${parseInt(child_id)}
-            `;
-        });
+        // Update child risk category using raw SQL query
+        await prisma.$queryRaw`
+            UPDATE children
+            SET risk_category = ${risk_category}
+            WHERE id = ${parseInt(child_id)}
+        `;
 
         return NextResponse.json(
             { status: "success", createdRecommendations },
