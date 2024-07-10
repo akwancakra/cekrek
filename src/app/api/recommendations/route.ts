@@ -223,12 +223,12 @@ export async function POST(req: NextRequest) {
                 createdRecommendations.push(String(newRecommendation.id));
 
                 await prisma.$queryRaw`
-                    INSERT INTO childRecommendations (recommendation_id, children_id)
+                    INSERT INTO child_recommendations (recommendation_id, children_id)
                     VALUES (${newRecommendation.id}, ${parseInt(child_id)})
                 `;
             } else {
                 await prisma.$queryRaw`
-                    INSERT INTO childRecommendations (recommendation_id, children_id)
+                    INSERT INTO child_recommendations (recommendation_id, children_id)
                     VALUES (${rec.recommendation_id}, ${parseInt(child_id)})
                 `;
             }
@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
         }));
 
         await prisma.$queryRaw`
-            INSERT INTO childAssesment (answer, assesment_id, date_time, children_id, assesment_type)
+            INSERT INTO child_assesment (answer, assesment_id, date_time, children_id, assesment_type)
             VALUES ${assessmentsData
                 .map(
                     ({
