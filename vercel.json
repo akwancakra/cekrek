@@ -1,7 +1,0 @@
-{
-    "functions": {
-        "api/recommendations/*.ts": {
-            "maxDuration": 60
-        }
-    }
-}
