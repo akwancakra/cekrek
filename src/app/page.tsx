@@ -282,11 +282,7 @@ export default function Home() {
                             aktivitas secara otomatis
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                            Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Natus ad ipsum pariatur autem, fugit laborum
-                            in atque amet obcaecati? Nisi minima aspernatur,
-                            quidem nulla cupiditate nam consequatur eligendi
-                            magni adipisci.
+                        CekRek hadir untuk membantu orang tua dan guru dalam proses monitoring perkembangan anak mereka. Didukung oleh teknologi terkini, CekRek menawarkan solusi komprehensif untuk memantau kemajuan anak autis. 
                         </p>
                     </div>
                     <div className="mt-16 grid divide-x divide-y divide-gray-100 dark:divide-neutral-600 overflow-hidden rounded-3xl border border-gray-100 text-gray-600 dark:border-neutral-600 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0 xl:grid-cols-4">
@@ -302,18 +298,17 @@ export default function Home() {
                                 />
                                 <div className="space-y-2">
                                     <h5 className="text-xl font-semibold text-gray-700 dark:text-white transition group-hover:text-primary">
-                                        First feature
+                                        Fleksibel
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                        Neque Dolor, fugiat non cum doloribus
-                                        aperiam voluptates nostrum.
+                                    Pantau perkembangan anak Anda melalui perangkat apa pun.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Read more</span>
+                                    <span className="text-sm">Baca Selengkapnya</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -341,18 +336,17 @@ export default function Home() {
                                 />
                                 <div className="space-y-2">
                                     <h5 className="text-xl font-semibold text-gray-700 dark:text-white transition group-hover:text-primary">
-                                        Second feature
+                                        Visualisasi Data
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                        Neque Dolor, fugiat non cum doloribus
-                                        aperiam voluptates nostrum.
+                                    Dapatkan pemahaman yang lebih baik tentang pola perkembangan anak Anda.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Read more</span>
+                                    <span className="text-sm">Baca Selengkapnya</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -380,18 +374,17 @@ export default function Home() {
                                 />
                                 <div className="space-y-2">
                                     <h5 className="text-xl font-semibold text-gray-700 dark:text-white transition group-hover:text-primary">
-                                        Third feature
+                                        Efisiensi
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                        Neque Dolor, fugiat non cum doloribus
-                                        aperiam voluptates nostrum.
+                                        Tugas-tugas administrasi yang rumit menjadi lebih mudah.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Read more</span>
+                                    <span className="text-sm">Baca Selengkapnya</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -419,18 +412,17 @@ export default function Home() {
                                 />
                                 <div className="space-y-2">
                                     <h5 className="text-xl font-semibold text-gray-700 dark:text-white transition group-hover:text-primary">
-                                        More features
+                                        Keamanan
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                        Neque Dolor, fugiat non cum doloribus
-                                        aperiam voluptates nostrum.
+                                        Kami menjamin data yang anda miliki aman dan terlindungi.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Read more</span>
+                                    <span className="text-sm">Baca Selengkapnya</span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -487,14 +479,7 @@ export default function Home() {
                                 informasi
                             </h2>
                             <p className="my-8 text-gray-600 dark:text-gray-300">
-                                Nobis minus voluptatibus pariatur dignissimos
-                                libero quaerat iure expedita at? Asperiores nemo
-                                possimus nesciunt dicta veniam aspernatur quam
-                                mollitia. <br /> <br /> Vitae error, quaerat
-                                officia delectus voluptatibus explicabo quo
-                                pariatur impedit, at reprehenderit aliquam a
-                                ipsum quas voluptatem. Quo pariatur asperiores
-                                eum amet.
+                            Sistem informasi CekRek memberikan solusi lengkap untuk memenuhi kebutuhan perkembangan anak autis. Dengan otomatisasi rekomendasi yang disesuaikan dengan kebutuhan individu, asesmen digital yang mudah, dan pengelolaan data yang efisien, Guru dan orang tua dapat memantau perkembangan anak mereka dengan lebih baik.
                             </p>
                             <div className="divide-y space-y-4 divide-gray-100 dark:divide-gray-800">
                                 <div className="mt-8 flex gap-4 md:items-center">
@@ -514,11 +499,10 @@ export default function Home() {
                                     </div>
                                     <div className="w-5/6">
                                         <h4 className="font-semibold text-lg text-gray-700 dark:text-indigo-300">
-                                            Chat Anytime
+                                            Digitalisasi Asesmen
                                         </h4>
                                         <p className="text-gray-500 dark:text-gray-400">
-                                            Asperiores nemo possimus nesciunt
-                                            quam mollitia.
+                                            Asesmen yang dilakukan secara digital dan mudah
                                         </p>
                                     </div>
                                 </div>
@@ -539,11 +523,10 @@ export default function Home() {
                                     </div>
                                     <div className="w-5/6">
                                         <h4 className="font-semibold text-lg text-gray-700 dark:text-teal-300">
-                                            Real Time Location
+                                            Otomatisasi Rekomendasi
                                         </h4>
                                         <p className="text-gray-500 dark:text-gray-400">
-                                            Asperiores nemo possimus nesciunt
-                                            quam mollitia.
+                                            Rekomendasi yang otomatis dan sesuai dengan kebutuhan anak
                                         </p>
                                     </div>
                                 </div>
@@ -586,16 +569,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit. Illum aliquid quo eum quae
-                                quos illo earum ipsa doloribus nostrum minus
-                                libero aspernatur laborum cum, a suscipit,
-                                ratione ea totam ullam! Lorem ipsum dolor sit
-                                amet consectetur, adipisicing elit. Architecto
-                                laboriosam deleniti aperiam ab veniam sint non
-                                cumque quis tempore cupiditate. Sint libero
-                                voluptas veniam at reprehenderit, veritatis
-                                harum et rerum.
+                            Kami akan terus mengembangkan platform ini dengan menambahkan fitur-fitur baru yang inovatif. Tujuan kami adalah menciptakan lingkungan untuk mendukung tumbuh kembang anak-anak berkebutuhan khusus.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -624,10 +598,7 @@ export default function Home() {
                             </div>
                             <p className="mt-8">
                                 {" "}
-                                Lorem ipsum dolor laboriosam deleniti aperiam ab
-                                veniam sint non cumque quis tempore cupiditate.
-                                Sint libero voluptas veniam at reprehenderit,
-                                veritatis harum et rerum.
+                                Dalam mengembangkan platform ini, kami telah bekerja sama dengan mitra dan ahli di bidang teknologi. Kolaborasi ini memungkinkan kami untuk menciptakan sebuah produk yang benar-benar memenuhi kebutuhan pengguna.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -655,11 +626,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Architecto laboriosam deleniti
-                                aperiam ab veniam sint non cumque quis tempore
-                                cupiditate. Sint libero voluptas veniam at
-                                reprehenderit, veritatis harum et rerum.
+                            Kami percaya bahwa teknologi dapat menjadi kekuatan besar dalam mengatasi tantangan. Platform ini adalah bukti nyata dari komitmen kami untuk menggunakan teknologi untuk kebaikan. Kami berharap dapat terus berkontribusi dalam pengembangan solusi inovatif untuk mendukung anak-anak autis.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -687,11 +654,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Architecto laboriosam deleniti
-                                aperiam ab veniam sint non cumque quis tempore
-                                cupiditate. Sint libero voluptas veniam at
-                                reprehenderit, veritatis harum et rerum.
+                            Dengan menggunakan platform ini, orang tua dapat melacak perkembangan anak mereka secara lebih efektif dan membuat keputusan yang lebih tepat.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -720,11 +683,7 @@ export default function Home() {
                             </div>
                             <p className="mt-8">
                                 {" "}
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Architecto laboriosam deleniti
-                                aperiam ab veniam sint non cumque quis tempore
-                                cupiditate. Sint libero voluptas veniam at
-                                reprehenderit, veritatis harum et rerum.
+                                Desain website ini sangat responsif sehingga dapat diakses dengan mudah melalui berbagai perangkat, baik itu komputer, tablet, maupun smartphone.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -752,11 +711,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                                Lorem ipsum dolor sit amet consectetur,
-                                adipisicing elit. Architecto laboriosam deleniti
-                                aperiam ab veniam sint non cumque quis tempore
-                                cupiditate. Sint libero voluptas veniam at
-                                reprehenderit, veritatis harum et rerum.
+                            Platform ini sangat bermanfaat bagi para orang tua dan guru dalam memantau perkembangan anak autis. Dengan fitur-fitur yang lengkap, CekRek memungkinkan pengguna untuk mendapatkan informasi yang akurat dan terkini.
                             </p>
                         </div>
                     </div>
@@ -778,8 +733,7 @@ export default function Home() {
                                 Mari coba sekarang
                             </h1>
                             <p className="text-center text-xl">
-                                Be part of millions people around the world
-                                using tailus in modern User Interfaces.
+                            Dapatkan Rekomendasi Aktivitas yang sesuai dengan kebutuhan anak Anda!
                             </p>
                             <div className="flex flex-wrap justify-center gap-6">
                                 <Button
