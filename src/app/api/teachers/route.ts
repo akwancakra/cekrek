@@ -10,19 +10,61 @@ export async function GET(req: NextRequest) {
         const limit = url?.searchParams?.get("limit") || "10";
         const skip = url?.searchParams?.get("skip") || "0";
         const name_params = url?.searchParams?.get("name") || "";
-        const teachers = await prisma.users.findMany({
-            where: { role: "teacher", name: { contains: name_params } },
-            include: { children: true },
-            take: parseInt(limit),
-            skip: parseInt(skip),
+        const sort = url.searchParams.get("sort"); // asc, desc
+        const plain = url?.searchParams?.get("plain") === "true";
+
+        // Deklarasikan findOptions sebagai any untuk mengizinkan properti dinamis
+        let findOptions: any = { where: { role: "teacher" } };
+
+        if (!plain) {
+            findOptions.include = { children: true };
+        }
+
+        if (name_params) {
+            findOptions.where = {
+                ...findOptions.where,
+                name: { contains: name_params },
+            };
+        }
+
+        if (limit) {
+            findOptions.take = parseInt(limit);
+        }
+
+        if (skip) {
+            findOptions.skip = parseInt(skip);
+        }
+
+        if (sort) {
+            findOptions.orderBy = {
+                name: sort,
+            };
+        }
+
+        const teachers = await prisma.users.findMany(findOptions);
+        // where: { role: "teacher", name: { contains: name_params } },
+        // include: { children: true },
+        // take: parseInt(limit),
+        // skip: parseInt(skip),
+
+        // Fetch total count
+        const totalCount = await prisma.users.count({
+            where: findOptions.where,
         });
+
+        // // Calculate next cursor
+        const nextCursor =
+            parseInt(skip) + teachers.length < totalCount
+                ? parseInt(skip) + teachers.length
+                : null;
+
         if (teachers.length === 0)
             return NextResponse.json(
                 { status: "error", message: "No Teachers Found" },
                 { status: 200 }
             );
         return NextResponse.json(
-            { status: "success", teachers },
+            { status: "success", teachers, totalCount, nextCursor },
             { status: 200 }
         );
     } catch (error: any) {

@@ -1,7 +1,5 @@
 "use client";
 
-import AddAccountDialog from "@/components/elements/alerts/AddAccountDialog";
-import AddAccountDrawer from "@/components/elements/alerts/AddAccountDrawer";
 import UsersTable from "@/components/elements/tables-and-grids/UsersTable";
 import { Button } from "@/components/ui/button";
 import { User } from "@/types/user.types";
@@ -9,30 +7,14 @@ import { fetcher } from "@/utils/fetcher";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { useMediaQuery } from "usehooks-ts";
 
 export default function UsersListAdmin() {
     // const isDesktop = useMediaQuery("(min-width: 768px)");
     const [keyword, setKeyword] = useState("");
-    const [users, setUsers] = useState<User[]>([]);
 
-    const {
-        data,
-        isLoading,
-    }: {
-        data: { status: string; users: User[] };
-        isLoading: boolean;
-    } = useSWR("/api/users", fetcher);
-
-    useEffect(() => {
-        if (!isLoading && data?.users) {
-            setUsers(data?.users || []);
-        }
-    }, [data, isLoading]);
-
-    const addAccountButton = () => {
-        console.log("Account Add Button Clicked");
-    };
+    // const addAccountButton = () => {
+    //     console.log("Account Add Button Clicked");
+    // };
 
     return (
         <>
@@ -99,16 +81,16 @@ export default function UsersListAdmin() {
                         </form>
                     </div>
                 </div>
-
+                {/* 
                 {isLoading ? (
                     <>
                         <div>
                             <div className="skeleton w-full h-72 rounded-lg"></div>
                         </div>
                     </>
-                ) : (
-                    <UsersTable users={users} keyword={keyword} />
-                )}
+                ) : ( */}
+                <UsersTable keyword={keyword} />
+                {/* )} */}
             </section>
         </>
     );

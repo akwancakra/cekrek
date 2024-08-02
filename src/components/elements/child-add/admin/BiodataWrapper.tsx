@@ -37,6 +37,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChildrenData } from "@/types/childrenData.type";
 import { getImageUrl } from "@/utils/converters";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -129,6 +130,12 @@ const getBase64 = (file: File) => {
     });
 };
 
+interface Parents {
+    dad?: User;
+    mother?: User;
+    wali?: User;
+}
+
 export default function BiodataWrapper({
     // handleBackStage,
     handleNextStage,
@@ -141,6 +148,9 @@ export default function BiodataWrapper({
     const [selectedImage, setSelectedImage] = useState(null);
     const [parentsData, setParentsData] = useState<User[]>([]);
     const [teachers, setTeachers] = useState<User[]>([]);
+
+    const [selectedTeacher, setSelectedTeacher] = useState<User>({} as User);
+    const [selectedParent, setSelectedParent] = useState<Parents>({});
     const isClient = useIsClient();
 
     const {
@@ -469,14 +479,14 @@ export default function BiodataWrapper({
         // console.log(date);
     }, [date, city]);
 
-    useEffect(() => {
-        if (parentsRaw?.parents?.length > 0) {
-            setParentsData(parentsRaw.parents);
-        }
-        if (teacherRow?.teachers) {
-            setTeachers(teacherRow.teachers);
-        }
-    }, [parentsRaw, teacherRow]);
+    // useEffect(() => {
+    //     if (parentsRaw?.parents?.length > 0) {
+    //         setParentsData(parentsRaw.parents);
+    //     }
+    //     if (teacherRow?.teachers) {
+    //         setTeachers(teacherRow.teachers);
+    //     }
+    // }, [parentsRaw, teacherRow]);
 
     if (!isClient) {
         return null;
@@ -484,10 +494,7 @@ export default function BiodataWrapper({
 
     return (
         <>
-            {(isLoading ||
-                isLoadingParent ||
-                isLoadingTeacher ||
-                !isClient) && (
+            {(isLoading || !isClient) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -530,253 +537,438 @@ export default function BiodataWrapper({
                 </>
             )}
 
-            {!isLoading &&
-                !isLoadingParent &&
-                !isLoadingTeacher &&
-                isClient && (
-                    <FormikProvider value={formik}>
-                        <Form>
-                            <div>
-                                <p className="text-large font-semibold tracking-tight">
-                                    Biodata
-                                </p>
-                                <div className="mt-3">
-                                    <label className="form-control max-w-32 cursor-pointer">
-                                        <div className="max-w-32 bg-gray-300 border border-gray-300 rounded-lg overflow-hidden transition-all ease-in-out hover:border-primary hover:border-2">
-                                            <AspectRatio ratio={1 / 1}>
-                                                <Image
-                                                    src={getImageUrl(
-                                                        selectedImage
-                                                    )}
-                                                    alt="Child Profile"
-                                                    fill={true}
-                                                    className="rounded-lg object-cover"
-                                                    draggable={false}
-                                                />
-                                            </AspectRatio>
-                                        </div>
-                                        <Field
-                                            name="picture"
-                                            type="file"
-                                            className="file-input file-input-ghost hidden"
-                                            accept="image/*"
-                                            onChange={(e: any) =>
-                                                handleImageChange(e)
-                                            }
-                                            // {...formik.getFieldProps("picture")}
-                                        />
-                                        <p className="text-small italic">
-                                            Foto anak (ubah)
-                                        </p>
-                                    </label>
-                                    <ErrorMessage
+            {!isLoading && isClient && (
+                <FormikProvider value={formik}>
+                    <Form>
+                        <div>
+                            <p className="text-large font-semibold tracking-tight">
+                                Biodata
+                            </p>
+                            <div className="mt-3">
+                                <label className="form-control max-w-32 cursor-pointer">
+                                    <div className="max-w-32 bg-gray-300 border border-gray-300 rounded-lg overflow-hidden transition-all ease-in-out hover:border-primary hover:border-2">
+                                        <AspectRatio ratio={1 / 1}>
+                                            <Image
+                                                src={getImageUrl(selectedImage)}
+                                                alt="Child Profile"
+                                                fill={true}
+                                                className="rounded-lg object-cover"
+                                                draggable={false}
+                                            />
+                                        </AspectRatio>
+                                    </div>
+                                    <Field
                                         name="picture"
-                                        component="div"
-                                        className="text-red-500 text-xs sm:text-sm"
+                                        type="file"
+                                        className="file-input file-input-ghost hidden"
+                                        accept="image/*"
+                                        onChange={(e: any) =>
+                                            handleImageChange(e)
+                                        }
+                                        // {...formik.getFieldProps("picture")}
                                     />
-                                </div>
-                                <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
-                                    <div>
-                                        <label className="form-control w-full">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Guru
-                                                    {formik.errors
-                                                        .teacher_id && (
-                                                        <span className="text-red-500 text-xs italic">
-                                                            *wajib dipilih
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <TeacherPicker
-                                                teacherId={
-                                                    formik.values.teacher_id
-                                                }
-                                                setTeacherId={(value) =>
-                                                    formik.setFieldValue(
-                                                        "teacher_id",
-                                                        value
-                                                    )
-                                                }
-                                                teachers={teachers}
-                                            />
-                                        </label>
-                                        <ErrorMessage
-                                            name="teacher_id"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-control w-full">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Ayah
-                                                    {formik.errors
-                                                        .parent_dad && (
-                                                        <span className="text-red-500 text-xs italic">
-                                                            *wajib dipilih
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <ParentPicker
-                                                parentType="ayah"
-                                                parentId={
-                                                    formik.values.parent_dad
-                                                }
-                                                setParentId={(value) =>
-                                                    formik.setFieldValue(
-                                                        "parent_dad",
-                                                        value
-                                                    )
-                                                }
-                                                parentsData={parentsData}
-                                            />
-                                        </label>
-                                        <ErrorMessage
-                                            name="parent_dad"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-control w-full">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Ibu
-                                                    {formik.errors
-                                                        .parent_mother && (
-                                                        <span className="text-red-500 text-xs italic">
-                                                            *wajib dipilih
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <ParentPicker
-                                                parentType="ibu"
-                                                parentId={
-                                                    formik.values.parent_mother
-                                                }
-                                                setParentId={(value) =>
-                                                    formik.setFieldValue(
-                                                        "parent_mother",
-                                                        value
-                                                    )
-                                                }
-                                                parentsData={parentsData}
-                                            />
-                                        </label>
-                                        <ErrorMessage
-                                            name="parent_mother"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-control w-full">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Wali
-                                                    {formik.errors
-                                                        .parent_wali && (
-                                                        <span className="text-red-500 text-xs italic">
-                                                            *wajib dipilih
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <ParentPicker
-                                                parentType="wali"
-                                                parentId={
-                                                    formik.values.parent_wali
-                                                }
-                                                setParentId={(value) =>
-                                                    formik.setFieldValue(
-                                                        "parent_wali",
-                                                        value
-                                                    )
-                                                }
-                                                parentsData={parentsData}
-                                            />
-                                        </label>
-                                        <ErrorMessage
-                                            name="parent_wali"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-control w-full">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Nama Panjang{" "}
-                                                    {formik.errors
-                                                        .full_name && (
-                                                        <span className="text-red-500 text-xs italic">
-                                                            *wajib dipilih
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </div>
-                                            <Field
-                                                type="text"
-                                                // name="full_name"
-                                                placeholder="Anista Dwi..."
-                                                className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
-                                                {...formik.getFieldProps(
-                                                    "full_name"
-                                                )}
-                                                // value={formik.values.full_name}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                            />
-                                        </label>
-                                        <ErrorMessage
-                                            name="full_name"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-control w-full">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Nama Panggilan
-                                                </span>
-                                            </div>
-                                            <Field
-                                                type="text"
-                                                // name="nickname"
-                                                placeholder="Anit..."
-                                                className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
-                                                {...formik.getFieldProps(
-                                                    "nick_name"
-                                                )}
-                                                // value={formik.values.name}
-                                                // onChange={formik.handleChange}
-                                                // onBlur={formik.handleBlur}
-                                            />
-                                        </label>
-                                        <ErrorMessage
-                                            name="nick_name"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
+                                    <p className="text-small italic">
+                                        Foto anak (ubah)
+                                    </p>
+                                </label>
+                                <ErrorMessage
+                                    name="picture"
+                                    component="div"
+                                    className="text-red-500 text-xs sm:text-sm"
+                                />
+                            </div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Guru
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
+                                <div>
+                                    <label className="form-control w-full">
                                         <div className="label ps-0">
                                             <span className="label-text">
-                                                Jenis kelamin{" "}
-                                                {formik.errors.gender && (
+                                                Guru
+                                                {formik.errors.teacher_id && (
                                                     <span className="text-red-500 text-xs italic">
                                                         *wajib dipilih
                                                     </span>
                                                 )}
                                             </span>
                                         </div>
-                                        {/* <select
+                                        <TeacherPicker
+                                            teacherId={formik.values.teacher_id}
+                                            setTeacherId={(value) =>
+                                                formik.setFieldValue(
+                                                    "teacher_id",
+                                                    value
+                                                )
+                                            }
+                                            setSelectedTeacher={
+                                                setSelectedTeacher
+                                            }
+                                            // teachers={teachers}
+                                        />
+                                    </label>
+                                    <ErrorMessage
+                                        name="teacher_id"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                            </div>
+                            {formik.values.teacher_id && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedTeacher.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value: selectedTeacher.phone || "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value: selectedTeacher.email || "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedTeacher.religion || "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedTeacher.education ||
+                                                "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Ayah
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
+                                <div>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Ayah
+                                                {formik.errors.parent_dad && (
+                                                    <span className="text-red-500 text-xs italic">
+                                                        *wajib dipilih
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <ParentPicker
+                                            parentType="ayah"
+                                            parentId={formik.values.parent_dad}
+                                            setParentId={(value) =>
+                                                formik.setFieldValue(
+                                                    "parent_dad",
+                                                    value
+                                                )
+                                            }
+                                            setSelectedParent={
+                                                setSelectedParent
+                                            }
+                                            // parentsData={parentsData}
+                                        />
+                                    </label>
+                                    <ErrorMessage
+                                        name="parent_dad"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                            </div>
+                            {formik.values.parent_dad && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedParent.dad.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value:
+                                                selectedParent.dad.phone || "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value:
+                                                selectedParent.dad.email || "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedParent.dad.religion ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedParent.dad.education ||
+                                                "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Ibu
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
+                                <div>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Ibu
+                                                {formik.errors
+                                                    .parent_mother && (
+                                                    <span className="text-red-500 text-xs italic">
+                                                        *wajib dipilih
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <ParentPicker
+                                            parentType="ibu"
+                                            parentId={
+                                                formik.values.parent_mother
+                                            }
+                                            setParentId={(value) =>
+                                                formik.setFieldValue(
+                                                    "parent_mother",
+                                                    value
+                                                )
+                                            }
+                                            setSelectedParent={
+                                                setSelectedParent
+                                            }
+                                            // parentsData={parentsData}
+                                        />
+                                    </label>
+                                    <ErrorMessage
+                                        name="parent_mother"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                            </div>
+                            {formik.values.parent_mother && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedParent.mother.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value:
+                                                selectedParent.mother.phone ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value:
+                                                selectedParent.mother.email ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedParent.mother
+                                                    .religion || "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedParent.mother
+                                                    .education || "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Wali
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
+                                <div>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Wali
+                                                {formik.errors.parent_wali && (
+                                                    <span className="text-red-500 text-xs italic">
+                                                        *wajib dipilih
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <ParentPicker
+                                            parentType="wali"
+                                            parentId={formik.values.parent_wali}
+                                            setParentId={(value) =>
+                                                formik.setFieldValue(
+                                                    "parent_wali",
+                                                    value
+                                                )
+                                            }
+                                            setSelectedParent={
+                                                setSelectedParent
+                                            }
+                                            // parentsData={parentsData}
+                                        />
+                                    </label>
+                                    <ErrorMessage
+                                        name="parent_wali"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                            </div>
+                            {formik.values.parent_wali && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedParent.wali.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value:
+                                                selectedParent.wali.phone ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value:
+                                                selectedParent.wali.email ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedParent.wali.religion ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedParent.wali.education ||
+                                                "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Anak
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
+                                <div>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Nama Panjang{" "}
+                                                {formik.errors.full_name && (
+                                                    <span className="text-red-500 text-xs italic">
+                                                        *wajib dipilih
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <Field
+                                            type="text"
+                                            // name="full_name"
+                                            placeholder="Anista Dwi..."
+                                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                                            {...formik.getFieldProps(
+                                                "full_name"
+                                            )}
+                                            // value={formik.values.full_name}
+                                            // onChange={formik.handleChange}
+                                            // onBlur={formik.handleBlur}
+                                        />
+                                    </label>
+                                    <ErrorMessage
+                                        name="full_name"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Nama Panggilan
+                                            </span>
+                                        </div>
+                                        <Field
+                                            type="text"
+                                            // name="nickname"
+                                            placeholder="Anit..."
+                                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                                            {...formik.getFieldProps(
+                                                "nick_name"
+                                            )}
+                                            // value={formik.values.name}
+                                            // onChange={formik.handleChange}
+                                            // onBlur={formik.handleBlur}
+                                        />
+                                    </label>
+                                    <ErrorMessage
+                                        name="nick_name"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <div className="label ps-0">
+                                        <span className="label-text">
+                                            Jenis kelamin{" "}
+                                            {formik.errors.gender && (
+                                                <span className="text-red-500 text-xs italic">
+                                                    *wajib dipilih
+                                                </span>
+                                            )}
+                                        </span>
+                                    </div>
+                                    {/* <select
                                         title="Jenis Kelamin"
                                         value={formik.values.gender}
                                         onChange={(e) =>
@@ -799,35 +991,35 @@ export default function BiodataWrapper({
                                             Perempuan
                                         </option>
                                     </select> */}
-                                        <Select
-                                            value={formik.values.gender || ""}
-                                            defaultValue={
-                                                formik.values.gender || ""
-                                            }
-                                            onValueChange={(value) =>
-                                                formik.setFieldValue(
-                                                    "gender",
-                                                    value
-                                                )
-                                            }
+                                    <Select
+                                        value={formik.values.gender || ""}
+                                        defaultValue={
+                                            formik.values.gender || ""
+                                        }
+                                        onValueChange={(value) =>
+                                            formik.setFieldValue(
+                                                "gender",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger
+                                            name="gender"
+                                            className="w-full"
+                                            onBlur={formik.handleBlur}
                                         >
-                                            <SelectTrigger
-                                                name="gender"
-                                                className="w-full"
-                                                onBlur={formik.handleBlur}
-                                            >
-                                                <SelectValue placeholder="Pilih Jenis Kelamin" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="laki-laki">
-                                                    Laki-laki
-                                                </SelectItem>
-                                                <SelectItem value="perempuan">
-                                                    Perempuan
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        {/* {genderOptions.map(
+                                            <SelectValue placeholder="Pilih Jenis Kelamin" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="laki-laki">
+                                                Laki-laki
+                                            </SelectItem>
+                                            <SelectItem value="perempuan">
+                                                Perempuan
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    {/* {genderOptions.map(
                                                 (gender, index) => (
                                                     <SelectItem
                                                         key={index}
@@ -837,24 +1029,24 @@ export default function BiodataWrapper({
                                                     </SelectItem>
                                                 )
                                             )} */}
-                                        <ErrorMessage
-                                            name="gender"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
+                                    <ErrorMessage
+                                        name="gender"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <div className="label ps-0">
+                                        <span className="label-text">
+                                            Agama{" "}
+                                            {formik.errors.religion && (
+                                                <span className="text-red-500 text-xs italic">
+                                                    *wajib dipilih
+                                                </span>
+                                            )}
+                                        </span>
                                     </div>
-                                    <div>
-                                        <div className="label ps-0">
-                                            <span className="label-text">
-                                                Agama{" "}
-                                                {formik.errors.religion && (
-                                                    <span className="text-red-500 text-xs italic">
-                                                        *wajib dipilih
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
-                                        {/* <select
+                                    {/* <select
                                         title="Agama"
                                         value={formik.values.religion}
                                         onChange={(e) =>
@@ -879,77 +1071,76 @@ export default function BiodataWrapper({
                                             Konghucu
                                         </option>
                                     </select> */}
-                                        <Select
-                                            value={formik.values.religion || ""}
-                                            defaultValue={
-                                                formik.values.religion || ""
-                                            }
-                                            onValueChange={(value) =>
-                                                formik.setFieldValue(
-                                                    "religion",
-                                                    value
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger
-                                                name="religion"
-                                                className="w-full"
-                                                onBlur={formik.handleBlur}
-                                            >
-                                                <SelectValue placeholder="Pilih Agama" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="islam">
-                                                    Islam
-                                                </SelectItem>
-                                                <SelectItem value="kristen">
-                                                    Kristen
-                                                </SelectItem>
-                                                <SelectItem value="katolik">
-                                                    Katolik
-                                                </SelectItem>
-                                                <SelectItem value="hindu">
-                                                    Hindu
-                                                </SelectItem>
-                                                <SelectItem value="buddha">
-                                                    Buddha
-                                                </SelectItem>
-                                                <SelectItem value="konghucu">
-                                                    Konghucu
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <ErrorMessage
+                                    <Select
+                                        value={formik.values.religion || ""}
+                                        defaultValue={
+                                            formik.values.religion || ""
+                                        }
+                                        onValueChange={(value) =>
+                                            formik.setFieldValue(
+                                                "religion",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger
                                             name="religion"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
+                                            className="w-full"
+                                            onBlur={formik.handleBlur}
+                                        >
+                                            <SelectValue placeholder="Pilih Agama" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="islam">
+                                                Islam
+                                            </SelectItem>
+                                            <SelectItem value="kristen">
+                                                Kristen
+                                            </SelectItem>
+                                            <SelectItem value="katolik">
+                                                Katolik
+                                            </SelectItem>
+                                            <SelectItem value="hindu">
+                                                Hindu
+                                            </SelectItem>
+                                            <SelectItem value="buddha">
+                                                Buddha
+                                            </SelectItem>
+                                            <SelectItem value="konghucu">
+                                                Konghucu
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <ErrorMessage
+                                        name="religion"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <div className="label ps-0">
+                                        <span className="label-text">
+                                            Tanggal Lahir{" "}
+                                            {formik.errors.date_birth && (
+                                                <span className="text-red-500 text-xs italic">
+                                                    *wajib dipilih
+                                                </span>
+                                            )}
+                                        </span>
                                     </div>
-                                    <div>
-                                        <div className="label ps-0">
-                                            <span className="label-text">
-                                                Tanggal Lahir{" "}
-                                                {formik.errors.date_birth && (
-                                                    <span className="text-red-500 text-xs italic">
-                                                        *wajib dipilih
-                                                    </span>
-                                                )}
-                                            </span>
-                                        </div>
-                                        <DatePicker
-                                            initialDate={
-                                                formik.values.date_birth
-                                            }
-                                            date={formik.values.date_birth}
-                                            setDate={setDate}
-                                        />
-                                        <ErrorMessage
-                                            name="date_birth"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
+                                    <DatePicker
+                                        initialDate={formik.values.date_birth}
+                                        date={formik.values.date_birth}
+                                        setDate={setDate}
+                                    />
+                                    <ErrorMessage
+                                        name="date_birth"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-control w-full">
                                         <div className="label ps-0">
                                             <span className="label-text">
                                                 Tempat Lahir{" "}
@@ -960,199 +1151,205 @@ export default function BiodataWrapper({
                                                 )}
                                             </span>
                                         </div>
-                                        <CityPicker
-                                            city={formik.values.place_birth}
-                                            setCity={setCity}
+                                        <Field
+                                            type="text"
+                                            placeholder="Masukkan tempat lahir..."
+                                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                                            {...formik.getFieldProps(
+                                                "place_birth"
+                                            )}
                                         />
-                                        <ErrorMessage
-                                            name="place_birth"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <div className="label ps-0">
-                                            <span className="label-text">
-                                                Pendengaran
-                                            </span>
-                                        </div>
-                                        <Select
-                                            value={formik.values.hearing || ""}
-                                            defaultValue={
-                                                formik.values.hearing || ""
-                                            }
-                                            onValueChange={(value) =>
-                                                formik.setFieldValue(
-                                                    "hearing",
-                                                    value
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger
-                                                name="hearing"
-                                                className="w-full"
-                                                onBlur={formik.handleBlur}
-                                            >
-                                                <SelectValue placeholder="Pilih Kualitas Pendengaran" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="normal">
-                                                    Dalam batas normal
-                                                </SelectItem>
-                                                <SelectItem value="below_normal">
-                                                    Di bawah normal
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <ErrorMessage
-                                            name="hearing"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <div className="label ps-0">
-                                            <span className="label-text">
-                                                Kategori{" "}
-                                            </span>
-                                        </div>
-                                        <Select
-                                            value={
-                                                formik.values.risk_category ||
-                                                ""
-                                            }
-                                            defaultValue={
-                                                formik.values.risk_category ||
-                                                ""
-                                            }
-                                            onValueChange={(value) =>
-                                                formik.setFieldValue(
-                                                    "risk_category",
-                                                    value
-                                                )
-                                            }
-                                        >
-                                            <SelectTrigger
-                                                name="risk_category"
-                                                className="w-full"
-                                                onBlur={formik.handleBlur}
-                                            >
-                                                <SelectValue placeholder="Pilih Kategori" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="rendah">
-                                                    Rendah
-                                                </SelectItem>
-                                                <SelectItem value="sedang">
-                                                    Sedang
-                                                </SelectItem>
-                                                <SelectItem value="tinggi">
-                                                    Tinggi
-                                                </SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <ErrorMessage
-                                            name="risk_category"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="form-control">
-                                            <div className="label ps-0">
-                                                <span className="label-text">
-                                                    Jumlah Saudara Kandung
-                                                </span>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <Button
-                                                    variant={"outline"}
-                                                    size={"icon"}
-                                                    className="rounded-full w-12"
-                                                    onClick={() =>
-                                                        formik.values
-                                                            .count_of_siblings !=
-                                                        0
-                                                            ? formik.setFieldValue(
-                                                                  "count_of_siblings",
-                                                                  formik.values
-                                                                      .count_of_siblings -
-                                                                      1
-                                                              )
-                                                            : null
-                                                    }
-                                                    type="button"
-                                                >
-                                                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
-                                                        remove
-                                                    </span>
-                                                </Button>
-                                                <Field
-                                                    type="number"
-                                                    // name="count_of_siblings"
-                                                    className="input input-bordered text-center rounded-lg ps-0 px-3 py-2 text-sm h-fit min-h-fit w-full number-input-no-arrow placeholder:text-center"
-                                                    {...formik.getFieldProps(
-                                                        "count_of_siblings"
-                                                    )}
-                                                    // value={formik.values.count_of_siblings}
-                                                    // onChange={formik.handleChange}
-                                                    // onBlur={formik.handleBlur}
-                                                />
-                                                <Button
-                                                    variant={"outline"}
-                                                    size={"icon"}
-                                                    className="rounded-full w-12"
-                                                    onClick={() =>
-                                                        formik.setFieldValue(
-                                                            "count_of_siblings",
-                                                            formik.values
-                                                                .count_of_siblings +
-                                                                1
-                                                        )
-                                                    }
-                                                    type="button"
-                                                >
-                                                    <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
-                                                        add
-                                                    </span>
-                                                </Button>
-                                            </div>
-                                        </label>
-                                        <ErrorMessage
-                                            name="count_of_siblings"
-                                            component="div"
-                                            className="text-red-500 text-xs sm:text-sm"
-                                        />
-                                    </div>
+                                    </label>
+                                    {/* <CityPicker
+                                        city={formik.values.place_birth}
+                                        setCity={setCity}
+                                    /> */}
+                                    <ErrorMessage
+                                        name="place_birth"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                 </div>
-                                <div className="flex justify-end gap-2">
-                                    <Button
-                                        variant={"outline"}
-                                        type="reset"
-                                        onClick={resetForm}
-                                        disabled={isLoading}
-                                    >
-                                        {" "}
-                                        <span className="material-symbols-outlined me-1 !leading-none !text-xl hover:no-underline">
-                                            close
-                                        </span>{" "}
-                                        Reset
-                                    </Button>
-                                    <Button
-                                        variant={"default"}
-                                        type="submit"
-                                        disabled={isLoading}
-                                    >
-                                        Selanjutnya{" "}
-                                        <span className="material-symbols-outlined me-1 !leading-none !text-xl hover:no-underline">
-                                            arrow_forward
+                                <div>
+                                    <div className="label ps-0">
+                                        <span className="label-text">
+                                            Pendengaran
                                         </span>
-                                    </Button>
+                                    </div>
+                                    <Select
+                                        value={formik.values.hearing || ""}
+                                        defaultValue={
+                                            formik.values.hearing || ""
+                                        }
+                                        onValueChange={(value) =>
+                                            formik.setFieldValue(
+                                                "hearing",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger
+                                            name="hearing"
+                                            className="w-full"
+                                            onBlur={formik.handleBlur}
+                                        >
+                                            <SelectValue placeholder="Pilih Kualitas Pendengaran" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="normal">
+                                                Dalam batas normal
+                                            </SelectItem>
+                                            <SelectItem value="below_normal">
+                                                Di bawah normal
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <ErrorMessage
+                                        name="hearing"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <div className="label ps-0">
+                                        <span className="label-text">
+                                            Kategori{" "}
+                                        </span>
+                                    </div>
+                                    <Select
+                                        value={
+                                            formik.values.risk_category || ""
+                                        }
+                                        defaultValue={
+                                            formik.values.risk_category || ""
+                                        }
+                                        onValueChange={(value) =>
+                                            formik.setFieldValue(
+                                                "risk_category",
+                                                value
+                                            )
+                                        }
+                                    >
+                                        <SelectTrigger
+                                            name="risk_category"
+                                            className="w-full"
+                                            onBlur={formik.handleBlur}
+                                        >
+                                            <SelectValue placeholder="Pilih Kategori" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="rendah">
+                                                Rendah
+                                            </SelectItem>
+                                            <SelectItem value="sedang">
+                                                Sedang
+                                            </SelectItem>
+                                            <SelectItem value="tinggi">
+                                                Tinggi
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                    <ErrorMessage
+                                        name="risk_category"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="form-control">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Jumlah Saudara Kandung
+                                            </span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant={"outline"}
+                                                size={"icon"}
+                                                className="rounded-full w-12"
+                                                onClick={() =>
+                                                    formik.values
+                                                        .count_of_siblings != 0
+                                                        ? formik.setFieldValue(
+                                                              "count_of_siblings",
+                                                              formik.values
+                                                                  .count_of_siblings -
+                                                                  1
+                                                          )
+                                                        : null
+                                                }
+                                                type="button"
+                                            >
+                                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                                                    remove
+                                                </span>
+                                            </Button>
+                                            <Field
+                                                type="number"
+                                                // name="count_of_siblings"
+                                                className="input input-bordered text-center rounded-lg ps-0 px-3 py-2 text-sm h-fit min-h-fit w-full number-input-no-arrow placeholder:text-center"
+                                                {...formik.getFieldProps(
+                                                    "count_of_siblings"
+                                                )}
+                                                // value={formik.values.count_of_siblings}
+                                                // onChange={formik.handleChange}
+                                                // onBlur={formik.handleBlur}
+                                            />
+                                            <Button
+                                                variant={"outline"}
+                                                size={"icon"}
+                                                className="rounded-full w-12"
+                                                onClick={() =>
+                                                    formik.setFieldValue(
+                                                        "count_of_siblings",
+                                                        formik.values
+                                                            .count_of_siblings +
+                                                            1
+                                                    )
+                                                }
+                                                type="button"
+                                            >
+                                                <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none">
+                                                    add
+                                                </span>
+                                            </Button>
+                                        </div>
+                                    </label>
+                                    <ErrorMessage
+                                        name="count_of_siblings"
+                                        component="div"
+                                        className="text-red-500 text-xs sm:text-sm"
+                                    />
                                 </div>
                             </div>
-                        </Form>
-                    </FormikProvider>
-                )}
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    variant={"outline"}
+                                    type="reset"
+                                    onClick={resetForm}
+                                    disabled={isLoading}
+                                >
+                                    {" "}
+                                    <span className="material-symbols-outlined me-1 !leading-none !text-xl hover:no-underline">
+                                        close
+                                    </span>{" "}
+                                    Reset
+                                </Button>
+                                <Button
+                                    variant={"default"}
+                                    type="submit"
+                                    disabled={isLoading}
+                                >
+                                    Selanjutnya{" "}
+                                    <span className="material-symbols-outlined me-1 !leading-none !text-xl hover:no-underline">
+                                        arrow_forward
+                                    </span>
+                                </Button>
+                            </div>
+                        </div>
+                    </Form>
+                </FormikProvider>
+            )}
         </>
     );
 }
@@ -1376,24 +1573,82 @@ const CityPicker = ({ city, setCity }: CityPickerProps) => {
 interface TeacherPickerProps {
     teacherId: string;
     setTeacherId: (parentId: string) => void;
-    teachers: User[];
+    // teachers: User[];
+    setSelectedTeacher: (any) => void;
 }
 
 const TeacherPicker = ({
     teacherId,
     setTeacherId,
-    teachers,
-}: TeacherPickerProps) => {
+    setSelectedTeacher,
+}: // teachers,
+TeacherPickerProps) => {
     const [open, setOpen] = useState(false);
-    const router = useRouter();
+    // const router = useRouter();
     const isClient = useIsClient();
     const currentUrl =
         typeof window !== "undefined" ? window.location.href : "";
 
-    const teachersOptions = teachers.map((parent) => ({
-        label: parent.name,
-        value: parent.id.toString(),
-    }));
+    const [teachersData, setTeachersData] = useState<User[]>([]);
+    const [search, setSearch] = useState("");
+    const limit = 25;
+
+    const fetchTeachers = async ({ pageParam = 0 }) => {
+        const res = await fetch(
+            `/api/teachers?plain=true&limit=${limit}&skip=${pageParam}&sort=asc`
+        );
+        return res.json();
+    };
+
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status,
+    }: any = useInfiniteQuery({
+        queryKey: ["teachers"],
+        queryFn: fetchTeachers,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    const teachersOptions = useMemo(() => {
+        return data?.pages.flatMap((page) => {
+            if (page?.message || page?.teachers?.length === 0) {
+                return [];
+            }
+
+            return page.teachers.map((teacher) => ({
+                label: teacher.name,
+                value: teacher.id.toString() + "-" + teacher.name,
+            }));
+        });
+    }, [data]);
+
+    useEffect(() => {
+        if (data) {
+            setTeachersData((prev) => {
+                const newTeachers = data.pages.flatMap((page) => page.teachers);
+                const uniqueNewTeachers = newTeachers.filter(
+                    (newTeacher) =>
+                        !prev.some(
+                            (existingTeacher) =>
+                                existingTeacher.id === newTeacher.id
+                        )
+                );
+
+                return [...prev, ...uniqueNewTeachers];
+            });
+        }
+    }, [data]);
+
+    // const teachersOptions = teachers.map((parent) => ({
+    //     label: parent.name,
+    //     value: parent.id.toString(),
+    // }));
 
     if (!isClient) {
         return null;
@@ -1420,67 +1675,108 @@ const TeacherPicker = ({
             </PopoverTrigger>
             <PopoverContent className=" p-0" align="start">
                 <Command>
-                    <CommandInput placeholder={`Cari Guru...`} />
+                    <CommandInput
+                        placeholder={`Cari Guru...`}
+                        onValueChange={setSearch}
+                    />
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
-                        <CommandEmpty asChild>
-                            <Link
-                                href={`/a/users/add?callback=${encodeURIComponent(
-                                    currentUrl
-                                )}`}
-                                className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                            >
-                                <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                    add
-                                </span>
-                                Tambah Guru
-                            </Link>
-                        </CommandEmpty>
-                        {teachersOptions.length === 0 && (
-                            <CommandItem value="add-new" asChild>
-                                <Link
-                                    href={`/a/users/add?callback=${encodeURIComponent(
-                                        currentUrl
-                                    )}`}
-                                    className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                                >
-                                    <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                        add
-                                    </span>
-                                    Tambah Guru
-                                </Link>
-                            </CommandItem>
-                        )}
-                        <CommandGroup>
-                            {teachersOptions.map((teacher, index) => (
-                                <CommandItem
-                                    key={index}
-                                    value={teacher.value}
-                                    onSelect={(currentValue) => {
-                                        setTeacherId(
-                                            currentValue === teacherId
-                                                ? ""
-                                                : currentValue
-                                        );
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <span
-                                        className={cn(
-                                            "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
-                                            {
-                                                "opacity-100":
-                                                    teacher.value === teacherId,
-                                                "opacity-0":
-                                                    teacher.value !== teacherId,
-                                            }
-                                        )}
+                        {isFetching || status === "pending" ? (
+                            <CommandEmpty>Mendapatkan data...</CommandEmpty>
+                        ) : (
+                            <>
+                                <CommandEmpty asChild>
+                                    <Link
+                                        href={`/a/users/add?callback=${encodeURIComponent(
+                                            currentUrl
+                                        )}`}
+                                        className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
                                     >
-                                        check
-                                    </span>
-                                    {teacher.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
+                                        <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                            add
+                                        </span>
+                                        Tambah Guru
+                                    </Link>
+                                </CommandEmpty>
+                                {teachersOptions.length === 0 && (
+                                    <CommandItem value="add-new" asChild>
+                                        <Link
+                                            href={`/a/users/add?callback=${encodeURIComponent(
+                                                currentUrl
+                                            )}`}
+                                            className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
+                                        >
+                                            <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                                add
+                                            </span>
+                                            Tambah Guru
+                                        </Link>
+                                    </CommandItem>
+                                )}
+                                <CommandGroup>
+                                    {teachersOptions.map((teacher, index) => (
+                                        <CommandItem
+                                            key={index}
+                                            value={teacher.value}
+                                            onSelect={(currentValue) => {
+                                                const selectedId =
+                                                    currentValue.split("-")[0];
+
+                                                setTeacherId(
+                                                    selectedId === teacherId
+                                                        ? ""
+                                                        : currentValue
+                                                );
+                                                setOpen(false);
+
+                                                const setTeacher =
+                                                    teachersData.find(
+                                                        (p: User) =>
+                                                            p.id.toString() ===
+                                                            selectedId
+                                                    );
+
+                                                if (setTeacher) {
+                                                    setSelectedTeacher(
+                                                        setTeacher
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
+                                                    {
+                                                        "opacity-100":
+                                                            teacher.value ===
+                                                            teacherId,
+                                                        "opacity-0":
+                                                            teacher.value !==
+                                                            teacherId,
+                                                    }
+                                                )}
+                                            >
+                                                check
+                                            </span>
+                                            {teacher.label}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+
+                                {hasNextPage && (
+                                    <CommandItem asChild value={"z " + search}>
+                                        <Button
+                                            onClick={() => fetchNextPage()}
+                                            disabled={isFetchingNextPage}
+                                            className="cursor-pointer w-full flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                        >
+                                            {isFetchingNextPage
+                                                ? "Memuat data..."
+                                                : "Lihat Lainnya"}
+                                        </Button>
+                                    </CommandItem>
+                                )}
+                            </>
+                        )}
                     </CommandList>
                 </Command>
             </PopoverContent>
@@ -1492,27 +1788,102 @@ interface ParentPickerProps {
     parentType: "ayah" | "ibu" | "wali";
     parentId: string;
     setParentId: (parentId: string) => void;
-    parentsData: User[];
+    // parentsData: User[];
+    setSelectedParent: (any) => void;
 }
 
 const ParentPicker = ({
     parentType,
     parentId,
     setParentId,
-    parentsData,
+    // parentsData,
+    setSelectedParent,
 }: ParentPickerProps) => {
     const [open, setOpen] = useState(false);
-    const router = useRouter();
+    // const router = useRouter();
     const isClient = useIsClient();
     const currentUrl =
         typeof window !== "undefined" ? window.location.href : "";
 
-    const parentOptions = parentsData
-        .filter((parent) => parent.type === parentType)
-        .map((parent) => ({
-            label: parent.name,
-            value: parent.id.toString(),
-        }));
+    const [parentsData, setParentsData] = useState<User[]>([]);
+    const [search, setSearch] = useState("");
+    const limit = 25;
+
+    const fetchParents = async ({ pageParam = 0 }) => {
+        const res = await fetch(
+            `/api/parents?plain=true&type=${parentType}&limit=${limit}&skip=${pageParam}&sort=asc`
+        );
+        return res.json();
+    };
+
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status,
+    }: any = useInfiniteQuery({
+        queryKey: ["parents", parentType],
+        queryFn: fetchParents,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    const parentOptions = useMemo(() => {
+        return data?.pages.flatMap((page) => {
+            if (page?.message || page?.parents?.length === 0) {
+                return [];
+            }
+
+            return page.parents
+                .filter((parent) => parent.type === parentType)
+                .map((parent) => ({
+                    label: parent.name,
+                    value: parent.id.toString() + "-" + parent.name,
+                }));
+        });
+    }, [data, parentType]);
+
+    useEffect(() => {
+        if (data) {
+            setParentsData((prev) => {
+                const newParents = data.pages.flatMap((page) => page.parents);
+                const uniqueNewParents = newParents.filter(
+                    (newParent) =>
+                        !prev.some(
+                            (existingParent) =>
+                                existingParent.id === newParent.id
+                        )
+                );
+
+                return [...prev, ...uniqueNewParents];
+            });
+        }
+    }, [data]);
+
+    const updateParent = (parent: User) => {
+        setSelectedParent((prev: any) => {
+            const updateState = { ...prev };
+
+            switch (parentType) {
+                case "ayah":
+                    updateState.dad = parent;
+                    break;
+                case "ibu":
+                    updateState.mother = parent;
+                    break;
+                case "wali":
+                    updateState.wali = parent;
+                    break;
+                default:
+                    break;
+            }
+
+            return updateState;
+        });
+    };
 
     if (!isClient) {
         return null;
@@ -1542,71 +1913,111 @@ const ParentPicker = ({
             </PopoverTrigger>
             <PopoverContent className=" p-0" align="start">
                 <Command>
-                    <CommandInput placeholder={`Cari ${parentType}...`} />
+                    <CommandInput
+                        placeholder={`Cari ${parentType}...`}
+                        onValueChange={setSearch}
+                    />
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
-                        <CommandEmpty asChild>
-                            <Link
-                                href={`/a/users/add?callback=${encodeURIComponent(
-                                    currentUrl
-                                )}`}
-                                className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                            >
-                                <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                    add
-                                </span>
-                                Tambah{" "}
-                                {parentType.charAt(0).toUpperCase() +
-                                    parentType.slice(1)}
-                            </Link>
-                        </CommandEmpty>
-                        {parentOptions.length === 0 && (
-                            <CommandItem value="add-new" asChild>
-                                <Link
-                                    href={`/a/users/add?callback=${encodeURIComponent(
-                                        currentUrl
-                                    )}`}
-                                    className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                                >
-                                    <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                        add
-                                    </span>
-                                    Tambah{" "}
-                                    {parentType.charAt(0).toUpperCase() +
-                                        parentType.slice(1)}
-                                </Link>
-                            </CommandItem>
-                        )}
-                        <CommandGroup>
-                            {parentOptions.map((parent, index) => (
-                                <CommandItem
-                                    key={index}
-                                    value={parent.value}
-                                    onSelect={(currentValue) => {
-                                        setParentId(
-                                            currentValue === parentId
-                                                ? ""
-                                                : currentValue
-                                        );
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <span
-                                        className={cn(
-                                            "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
-                                            {
-                                                "opacity-100":
-                                                    parent.value === parentId,
-                                                "opacity-0":
-                                                    parent.value !== parentId,
-                                            }
-                                        )}
+                        {isFetching || status === "pending" ? (
+                            <CommandEmpty>Mendapatkan data...</CommandEmpty>
+                        ) : (
+                            <>
+                                <CommandEmpty asChild>
+                                    <Link
+                                        href={`/a/users/add?callback=${encodeURIComponent(
+                                            currentUrl
+                                        )}`}
+                                        className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
                                     >
-                                        check
-                                    </span>
-                                    {parent.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
+                                        <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                            add
+                                        </span>
+                                        Tambah{" "}
+                                        {parentType.charAt(0).toUpperCase() +
+                                            parentType.slice(1)}
+                                    </Link>
+                                </CommandEmpty>
+                                {parentOptions.length === 0 && (
+                                    <CommandItem value="add-new" asChild>
+                                        <Link
+                                            href={`/a/users/add?callback=${encodeURIComponent(
+                                                currentUrl
+                                            )}`}
+                                            className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
+                                        >
+                                            <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                                add
+                                            </span>
+                                            Tambah{" "}
+                                            {parentType
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                                parentType.slice(1)}
+                                        </Link>
+                                    </CommandItem>
+                                )}
+                                <CommandGroup>
+                                    {parentOptions.map((parent, index) => (
+                                        <CommandItem
+                                            key={index}
+                                            value={parent.value}
+                                            onSelect={(currentValue) => {
+                                                const selectedId =
+                                                    currentValue.split("-")[0];
+
+                                                setParentId(
+                                                    selectedId === parentId
+                                                        ? ""
+                                                        : currentValue
+                                                );
+                                                setOpen(false);
+
+                                                const setParent =
+                                                    parentsData.find(
+                                                        (p: User) =>
+                                                            p.id.toString() ===
+                                                            selectedId
+                                                    );
+
+                                                if (setParent) {
+                                                    updateParent(setParent);
+                                                }
+                                            }}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
+                                                    {
+                                                        "opacity-100":
+                                                            parent.value ===
+                                                            parentId,
+                                                        "opacity-0":
+                                                            parent.value !==
+                                                            parentId,
+                                                    }
+                                                )}
+                                            >
+                                                check
+                                            </span>
+                                            {parent.label}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                                {hasNextPage && (
+                                    <CommandItem asChild value={"z " + search}>
+                                        <Button
+                                            onClick={() => fetchNextPage()}
+                                            disabled={isFetchingNextPage}
+                                            className="cursor-pointer w-full flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                        >
+                                            {isFetchingNextPage
+                                                ? "Memuat data..."
+                                                : "Lihat Lainnya"}
+                                        </Button>
+                                    </CommandItem>
+                                )}
+                            </>
+                        )}
                     </CommandList>
                 </Command>
             </PopoverContent>

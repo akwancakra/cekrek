@@ -50,10 +50,11 @@ interface ChildrenData {
 export async function GET(req: NextRequest) {
     try {
         const url = new URL(req.url);
-        const limit = url?.searchParams?.get("limit");
-        const skip = url?.searchParams?.get("skip");
         const name_params = url?.searchParams?.get("name") || "";
         const plain = url?.searchParams?.get("plain") === "true";
+
+        const limit = url?.searchParams?.get("limit") as string;
+        const skip = url?.searchParams?.get("skip") as string;
 
         const include = plain
             ? {}
@@ -69,7 +70,9 @@ export async function GET(req: NextRequest) {
               };
 
         const query: any = {
-            where: { full_name: { contains: name_params } },
+            where: {
+                full_name: { contains: name_params },
+            },
             include,
         };
 

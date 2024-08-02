@@ -7,21 +7,45 @@ const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
     try {
         const url = new URL(req.url);
-        const limit = url?.searchParams?.get("limit");
-        const skip = url?.searchParams?.get("skip");
-        const name_params = url?.searchParams?.get("name");
-        const plain = url?.searchParams?.get("plain") === "true";
+        const name_params = url.searchParams.get("name");
+        const plain = url.searchParams.get("plain") === "true";
+        const limit = url.searchParams.get("limit") as string;
+        const skip = url.searchParams.get("skip") as string;
+        const type = url.searchParams.get("type"); // ayah, ibu, wali
+        const sort = url.searchParams.get("sort"); // asc, desc
 
         // Deklarasikan findOptions sebagai any untuk mengizinkan properti dinamis
         let findOptions: any = {
             where: { role: "parent" },
-            take: limit ? parseInt(limit) : undefined,
-            skip: skip ? parseInt(skip) : undefined,
         };
 
+        if (limit) {
+            findOptions.take = parseInt(limit);
+        }
+
+        if (skip) {
+            findOptions.skip = parseInt(skip);
+        }
+
         if (name_params) {
-            // Tambahkan properti name ke where
-            findOptions.where.name = { contains: name_params };
+            // Pastikan properti where sudah dideklarasikan sebagai objek
+            findOptions.where = {
+                ...findOptions.where,
+                name: { contains: name_params },
+            };
+        }
+
+        if (type) {
+            findOptions.where = {
+                ...findOptions.where,
+                type: type,
+            };
+        }
+
+        if (sort) {
+            findOptions.orderBy = {
+                name: sort,
+            };
         }
 
         if (!plain) {
@@ -49,6 +73,17 @@ export async function GET(req: NextRequest) {
 
         const parents = await prisma.users.findMany(findOptions);
 
+        // Fetch total count
+        const totalCount = await prisma.users.count({
+            where: findOptions.where,
+        });
+
+        // Calculate next cursor
+        const nextCursor =
+            parseInt(skip) + parents.length < totalCount
+                ? parseInt(skip) + parents.length
+                : null;
+
         if (parents.length === 0) {
             return NextResponse.json(
                 { status: "error", message: "No Parents Found" },
@@ -57,7 +92,7 @@ export async function GET(req: NextRequest) {
         }
 
         return NextResponse.json(
-            { status: "success", parents },
+            { status: "success", parents, totalCount, nextCursor },
             { status: 200 }
         );
     } catch (error: any) {

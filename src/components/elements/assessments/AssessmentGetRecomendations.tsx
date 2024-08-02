@@ -15,7 +15,7 @@ import {
 import CreateRecomendationCard from "../cards/CreateRecomendationCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useEffect, useState } from "react";
-import { useMediaQuery } from "usehooks-ts";
+import { useCounter, useMediaQuery } from "usehooks-ts";
 import {
     Drawer,
     DrawerClose,
@@ -27,7 +27,7 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import { AssessmentAnswer } from "@/types/assessmentAnswer.copy";
-import { getRiskCategory } from "@/utils/converters";
+import { getRiskCategory, isRecommendationResponse } from "@/utils/converters";
 import { Child } from "@/types/children.types";
 import axios from "axios";
 import { toast } from "sonner";
@@ -47,8 +47,10 @@ interface AssessmentGetRecommendationsProps {
 
 type Recommendation = {
     id?: number;
+    id_temp?: number;
     teacher_id?: string | number;
     is_main: boolean;
+    is_change?: boolean;
     assesment_number: string | number;
     title: string;
     description: string;
@@ -68,8 +70,10 @@ const formSchema = Yup.object().shape({
 });
 
 const initialValues: Recommendation = {
+    id_temp: 0,
     teacher_id: "",
     is_main: false,
+    is_change: false,
     title: "",
     assesment_number: "",
     description: "",
@@ -98,6 +102,8 @@ export default function AssessmentGetRecommendations({
     const [assessmentFails, setAssessmentFails] = useState<AssessmentAnswer[]>(
         []
     );
+    const [isLoadingAI, setIsLoadingAI] = useState<boolean>(false);
+    const { count, increment, decrement, setCount } = useCounter(0);
     const { profile, isReady } = useProfile();
 
     const { id } = useParams();
@@ -182,6 +188,67 @@ export default function AssessmentGetRecommendations({
         };
     };
 
+    const getAIRecommendations = async () => {
+        setIsLoadingAI(true);
+        try {
+            await axios
+                .post("/api/ai/recommendations", {
+                    assesment: assessmentFails,
+                    risk_category: riskCategory,
+                    child,
+                })
+                .then((res) => {
+                    const newRecommendations = JSON.parse(res.data.text);
+                    let countRec = count;
+                    const newRecommendationsFinal = newRecommendations.map(
+                        (recommendation: Recommendation) => {
+                            countRec++;
+                            return {
+                                ...recommendation,
+                                id_temp: countRec,
+                                is_change: true,
+                            };
+                        }
+                    );
+                    setCount(countRec);
+
+                    if (
+                        Array.isArray(newRecommendationsFinal) &&
+                        newRecommendationsFinal.every(isRecommendationResponse)
+                    ) {
+                        setNewRecommendations((prev) => [
+                            ...prev,
+                            ...newRecommendationsFinal,
+                        ]);
+                    } else {
+                        toast.error(
+                            "Response tidak sesuai dengan tipe yang diharapkan"
+                        );
+                    }
+
+                    toast.success("Berhasil mendapatkan rekomendasi AI!", {
+                        duration: 1000,
+                    });
+                    console.log(newRecommendationsFinal);
+                })
+                .catch((error) => {
+                    console.log(error);
+                    toast.error(
+                        error?.response?.data?.message ||
+                            error?.message ||
+                            "Terjadi kesalahan"
+                    );
+                });
+
+            setIsLoadingAI(false);
+            // const data = await response.json();
+            // setRecommendations(data.recommendations);
+        } catch (error) {
+            console.error("Error fetching recommendations:", error);
+            setIsLoadingAI(false);
+        }
+    };
+
     // const transformRecommendation = (data: Recommendation[]) => {
     //     return data.map((recommendation) => ({
     //         title: recommendation.title,
@@ -196,15 +263,24 @@ export default function AssessmentGetRecommendations({
     // };
 
     const removeRecommendation = (id: string) => {
+        console.log("Assessment Removed", id, recommendations);
         setRecommendations((prevRecommendations) =>
             prevRecommendations.filter((item) => item.id.toString() !== id)
         );
     };
 
     const removeNewRecommendation = (id: string) => {
+        // console.log("Assessment New Removed", id, newRecommendations);
+        // setNewRecommendations((prevNewRecommendations) =>
+        //     prevNewRecommendations.filter(
+        //         (item) => item.assesment_number !== id
+        //     )
+        // );
+
+        console.log("Assessment New Removed", id, newRecommendations);
         setNewRecommendations((prevNewRecommendations) =>
             prevNewRecommendations.filter(
-                (item) => item.assesment_number !== id
+                (item) => item.id_temp.toString() !== id
             )
         );
     };
@@ -215,8 +291,9 @@ export default function AssessmentGetRecommendations({
         const data = createDataObjectFinal();
         let finalData = {
             teacher_id: profile?.id,
-            child_id: data.child_id,
+            child_id: data.child_id.toString(),
             date_time: data.date_time,
+            risk_category: riskCategory,
             assessmentsAnswer: data.assessmentsAnswer,
             childRecommendations: [
                 ...data.childRecommendations,
@@ -258,7 +335,8 @@ export default function AssessmentGetRecommendations({
                 duration: 1000,
             });
         } catch (error: any) {
-            console.error("Error sending recommendation:", error.message);
+            console.log(error);
+            console.error("Error sending recommendation:", error?.message);
         } finally {
             setIsLoadingPost(false);
         }
@@ -302,18 +380,28 @@ export default function AssessmentGetRecommendations({
         initialValues,
         validationSchema: formSchema,
         onSubmit: async (values) => {
-            const newValues = {
+            let newValues = {
                 ...values,
                 teacher_id:
                     typeof profile?.id === "number"
                         ? profile.id.toString()
                         : profile?.id,
+                id_temp: count,
             };
+            increment();
 
-            setNewRecommendations([...newRecommendations, newValues]);
-            // setRecommendations([...recommendations, values]);
-            // const data = createDataObjectFinal();
-            // const transformRecommendation
+            if (values.is_change) {
+                const updatedRecommendations = newRecommendations.map(
+                    (recommendation) =>
+                        recommendation.id_temp === values.id_temp
+                            ? newValues
+                            : recommendation
+                );
+
+                setNewRecommendations(updatedRecommendations);
+            } else {
+                setNewRecommendations([...newRecommendations, newValues]);
+            }
 
             console.log([...newRecommendations, values], recommendations);
 
@@ -388,7 +476,13 @@ export default function AssessmentGetRecommendations({
                     <Button
                         variant={"default"}
                         className="gap-1 w-full mt-2 sm:w-fit sm:mt-0 group-[.open]:mt-2 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-fit"
-                        disabled={true}
+                        disabled={
+                            isSubmit ||
+                            isLoading ||
+                            isLoadingPost ||
+                            isLoadingAI
+                        }
+                        onClick={getAIRecommendations}
                         // disabled={isLoading || isLoadingPost}
                     >
                         <svg
@@ -400,7 +494,12 @@ export default function AssessmentGetRecommendations({
                         >
                             <path d="M7.657 6.247c.11-.33.576-.33.686 0l.645 1.937a2.89 2.89 0 0 0 1.829 1.828l1.936.645c.33.11.33.576 0 .686l-1.937.645a2.89 2.89 0 0 0-1.828 1.829l-.645 1.936a.361.361 0 0 1-.686 0l-.645-1.937a2.89 2.89 0 0 0-1.828-1.828l-1.937-.645a.361.361 0 0 1 0-.686l1.937-.645a2.89 2.89 0 0 0 1.828-1.828zM3.794 1.148a.217.217 0 0 1 .412 0l.387 1.162c.173.518.579.924 1.097 1.097l1.162.387a.217.217 0 0 1 0 .412l-1.162.387A1.73 1.73 0 0 0 4.593 5.69l-.387 1.162a.217.217 0 0 1-.412 0L3.407 5.69A1.73 1.73 0 0 0 2.31 4.593l-1.162-.387a.217.217 0 0 1 0-.412l1.162-.387A1.73 1.73 0 0 0 3.407 2.31zM10.863.099a.145.145 0 0 1 .274 0l.258.774c.115.346.386.617.732.732l.774.258a.145.145 0 0 1 0 .274l-.774.258a1.16 1.16 0 0 0-.732.732l-.258.774a.145.145 0 0 1-.274 0l-.258-.774a1.16 1.16 0 0 0-.732-.732L9.1 2.137a.145.145 0 0 1 0-.274l.774-.258c.346-.115.617-.386.732-.732z" />
                         </svg>
-                        <span>Rekomendasi AI</span>
+                        <span>
+                            Rekomendasi AI{" "}
+                            {isLoadingAI && (
+                                <span className="loading loading-spinner loading-sm"></span>
+                            )}
+                        </span>
                     </Button>
                 </div>
                 <div className="flex flex-col gap-3">
@@ -428,6 +527,8 @@ export default function AssessmentGetRecommendations({
                                 key={recommendation.id}
                                 recommendation={recommendation}
                                 onDelete={removeRecommendation}
+                                formik={formik}
+                                assessmentFails={assessmentFails}
                             />
                         ))}
 
@@ -438,6 +539,8 @@ export default function AssessmentGetRecommendations({
                                 key={idx}
                                 recommendation={recommendation}
                                 onDelete={removeNewRecommendation}
+                                formik={formik}
+                                assessmentFails={assessmentFails}
                             />
                         ))}
                 </div>
@@ -459,7 +562,12 @@ export default function AssessmentGetRecommendations({
                         <Button
                             variant={"outline"}
                             className="gap-1"
-                            disabled={isLoading || isLoadingPost}
+                            disabled={
+                                isLoading ||
+                                isSubmit ||
+                                isLoadingPost ||
+                                isLoadingAI
+                            }
                         >
                             <span>Selesai &amp; Kirim</span>
                             <span className="material-symbols-outlined !text-xl !leading-none pointer-events-none">
@@ -501,15 +609,27 @@ export default function AssessmentGetRecommendations({
 }
 
 const RecomendationForm = ({
+    recommendation,
     assessmentFails,
     formik,
     isSubmit,
 }: {
+    recommendation?: Recommendation;
     assessmentFails: AssessmentAnswer[];
     formik: FormikProps<Recommendation>;
     isSubmit: boolean;
 }) => {
     const [open, setOpen] = useState(false);
+    // const [isAdd, setIsAdd] = useState(true);
+
+    // useEffect(() => {
+    //     if (recommendation) {
+    //         setIsAdd(false);
+    //         formik.setValues({
+    //             ...recommendation,
+    //         });
+    //     }
+    // }, [recommendation]);
 
     return (
         <Drawer open={open} onOpenChange={setOpen}>
@@ -528,23 +648,24 @@ const RecomendationForm = ({
                 <ScrollArea className="p-0 max-h-svh overflow-auto">
                     <DrawerHeader className="text-left">
                         <DrawerTitle>Tambah Rekomendasi</DrawerTitle>
-                        <DrawerDescription>
-                            <div>
-                                <AddRecomendationForm
-                                    formik={formik}
-                                    assessmentFails={assessmentFails}
-                                />
-                            </div>
-                        </DrawerDescription>
+                        <div>
+                            <AddRecomendationForm
+                                formik={formik}
+                                assessmentFails={assessmentFails}
+                            />
+                        </div>
+                        <DrawerDescription></DrawerDescription>
                     </DrawerHeader>
                     <DrawerFooter className="pt-2">
-                        <Button
-                            variant={"default"}
-                            onClick={formik.submitForm}
-                            disabled={isSubmit}
-                        >
-                            Tambah
-                        </Button>
+                        <DrawerClose asChild>
+                            <Button
+                                variant={"default"}
+                                onClick={formik.submitForm}
+                                disabled={isSubmit}
+                            >
+                                Tambah
+                            </Button>
+                        </DrawerClose>
                         <DrawerClose asChild>
                             <Button
                                 variant="outline"
@@ -562,14 +683,27 @@ const RecomendationForm = ({
 };
 
 const RecomendationFormDesktop = ({
+    recommendation,
     assessmentFails,
     formik,
     isSubmit,
 }: {
+    recommendation?: Recommendation;
     assessmentFails: AssessmentAnswer[];
     formik: FormikProps<Recommendation>;
     isSubmit: boolean;
 }) => {
+    // const [isAdd, setIsAdd] = useState(true);
+
+    // useEffect(() => {
+    //     if (recommendation) {
+    //         setIsAdd(false);
+    //         formik.setValues({
+    //             ...recommendation,
+    //         });
+    //     }
+    // }, [recommendation]);
+
     return (
         <AlertDialog>
             <AlertDialogTrigger asChild>

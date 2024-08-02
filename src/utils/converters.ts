@@ -264,6 +264,16 @@ const removeLeadingZeros = (input: string) => {
     return result;
 };
 
+const isRecommendationResponse = (obj) => {
+    return (
+        typeof obj === "object" &&
+        obj !== null &&
+        typeof obj.title === "string" &&
+        typeof obj.description === "string" &&
+        typeof obj.frequency === "string"
+    );
+};
+
 const questionsBirthHealth = [
     "healthy_pregnancy",
     "pregnancy_illness",
@@ -376,4 +386,5 @@ export {
     getUrlFromRole,
     getImageUrl,
     getRecommendationImageUrl,
+    isRecommendationResponse,
 };

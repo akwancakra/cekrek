@@ -37,6 +37,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/converters";
 import { ChildrenData } from "@/types/childrenData.type";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -119,6 +120,12 @@ interface Props {
     localData: ChildrenData;
 }
 
+interface Parents {
+    dad?: User;
+    mother?: User;
+    wali?: User;
+}
+
 const getBase64 = (file: File) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -138,14 +145,15 @@ export default function BiodataWrapper({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [parentsData, setParentsData] = useState<User[]>([]);
+    // const [parentsData, setParentsData] = useState<User[]>([]);
+    const [selectedParent, setSelectedParent] = useState<Parents>({});
     const isClient = useIsClient();
 
-    const {
-        data: parentsRaw,
-        isLoading: isLoadingParent,
-    }: { data: { status: string; parents: User[] }; isLoading: boolean } =
-        useSWR("/api/parents?plain=true", fetcher);
+    // const {
+    //     data: parentsRaw,
+    //     isLoading: isLoadingParent,
+    // }: { data: { status: string; parents: User[] }; isLoading: boolean } =
+    //     useSWR(`/api/parents?plain=true&limit=${limit}&sort=asc`, fetcher);
 
     // const initialValues: { [key: string]: any } = {
     //     // id: "",
@@ -453,11 +461,11 @@ export default function BiodataWrapper({
         // console.log(date);
     }, [date, city]);
 
-    useEffect(() => {
-        if (parentsRaw?.parents?.length > 0) {
-            setParentsData(parentsRaw.parents);
-        }
-    }, [parentsRaw]);
+    // useEffect(() => {
+    //     if (parentsRaw?.parents?.length > 0) {
+    //         setParentsData(parentsRaw.parents);
+    //     }
+    // }, [parentsRaw]);
 
     if (!isClient) {
         return null;
@@ -465,7 +473,8 @@ export default function BiodataWrapper({
 
     return (
         <>
-            {(isLoading || isLoadingParent || !isClient) && (
+            {/* isLoadingParent */}
+            {(isLoading || !isClient) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -508,7 +517,8 @@ export default function BiodataWrapper({
                 </>
             )}
 
-            {!isLoading && !isLoadingParent && isClient && (
+            {/* !isLoadingParent */}
+            {!isLoading && isClient && (
                 <FormikProvider value={formik}>
                     <Form>
                         <div>
@@ -548,6 +558,9 @@ export default function BiodataWrapper({
                                     className="text-red-500 text-xs sm:text-sm"
                                 />
                             </div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Ayah
+                            </div>
                             <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                 <div>
                                     <label className="form-control w-full">
@@ -570,7 +583,10 @@ export default function BiodataWrapper({
                                                     value
                                                 )
                                             }
-                                            parentsData={parentsData}
+                                            setSelectedParent={
+                                                setSelectedParent
+                                            }
+                                            // parentsData={parentsData}
                                         />
                                     </label>
                                     <ErrorMessage
@@ -579,6 +595,52 @@ export default function BiodataWrapper({
                                         className="text-red-500 text-xs sm:text-sm"
                                     />
                                 </div>
+                            </div>
+                            {formik.values.parent_dad && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedParent.dad.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value:
+                                                selectedParent.dad.phone || "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value:
+                                                selectedParent.dad.email || "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedParent.dad.religion ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedParent.dad.education ||
+                                                "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Ibu
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                 <div>
                                     <label className="form-control w-full">
                                         <div className="label ps-0">
@@ -603,7 +665,10 @@ export default function BiodataWrapper({
                                                     value
                                                 )
                                             }
-                                            parentsData={parentsData}
+                                            setSelectedParent={
+                                                setSelectedParent
+                                            }
+                                            // parentsData={parentsData}
                                         />
                                     </label>
                                     <ErrorMessage
@@ -612,6 +677,54 @@ export default function BiodataWrapper({
                                         className="text-red-500 text-xs sm:text-sm"
                                     />
                                 </div>
+                            </div>
+                            {formik.values.parent_mother && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedParent.mother.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value:
+                                                selectedParent.mother.phone ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value:
+                                                selectedParent.mother.email ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedParent.mother
+                                                    .religion || "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedParent.mother
+                                                    .education || "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Wali
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                 <div>
                                     <label className="form-control w-full">
                                         <div className="label ps-0">
@@ -633,7 +746,10 @@ export default function BiodataWrapper({
                                                     value
                                                 )
                                             }
-                                            parentsData={parentsData}
+                                            setSelectedParent={
+                                                setSelectedParent
+                                            }
+                                            // parentsData={parentsData}
                                         />
                                     </label>
                                     <ErrorMessage
@@ -642,6 +758,54 @@ export default function BiodataWrapper({
                                         className="text-red-500 text-xs sm:text-sm"
                                     />
                                 </div>
+                            </div>
+                            {formik.values.parent_wali && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedParent.wali.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value:
+                                                selectedParent.wali.phone ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value:
+                                                selectedParent.wali.email ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedParent.wali.religion ||
+                                                "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedParent.wali.education ||
+                                                "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Anak
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                 <div>
                                     <label className="form-control w-full">
                                         <div className="label ps-0">
@@ -882,20 +1046,30 @@ export default function BiodataWrapper({
                                     />
                                 </div>
                                 <div>
-                                    <div className="label ps-0">
-                                        <span className="label-text">
-                                            Tempat Lahir{" "}
-                                            {formik.errors.place_birth && (
-                                                <span className="text-red-500 text-xs italic">
-                                                    *wajib dipilih
-                                                </span>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Tempat Lahir{" "}
+                                                {formik.errors.place_birth && (
+                                                    <span className="text-red-500 text-xs italic">
+                                                        *wajib dipilih
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <Field
+                                            type="text"
+                                            placeholder="Masukkan tempat lahir..."
+                                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                                            {...formik.getFieldProps(
+                                                "place_birth"
                                             )}
-                                        </span>
-                                    </div>
-                                    <CityPicker
+                                        />
+                                    </label>
+                                    {/* <CityPicker
                                         city={formik.values.place_birth}
                                         setCity={setCity}
-                                    />
+                                    /> */}
                                     <ErrorMessage
                                         name="place_birth"
                                         component="div"
@@ -1306,27 +1480,106 @@ interface ParentPickerProps {
     parentType: "ayah" | "ibu" | "wali";
     parentId: string;
     setParentId: (parentId: string) => void;
-    parentsData: User[];
+    setSelectedParent: (any) => void;
+    // parentsData?: User[];
 }
 
 const ParentPicker = ({
     parentType,
     parentId,
     setParentId,
-    parentsData,
-}: ParentPickerProps) => {
+    setSelectedParent,
+}: // parentsData,
+ParentPickerProps) => {
     const [open, setOpen] = useState(false);
-    const router = useRouter();
+    // const router = useRouter();
     const isClient = useIsClient();
     const currentUrl =
         typeof window !== "undefined" ? window.location.href : "";
+    // const [parentOptions, setParentOptions] = useState<
+    //     { label: string; value: string }[]
+    // >([]);
 
-    const parentOptions = parentsData
-        .filter((parent) => parent.type === parentType)
-        .map((parent) => ({
-            label: parent.name,
-            value: parent.id.toString(),
-        }));
+    // const [page, setPage] = useState(0);
+    const [parentsData, setParentsData] = useState<User[]>([]);
+    const [search, setSearch] = useState("");
+    const limit = 25;
+
+    const fetchParents = async ({ pageParam = 0 }) => {
+        const res = await fetch(
+            `/api/parents?plain=true&type=${parentType}&limit=${limit}&skip=${pageParam}&sort=asc`
+        );
+        return res.json();
+    };
+
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status,
+    }: any = useInfiniteQuery({
+        queryKey: ["parents", parentType],
+        queryFn: fetchParents,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    const parentOptions = useMemo(() => {
+        return data?.pages.flatMap((page) => {
+            if (page?.message || page?.parents?.length === 0) {
+                return [];
+            }
+
+            return page?.parents
+                .filter((parent) => parent.type === parentType)
+                .map((parent) => ({
+                    label: parent.name,
+                    value: parent.id.toString() + "-" + parent.name,
+                }));
+        });
+    }, [data, parentType]);
+
+    useEffect(() => {
+        if (data) {
+            setParentsData((prev) => {
+                const newParents = data.pages.flatMap((page) => page.parents);
+                const uniqueNewParents = newParents.filter(
+                    (newParent) =>
+                        !prev.some(
+                            (existingParent) =>
+                                existingParent.id === newParent.id
+                        )
+                );
+
+                return [...prev, ...uniqueNewParents];
+            });
+        }
+    }, [data]);
+
+    const updateParent = (parent: User) => {
+        setSelectedParent((prev: any) => {
+            const updateState = { ...prev };
+
+            switch (parentType) {
+                case "ayah":
+                    updateState.dad = parent;
+                    break;
+                case "ibu":
+                    updateState.mother = parent;
+                    break;
+                case "wali":
+                    updateState.wali = parent;
+                    break;
+                default:
+                    break;
+            }
+
+            return updateState;
+        });
+    };
 
     if (!isClient) {
         return null;
@@ -1356,74 +1609,169 @@ const ParentPicker = ({
             </PopoverTrigger>
             <PopoverContent className=" p-0" align="start">
                 <Command>
-                    <CommandInput placeholder={`Cari ${parentType}...`} />
+                    <CommandInput
+                        placeholder={`Cari ${parentType}...`}
+                        onValueChange={setSearch}
+                    />
+                    {/* <div className="my-2">
+                        <input
+                            placeholder={`Cari ${parentType}...`}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            value={search}
+                        />
+                    </div> */}
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
-                        <CommandEmpty asChild>
-                            <Link
-                                href={`/t/parents/add?callback=${encodeURIComponent(
-                                    currentUrl
-                                )}`}
-                                className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                            >
-                                <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                    add
-                                </span>
-                                Tambah{" "}
-                                {parentType.charAt(0).toUpperCase() +
-                                    parentType.slice(1)}
-                            </Link>
-                        </CommandEmpty>
-                        {parentOptions.length === 0 && (
-                            <CommandItem value="add-new" asChild>
-                                <Link
-                                    href={`/t/parents/add?callback=${encodeURIComponent(
-                                        currentUrl
-                                    )}`}
-                                    className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                                >
-                                    <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                        add
-                                    </span>
-                                    Tambah{" "}
-                                    {parentType.charAt(0).toUpperCase() +
-                                        parentType.slice(1)}
-                                </Link>
-                            </CommandItem>
-                        )}
-                        <CommandGroup>
-                            {parentOptions.map((parent, index) => (
-                                <CommandItem
-                                    key={index}
-                                    value={parent.value}
-                                    onSelect={(currentValue) => {
-                                        setParentId(
-                                            currentValue === parentId
-                                                ? ""
-                                                : currentValue
-                                        );
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <span
-                                        className={cn(
-                                            "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
-                                            {
-                                                "opacity-100":
-                                                    parent.value === parentId,
-                                                "opacity-0":
-                                                    parent.value !== parentId,
-                                            }
-                                        )}
+                        {isFetching || status === "pending" ? (
+                            <CommandEmpty>Mendapatkan data...</CommandEmpty>
+                        ) : (
+                            <>
+                                <CommandEmpty asChild>
+                                    <Link
+                                        href={`/t/parents/add?callback=${encodeURIComponent(
+                                            currentUrl
+                                        )}`}
+                                        className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
                                     >
-                                        check
-                                    </span>
-                                    {parent.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
+                                        <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                            add
+                                        </span>
+                                        Tambah{" "}
+                                        {parentType.charAt(0).toUpperCase() +
+                                            parentType.slice(1)}
+                                    </Link>
+                                </CommandEmpty>
+                                {parentOptions.length === 0 && (
+                                    <CommandItem value="add-new" asChild>
+                                        <Link
+                                            href={`/t/parents/add?callback=${encodeURIComponent(
+                                                currentUrl
+                                            )}`}
+                                            className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                        >
+                                            <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                                add
+                                            </span>
+                                            Tambah{" "}
+                                            {parentType
+                                                .charAt(0)
+                                                .toUpperCase() +
+                                                parentType.slice(1)}
+                                        </Link>
+                                    </CommandItem>
+                                )}
+                                <CommandGroup>
+                                    {parentOptions.map((parent, index) => (
+                                        <CommandItem
+                                            key={index}
+                                            value={parent.value}
+                                            onSelect={(currentValue) => {
+                                                const selectedId =
+                                                    currentValue.split("-")[0];
+
+                                                setParentId(
+                                                    selectedId === parentId
+                                                        ? ""
+                                                        : currentValue
+                                                );
+                                                setOpen(false);
+
+                                                const setParent =
+                                                    parentsData.find(
+                                                        (p: User) =>
+                                                            p.id.toString() ===
+                                                            selectedId
+                                                    );
+
+                                                if (setParent) {
+                                                    updateParent(setParent);
+                                                }
+                                            }}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
+                                                    {
+                                                        "opacity-100":
+                                                            parent.value ===
+                                                            parentId,
+                                                        "opacity-0":
+                                                            parent.value !==
+                                                            parentId,
+                                                    }
+                                                )}
+                                            >
+                                                check
+                                            </span>
+                                            {parent.label}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                                {hasNextPage && (
+                                    <CommandItem asChild value={"z " + search}>
+                                        <Button
+                                            onClick={() => fetchNextPage()}
+                                            disabled={isFetchingNextPage}
+                                            className="cursor-pointer w-full flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                        >
+                                            {isFetchingNextPage
+                                                ? "Memuat data..."
+                                                : "Lihat Lainnya"}
+                                        </Button>
+                                    </CommandItem>
+                                )}
+                            </>
+                        )}
                     </CommandList>
                 </Command>
             </PopoverContent>
         </Popover>
     );
 };
+
+// const {
+//     data,
+//     error,
+//     isLoading,
+// }: {
+//     data: { status: string; parents: User[] };
+//     error: any;
+//     isLoading: boolean;
+// } = useSWR(
+//     `/api/parents?limit=${limit}&plain=true&type=${parentType}&name=${search}`,
+//     fetcher
+// );
+
+// const parentOptions = useMemo(() => {
+//     console.log(`MEMO BARU ${parentType}`, parentsData);
+
+//     return parentsData
+//         .filter((parent) => parent.type === parentType)
+//         .map((parent) => ({
+//             label: parent.name,
+//             value: parent.id.toString(),
+//         }));
+// }, [parentsData, parentType]);
+// useEffect(() => {
+//     console.log("DATA: ", data);
+//     if (data?.parents) {
+//         const options = data.parents
+//             .filter((parent) => parent.type === parentType)
+//             .map((parent) => ({
+//                 label: parent.name,
+//                 value: parent.id.toString(),
+//             }));
+//         setParentOptions(options);
+//     }
+// }, [data, parentType]);
+
+// const handleSearchChange = (keyword: string) => {
+//     setSearch(keyword);
+//     // setPage(0); // reset to first page on new search
+// };
+
+// const parentOptions = parentsData
+//     .filter((parent) => parent.type === parentType)
+//     .map((parent) => ({
+//         label: parent.name,
+//         value: parent.id.toString(),
+//     }));

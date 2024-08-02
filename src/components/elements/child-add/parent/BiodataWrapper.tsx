@@ -36,6 +36,7 @@ import { getImageUrl } from "@/utils/converters";
 import { ChildrenData } from "@/types/childrenData.type";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 const validationSchema = Yup.object().shape({
     teacher_id: Yup.string().required("Guru hapus dipilih"),
@@ -108,14 +109,15 @@ export default function BiodataWrapper({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [teachersData, setTeachersData] = useState<User[]>([]);
+    // const [teachersData, setTeachersData] = useState<User[]>([]);
+    const [selectedTeacher, setSelectedTeacher] = useState<User>({} as User);
     const isClient = useIsClient();
 
-    const {
-        data: teachersRaw,
-        isLoading: isLoadingTeachers,
-    }: { data: { status: string; teachers: User[] }; isLoading: boolean } =
-        useSWR("/api/teachers?plain=true", fetcher);
+    // const {
+    //     data: teachersRaw,
+    //     isLoading: isLoadingTeachers,
+    // }: { data: { status: string; teachers: User[] }; isLoading: boolean } =
+    //     useSWR("/api/teachers?plain=true", fetcher);
 
     const initialValues: { [key: string]: string } = {
         teacher_id: "",
@@ -268,11 +270,11 @@ export default function BiodataWrapper({
         // console.log(date);
     }, [date, city]);
 
-    useEffect(() => {
-        if (teachersRaw?.teachers) {
-            setTeachersData(teachersRaw.teachers);
-        }
-    }, [teachersRaw]);
+    // useEffect(() => {
+    //     if (teachersRaw?.teachers) {
+    //         setTeachersData(teachersRaw.teachers);
+    //     }
+    // }, [teachersRaw]);
 
     if (!isClient) {
         return null;
@@ -280,7 +282,7 @@ export default function BiodataWrapper({
 
     return (
         <>
-            {(isLoading || isLoadingTeachers || !isClient) && (
+            {(isLoading || !isClient) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -323,7 +325,7 @@ export default function BiodataWrapper({
                 </>
             )}
 
-            {!isLoading && !isLoadingTeachers && isClient && (
+            {!isLoading && isClient && (
                 <FormikProvider value={formik}>
                     <Form>
                         <div>
@@ -363,6 +365,9 @@ export default function BiodataWrapper({
                                     className="text-red-500 text-xs sm:text-sm"
                                 />
                             </div>
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Guru
+                            </div>
                             <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                 <div>
                                     <label className="form-control w-full">
@@ -384,7 +389,10 @@ export default function BiodataWrapper({
                                                     value
                                                 )
                                             }
-                                            teachersData={teachersData}
+                                            setSelectedTeacher={
+                                                setSelectedTeacher
+                                            }
+                                            // teachersData={teachersData}
                                         />
                                     </label>
                                     <ErrorMessage
@@ -393,6 +401,49 @@ export default function BiodataWrapper({
                                         className="text-red-500 text-xs sm:text-sm"
                                     />
                                 </div>
+                            </div>
+                            {formik.values.teacher_id && (
+                                <div className="border border-gray-300 p-2 rounded-lg mb-3 grid gap-2 grid-cols-2 sm:grid-cols-3 dark:border-neutral-600">
+                                    {[
+                                        {
+                                            label: "Nama",
+                                            value: selectedTeacher.name,
+                                        },
+                                        {
+                                            label: "No Telp",
+                                            value: selectedTeacher.phone || "-",
+                                        },
+                                        {
+                                            label: "E-mail",
+                                            value: selectedTeacher.email || "-",
+                                        },
+                                        {
+                                            label: "Agama",
+                                            value:
+                                                selectedTeacher.religion || "-",
+                                        },
+                                        {
+                                            label: "Pendidikan",
+                                            value:
+                                                selectedTeacher.education ||
+                                                "-",
+                                        },
+                                    ].map((field, index) => (
+                                        <div key={index} className="my-1">
+                                            <p className="text-xs text-gray-400">
+                                                {field.label}
+                                            </p>
+                                            <p className="text-medium font-semibold break-words">
+                                                {field.value}
+                                            </p>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600">
+                                Data Anak
+                            </div>
+                            <div className="grid gap-2 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                 <div>
                                     <label className="form-control w-full">
                                         <div className="label ps-0">
@@ -633,20 +684,30 @@ export default function BiodataWrapper({
                                     />
                                 </div>
                                 <div>
-                                    <div className="label ps-0">
-                                        <span className="label-text">
-                                            Tempat Lahir{" "}
-                                            {formik.errors.place_birth && (
-                                                <span className="text-red-500 text-xs italic">
-                                                    *wajib dipilih
-                                                </span>
+                                    <label className="form-control w-full">
+                                        <div className="label ps-0">
+                                            <span className="label-text">
+                                                Tempat Lahir{" "}
+                                                {formik.errors.place_birth && (
+                                                    <span className="text-red-500 text-xs italic">
+                                                        *wajib dipilih
+                                                    </span>
+                                                )}
+                                            </span>
+                                        </div>
+                                        <Field
+                                            type="text"
+                                            placeholder="Masukkan tempat lahir..."
+                                            className="input input-bordered rounded-lg px-3 py-2 text-sm h-fit min-h-fit w-full"
+                                            {...formik.getFieldProps(
+                                                "place_birth"
                                             )}
-                                        </span>
-                                    </div>
-                                    <CityPicker
+                                        />
+                                    </label>
+                                    {/* <CityPicker
                                         city={formik.values.place_birth}
                                         setCity={setCity}
-                                    />
+                                    /> */}
                                     <ErrorMessage
                                         name="place_birth"
                                         component="div"
@@ -1056,24 +1117,81 @@ const CityPicker = ({ city, setCity }: CityPickerProps) => {
 interface TeacherPickerProps {
     teacherId: string;
     setTeacherId: (teacherId: string) => void;
-    teachersData: User[];
+    // teachersData: User[];
+    setSelectedTeacher: (any) => void;
 }
 
 const TeacherPicker = ({
     teacherId,
     setTeacherId,
-    teachersData,
+    // teachersData,
+    setSelectedTeacher,
 }: TeacherPickerProps) => {
     const [open, setOpen] = useState(false);
-    const router = useRouter();
+    // const router = useRouter();
     const isClient = useIsClient();
-    const currentUrl =
-        typeof window !== "undefined" ? window.location.href : "";
+    // const currentUrl =
+    //     typeof window !== "undefined" ? window.location.href : "";
+    const [teachersData, setTeachersData] = useState<User[]>([]);
+    const [search, setSearch] = useState("");
+    const limit = 25;
 
-    const parentOptions = teachersData.map((parent) => ({
-        label: parent.name,
-        value: parent.id.toString(),
-    }));
+    const fetchTeachers = async ({ pageParam = 0 }) => {
+        const res = await fetch(
+            `/api/teachers?plain=true&limit=${limit}&skip=${pageParam}&sort=asc`
+        );
+        return res.json();
+    };
+
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetching,
+        isFetchingNextPage,
+        status,
+    }: any = useInfiniteQuery({
+        queryKey: ["teachers"],
+        queryFn: fetchTeachers,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    // const teacherOptions = teachersData.map((teacher) => ({
+    //     label: teacher.name,
+    //     value: teacher.id.toString() + "-" + teacher.name,
+    // }));
+
+    const teacherOptions = useMemo(() => {
+        return data?.pages.flatMap((page) => {
+            if (page?.message || page?.teachers?.length === 0) {
+                return [];
+            }
+
+            return page?.teachers.map((teacher) => ({
+                label: teacher.name,
+                value: teacher.id.toString() + "-" + teacher.name,
+            }));
+        });
+    }, [data]);
+
+    useEffect(() => {
+        if (data) {
+            setTeachersData((prev) => {
+                const newTeachers = data.pages.flatMap((page) => page.teachers);
+                const uniqueNewTeachers = newTeachers.filter(
+                    (newTeacher) =>
+                        !prev.some(
+                            (existingTeacher) =>
+                                existingTeacher.id === newTeacher.id
+                        )
+                );
+
+                return [...prev, ...uniqueNewTeachers];
+            });
+        }
+    }, [data]);
 
     if (!isClient) {
         return null;
@@ -1089,7 +1207,7 @@ const TeacherPicker = ({
                     className="w-full justify-between text-sm"
                 >
                     {teacherId
-                        ? parentOptions.find(
+                        ? teacherOptions.find(
                               (parent) => parent.value === teacherId
                           )?.label
                         : `Pilih Guru...`}
@@ -1100,41 +1218,83 @@ const TeacherPicker = ({
             </PopoverTrigger>
             <PopoverContent className="p-0 border-neutral-600" align="start">
                 <Command>
-                    <CommandInput placeholder={`Cari Guru...`} />
+                    <CommandInput
+                        placeholder={`Cari Guru...`}
+                        onValueChange={setSearch}
+                    />
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
-                        <CommandEmpty>Guru tidak ditemukan</CommandEmpty>
-                        <CommandGroup>
-                            {parentOptions.map((parent, index) => (
-                                <CommandItem
-                                    key={index}
-                                    value={parent.value}
-                                    defaultValue={parent.value}
-                                    onSelect={(currentValue) => {
-                                        setTeacherId(
-                                            currentValue === teacherId
-                                                ? ""
-                                                : currentValue
-                                        );
-                                        setOpen(false);
-                                    }}
-                                >
-                                    <span
-                                        className={cn(
-                                            "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
-                                            {
-                                                "opacity-100":
-                                                    parent.value === teacherId,
-                                                "opacity-0":
-                                                    parent.value !== teacherId,
-                                            }
-                                        )}
-                                    >
-                                        check
-                                    </span>
-                                    {parent.label}
-                                </CommandItem>
-                            ))}
-                        </CommandGroup>
+                        {isFetching || status === "pending" ? (
+                            <CommandEmpty>Mendapatkan data...</CommandEmpty>
+                        ) : (
+                            <>
+                                <CommandEmpty>
+                                    Guru tidak ditemukan
+                                </CommandEmpty>
+                                <CommandGroup>
+                                    {teacherOptions.map((parent, index) => (
+                                        <CommandItem
+                                            key={index}
+                                            value={parent.value}
+                                            defaultValue={parent.value}
+                                            onSelect={(currentValue) => {
+                                                const selectedId =
+                                                    currentValue.split("-")[0];
+
+                                                setTeacherId(
+                                                    selectedId === teacherId
+                                                        ? ""
+                                                        : currentValue
+                                                );
+                                                setOpen(false);
+
+                                                const setTeacher =
+                                                    teachersData.find(
+                                                        (p: User) =>
+                                                            p.id.toString() ===
+                                                            selectedId
+                                                    );
+
+                                                if (setTeacher) {
+                                                    setSelectedTeacher(
+                                                        setTeacher
+                                                    );
+                                                }
+                                            }}
+                                        >
+                                            <span
+                                                className={cn(
+                                                    "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
+                                                    {
+                                                        "opacity-100":
+                                                            parent.value ===
+                                                            teacherId,
+                                                        "opacity-0":
+                                                            parent.value !==
+                                                            teacherId,
+                                                    }
+                                                )}
+                                            >
+                                                check
+                                            </span>
+                                            {parent.label}
+                                        </CommandItem>
+                                    ))}
+                                </CommandGroup>
+                                {hasNextPage && (
+                                    <CommandItem asChild value={"z " + search}>
+                                        <Button
+                                            onClick={() => fetchNextPage()}
+                                            disabled={isFetchingNextPage}
+                                            className="cursor-pointer w-full flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                        >
+                                            {isFetchingNextPage
+                                                ? "Memuat data..."
+                                                : "Lihat Lainnya"}
+                                        </Button>
+                                    </CommandItem>
+                                )}
+                            </>
+                        )}
                     </CommandList>
                 </Command>
             </PopoverContent>
