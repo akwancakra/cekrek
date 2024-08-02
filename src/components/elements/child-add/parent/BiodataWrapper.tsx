@@ -407,25 +407,28 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedTeacher.name,
+                                            value: selectedTeacher?.name,
                                         },
                                         {
                                             label: "No Telp",
-                                            value: selectedTeacher.phone || "-",
+                                            value:
+                                                selectedTeacher?.phone || "-",
                                         },
                                         {
                                             label: "E-mail",
-                                            value: selectedTeacher.email || "-",
+                                            value:
+                                                selectedTeacher?.email || "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
-                                                selectedTeacher.religion || "-",
+                                                selectedTeacher?.religion ||
+                                                "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
-                                                selectedTeacher.education ||
+                                                selectedTeacher?.education ||
                                                 "-",
                                         },
                                     ].map((field, index) => (
@@ -1206,7 +1209,7 @@ const TeacherPicker = ({
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {teacherId
+                    {teacherId && !isFetching
                         ? teacherOptions.find(
                               (parent) => parent.value === teacherId
                           )?.label

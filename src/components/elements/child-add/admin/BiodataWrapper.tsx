@@ -619,25 +619,28 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedTeacher.name,
+                                            value: selectedTeacher?.name || "-",
                                         },
                                         {
                                             label: "No Telp",
-                                            value: selectedTeacher.phone || "-",
+                                            value:
+                                                selectedTeacher?.phone || "-",
                                         },
                                         {
                                             label: "E-mail",
-                                            value: selectedTeacher.email || "-",
+                                            value:
+                                                selectedTeacher?.email || "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
-                                                selectedTeacher.religion || "-",
+                                                selectedTeacher?.religion ||
+                                                "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
-                                                selectedTeacher.education ||
+                                                selectedTeacher?.education ||
                                                 "-",
                                         },
                                     ].map((field, index) => (
@@ -695,28 +698,31 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedParent.dad.name,
+                                            value:
+                                                selectedParent.dad?.name || "-",
                                         },
                                         {
                                             label: "No Telp",
                                             value:
-                                                selectedParent.dad.phone || "-",
+                                                selectedParent.dad?.phone ||
+                                                "-",
                                         },
                                         {
                                             label: "E-mail",
                                             value:
-                                                selectedParent.dad.email || "-",
+                                                selectedParent.dad?.email ||
+                                                "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
-                                                selectedParent.dad.religion ||
+                                                selectedParent.dad?.religion ||
                                                 "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
-                                                selectedParent.dad.education ||
+                                                selectedParent.dad?.education ||
                                                 "-",
                                         },
                                     ].map((field, index) => (
@@ -777,31 +783,33 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedParent.mother.name,
+                                            value:
+                                                selectedParent.mother?.name ||
+                                                "-",
                                         },
                                         {
                                             label: "No Telp",
                                             value:
-                                                selectedParent.mother.phone ||
+                                                selectedParent.mother?.phone ||
                                                 "-",
                                         },
                                         {
                                             label: "E-mail",
                                             value:
-                                                selectedParent.mother.email ||
+                                                selectedParent.mother?.email ||
                                                 "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
                                                 selectedParent.mother
-                                                    .religion || "-",
+                                                    ?.religion || "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
                                                 selectedParent.mother
-                                                    .education || "-",
+                                                    ?.education || "-",
                                         },
                                     ].map((field, index) => (
                                         <div key={index} className="my-1">
@@ -1663,7 +1671,7 @@ TeacherPickerProps) => {
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {teacherId
+                    {teacherId && !isFetching
                         ? teachersOptions.find(
                               (parent) => parent.value === teacherId
                           )?.label
@@ -1898,7 +1906,7 @@ const ParentPicker = ({
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {parentId
+                    {parentId && !isFetching
                         ? parentOptions.find(
                               (parent) => parent.value === parentId
                           )?.label

@@ -601,28 +601,31 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedParent.dad.name,
+                                            value:
+                                                selectedParent.dad?.name || "-",
                                         },
                                         {
                                             label: "No Telp",
                                             value:
-                                                selectedParent.dad.phone || "-",
+                                                selectedParent.dad?.phone ||
+                                                "-",
                                         },
                                         {
                                             label: "E-mail",
                                             value:
-                                                selectedParent.dad.email || "-",
+                                                selectedParent.dad?.email ||
+                                                "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
-                                                selectedParent.dad.religion ||
+                                                selectedParent.dad?.religion ||
                                                 "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
-                                                selectedParent.dad.education ||
+                                                selectedParent.dad?.education ||
                                                 "-",
                                         },
                                     ].map((field, index) => (
@@ -683,31 +686,33 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedParent.mother.name,
+                                            value:
+                                                selectedParent.mother?.name ||
+                                                "-",
                                         },
                                         {
                                             label: "No Telp",
                                             value:
-                                                selectedParent.mother.phone ||
+                                                selectedParent.mother?.phone ||
                                                 "-",
                                         },
                                         {
                                             label: "E-mail",
                                             value:
-                                                selectedParent.mother.email ||
+                                                selectedParent.mother?.email ||
                                                 "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
                                                 selectedParent.mother
-                                                    .religion || "-",
+                                                    ?.religion || "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
                                                 selectedParent.mother
-                                                    .education || "-",
+                                                    ?.education || "-",
                                         },
                                     ].map((field, index) => (
                                         <div key={index} className="my-1">
@@ -764,31 +769,33 @@ export default function BiodataWrapper({
                                     {[
                                         {
                                             label: "Nama",
-                                            value: selectedParent.wali.name,
+                                            value:
+                                                selectedParent.wali?.name ||
+                                                "-",
                                         },
                                         {
                                             label: "No Telp",
                                             value:
-                                                selectedParent.wali.phone ||
+                                                selectedParent.wali?.phone ||
                                                 "-",
                                         },
                                         {
                                             label: "E-mail",
                                             value:
-                                                selectedParent.wali.email ||
+                                                selectedParent.wali?.email ||
                                                 "-",
                                         },
                                         {
                                             label: "Agama",
                                             value:
-                                                selectedParent.wali.religion ||
+                                                selectedParent.wali?.religion ||
                                                 "-",
                                         },
                                         {
                                             label: "Pendidikan",
                                             value:
-                                                selectedParent.wali.education ||
-                                                "-",
+                                                selectedParent.wali
+                                                    ?.education || "-",
                                         },
                                     ].map((field, index) => (
                                         <div key={index} className="my-1">
@@ -1594,7 +1601,7 @@ ParentPickerProps) => {
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {parentId
+                    {parentId && !isFetching
                         ? parentOptions.find(
                               (parent) => parent.value === parentId
                           )?.label

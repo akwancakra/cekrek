@@ -226,7 +226,47 @@ export default function Home() {
                                 </div>
                             </div>
                         </div>
-                        <div className="mt-12 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3">
+                        <div className="mt-12 grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4">
+                            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
+                                <Image
+                                    src="/static/images/logo-kemdikbud.png"
+                                    className="h-max max-h-10 w-auto mx-auto"
+                                    loading="lazy"
+                                    alt="client logo"
+                                    width="100"
+                                    height="100"
+                                />
+                            </div>
+                            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
+                                <Image
+                                    src="/static/images/logo-simbelmawa.png"
+                                    className="h-max max-h-10 w-auto mx-auto"
+                                    loading="lazy"
+                                    alt="client logo"
+                                    width="100"
+                                    height="100"
+                                />
+                            </div>
+                            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
+                                <Image
+                                    src="/static/images/logo-kampus-merdeka.png"
+                                    className="h-max max-h-10 w-auto mx-auto"
+                                    loading="lazy"
+                                    alt="client logo"
+                                    width="100"
+                                    height="100"
+                                />
+                            </div>
+                            <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
+                                <Image
+                                    src="/static/images/logo-pkm.png"
+                                    className="h-max max-h-10 w-auto mx-auto"
+                                    loading="lazy"
+                                    alt="client logo"
+                                    width="100"
+                                    height="100"
+                                />
+                            </div>
                             <div className="p-4 grayscale transition duration-200 hover:grayscale-0">
                                 <Image
                                     src="/static/images/logo-upi.png"
@@ -282,7 +322,10 @@ export default function Home() {
                             aktivitas secara otomatis
                         </h2>
                         <p className="text-gray-600 dark:text-gray-300">
-                        CekRek hadir untuk membantu orang tua dan guru dalam proses monitoring perkembangan anak mereka. Didukung oleh teknologi terkini, CekRek menawarkan solusi komprehensif untuk memantau kemajuan anak autis. 
+                            CekRek hadir untuk membantu orang tua dan guru dalam
+                            proses monitoring perkembangan anak mereka. Didukung
+                            oleh teknologi terkini, CekRek menawarkan solusi
+                            komprehensif untuk memantau kemajuan anak autis.
                         </p>
                     </div>
                     <div className="mt-16 grid divide-x divide-y divide-gray-100 dark:divide-neutral-600 overflow-hidden rounded-3xl border border-gray-100 text-gray-600 dark:border-neutral-600 sm:grid-cols-2 lg:grid-cols-4 lg:divide-y-0 xl:grid-cols-4">
@@ -301,14 +344,17 @@ export default function Home() {
                                         Fleksibel
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                    Pantau perkembangan anak Anda melalui perangkat apa pun.
+                                        Pantau perkembangan anak Anda melalui
+                                        perangkat apa pun.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Baca Selengkapnya</span>
+                                    <span className="text-sm">
+                                        Baca Selengkapnya
+                                    </span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -339,14 +385,17 @@ export default function Home() {
                                         Visualisasi Data
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                    Dapatkan pemahaman yang lebih baik tentang pola perkembangan anak Anda.
+                                        Dapatkan pemahaman yang lebih baik
+                                        tentang pola perkembangan anak Anda.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Baca Selengkapnya</span>
+                                    <span className="text-sm">
+                                        Baca Selengkapnya
+                                    </span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -377,14 +426,17 @@ export default function Home() {
                                         Efisiensi
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                        Tugas-tugas administrasi yang rumit menjadi lebih mudah.
+                                        Tugas-tugas administrasi yang rumit
+                                        menjadi lebih mudah.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between dark:text-neutral-500 group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Baca Selengkapnya</span>
+                                    <span className="text-sm">
+                                        Baca Selengkapnya
+                                    </span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -415,14 +467,17 @@ export default function Home() {
                                         Keamanan
                                     </h5>
                                     <p className="text-gray-600 dark:text-gray-300">
-                                        Kami menjamin data yang anda miliki aman dan terlindungi.
+                                        Kami menjamin data yang anda miliki aman
+                                        dan terlindungi.
                                     </p>
                                 </div>
                                 <a
                                     href="#"
                                     className="flex items-center justify-between group-hover:text-primary"
                                 >
-                                    <span className="text-sm">Baca Selengkapnya</span>
+                                    <span className="text-sm">
+                                        Baca Selengkapnya
+                                    </span>
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         viewBox="0 0 24 24"
@@ -479,7 +534,13 @@ export default function Home() {
                                 informasi
                             </h2>
                             <p className="my-8 text-gray-600 dark:text-gray-300">
-                            Sistem informasi CekRek memberikan solusi lengkap untuk memenuhi kebutuhan perkembangan anak autis. Dengan otomatisasi rekomendasi yang disesuaikan dengan kebutuhan individu, asesmen digital yang mudah, dan pengelolaan data yang efisien, Guru dan orang tua dapat memantau perkembangan anak mereka dengan lebih baik.
+                                Sistem informasi CekRek memberikan solusi
+                                lengkap untuk memenuhi kebutuhan perkembangan
+                                anak autis. Dengan otomatisasi rekomendasi yang
+                                disesuaikan dengan kebutuhan individu, asesmen
+                                digital yang mudah, dan pengelolaan data yang
+                                efisien, Guru dan orang tua dapat memantau
+                                perkembangan anak mereka dengan lebih baik.
                             </p>
                             <div className="divide-y space-y-4 divide-gray-100 dark:divide-gray-800">
                                 <div className="mt-8 flex gap-4 md:items-center">
@@ -502,7 +563,8 @@ export default function Home() {
                                             Digitalisasi Asesmen
                                         </h4>
                                         <p className="text-gray-500 dark:text-gray-400">
-                                            Asesmen yang dilakukan secara digital dan mudah
+                                            Asesmen yang dilakukan secara
+                                            digital dan mudah
                                         </p>
                                     </div>
                                 </div>
@@ -526,7 +588,8 @@ export default function Home() {
                                             Otomatisasi Rekomendasi
                                         </h4>
                                         <p className="text-gray-500 dark:text-gray-400">
-                                            Rekomendasi yang otomatis dan sesuai dengan kebutuhan anak
+                                            Rekomendasi yang otomatis dan sesuai
+                                            dengan kebutuhan anak
                                         </p>
                                     </div>
                                 </div>
@@ -569,7 +632,11 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                            Kami akan terus mengembangkan platform ini dengan menambahkan fitur-fitur baru yang inovatif. Tujuan kami adalah menciptakan lingkungan untuk mendukung tumbuh kembang anak-anak berkebutuhan khusus.
+                                Kami akan terus mengembangkan platform ini
+                                dengan menambahkan fitur-fitur baru yang
+                                inovatif. Tujuan kami adalah menciptakan
+                                lingkungan untuk mendukung tumbuh kembang
+                                anak-anak berkebutuhan khusus.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -598,7 +665,11 @@ export default function Home() {
                             </div>
                             <p className="mt-8">
                                 {" "}
-                                Dalam mengembangkan platform ini, kami telah bekerja sama dengan mitra dan ahli di bidang teknologi. Kolaborasi ini memungkinkan kami untuk menciptakan sebuah produk yang benar-benar memenuhi kebutuhan pengguna.
+                                Dalam mengembangkan platform ini, kami telah
+                                bekerja sama dengan mitra dan ahli di bidang
+                                teknologi. Kolaborasi ini memungkinkan kami
+                                untuk menciptakan sebuah produk yang benar-benar
+                                memenuhi kebutuhan pengguna.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -626,7 +697,13 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                            Kami percaya bahwa teknologi dapat menjadi kekuatan besar dalam mengatasi tantangan. Platform ini adalah bukti nyata dari komitmen kami untuk menggunakan teknologi untuk kebaikan. Kami berharap dapat terus berkontribusi dalam pengembangan solusi inovatif untuk mendukung anak-anak autis.
+                                Kami percaya bahwa teknologi dapat menjadi
+                                kekuatan besar dalam mengatasi tantangan.
+                                Platform ini adalah bukti nyata dari komitmen
+                                kami untuk menggunakan teknologi untuk kebaikan.
+                                Kami berharap dapat terus berkontribusi dalam
+                                pengembangan solusi inovatif untuk mendukung
+                                anak-anak autis.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -654,7 +731,9 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                            Dengan menggunakan platform ini, orang tua dapat melacak perkembangan anak mereka secara lebih efektif dan membuat keputusan yang lebih tepat.
+                                Dengan menggunakan platform ini, orang tua dapat
+                                melacak perkembangan anak mereka secara lebih
+                                efektif dan membuat keputusan yang lebih tepat.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -683,7 +762,10 @@ export default function Home() {
                             </div>
                             <p className="mt-8">
                                 {" "}
-                                Desain website ini sangat responsif sehingga dapat diakses dengan mudah melalui berbagai perangkat, baik itu komputer, tablet, maupun smartphone.
+                                Desain website ini sangat responsif sehingga
+                                dapat diakses dengan mudah melalui berbagai
+                                perangkat, baik itu komputer, tablet, maupun
+                                smartphone.
                             </p>
                         </div>
                         <div className="aspect-auto p-8 border border-gray-100 rounded-3xl bg-white shadow-2xl shadow-gray-600/10 dark:bg-neutral-900 dark:border-neutral-600 dark:shadow-none">
@@ -711,7 +793,11 @@ export default function Home() {
                                 </div>
                             </div>
                             <p className="mt-8">
-                            Platform ini sangat bermanfaat bagi para orang tua dan guru dalam memantau perkembangan anak autis. Dengan fitur-fitur yang lengkap, CekRek memungkinkan pengguna untuk mendapatkan informasi yang akurat dan terkini.
+                                Platform ini sangat bermanfaat bagi para orang
+                                tua dan guru dalam memantau perkembangan anak
+                                autis. Dengan fitur-fitur yang lengkap, CekRek
+                                memungkinkan pengguna untuk mendapatkan
+                                informasi yang akurat dan terkini.
                             </p>
                         </div>
                     </div>
@@ -733,7 +819,8 @@ export default function Home() {
                                 Mari coba sekarang
                             </h1>
                             <p className="text-center text-xl">
-                            Dapatkan Rekomendasi Aktivitas yang sesuai dengan kebutuhan anak Anda!
+                                Dapatkan Rekomendasi Aktivitas yang sesuai
+                                dengan kebutuhan anak Anda!
                             </p>
                             <div className="flex flex-wrap justify-center gap-6">
                                 <Button
@@ -774,12 +861,12 @@ export default function Home() {
                     >
                         Kontak
                     </Link>
-                    <Link
+                    {/* <Link
                         href="/terms"
                         className="link link-hover dark:text-neutral-300"
                     >
                         Syarat & Ketentuan
-                    </Link>
+                    </Link> */}
                 </nav>
                 <nav>
                     <div className="grid grid-flow-col gap-4">
