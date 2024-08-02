@@ -136,6 +136,7 @@ model recommendations {
   // type          String // standar, durasi, repetisi (Enum)
   // aspect            String @default()
   title            String
+  aspect           String?
   description      String  @db.Text
   icon             String?
   frequency        String? // 2-3 kali sehari, 5-10 detik
@@ -164,6 +165,7 @@ model child_recommendations {
 model monitor_child_recommendation {
   id                      Int                   @id @default(autoincrement())
   // teacher_id              Int?
+  name                    String?
   child_recommendation_id Int
   date_time               DateTime              @db.Date
   is_done                 Boolean               @default(false)
