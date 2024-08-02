@@ -613,7 +613,7 @@ export default function Home() {
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
                                             className="rounded-full"
-                                            src="/static/images/user-default.jpg"
+                                            src="/static/images/tim/merah-akwan.jpg"
                                             alt="user avatar"
                                             width={400}
                                             height={400}
@@ -645,7 +645,7 @@ export default function Home() {
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
                                             className="rounded-full"
-                                            src="/static/images/user-default.jpg"
+                                            src="/static/images/tim/merah-krisna.jpg"
                                             alt="user avatar"
                                             width={400}
                                             height={400}
@@ -678,7 +678,7 @@ export default function Home() {
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
                                             className="rounded-full"
-                                            src="/static/images/user-default.jpg"
+                                            src="/static/images/tim/merah-indri.jpg"
                                             alt="user avatar"
                                             width={400}
                                             height={400}
@@ -712,7 +712,7 @@ export default function Home() {
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
                                             className="rounded-full"
-                                            src="/static/images/user-default.jpg"
+                                            src="/static/images/tim/merah-anisa.jpg"
                                             alt="user avatar"
                                             width={400}
                                             height={400}
@@ -742,7 +742,7 @@ export default function Home() {
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
                                             className="rounded-full"
-                                            src="/static/images/user-default.jpg"
+                                            src="/static/images/tim/merah-tiara.jpg"
                                             alt="user avatar"
                                             width={400}
                                             height={400}
