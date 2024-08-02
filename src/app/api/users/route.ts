@@ -7,12 +7,17 @@ const prisma = new PrismaClient();
 export async function GET(req: NextRequest) {
     try {
         const url = new URL(req.url);
-        const limit = url?.searchParams?.get("limit") || "10";
-        const skip = url?.searchParams?.get("skip") || "0";
         const name_params = url?.searchParams?.get("name") || "";
-        const users = await prisma.users.findMany({
-            where: { name: { contains: name_params } },
-            include: {
+        const plain = url.searchParams.get("plain") === "true";
+        const limit = url?.searchParams?.get("limit") as string;
+        const skip = url?.searchParams?.get("skip") as string;
+        const sort = url.searchParams.get("sort"); // asc, desc
+
+        // Inisialisasi findOptions sebagai objek kosong
+        let findOptions: any = {};
+
+        if (!plain) {
+            findOptions.include = {
                 children: {
                     include: {
                         birth_history: true,
@@ -25,16 +30,50 @@ export async function GET(req: NextRequest) {
                         },
                     },
                 },
-            },
-            take: parseInt(limit),
-            skip: parseInt(skip),
+            };
+        }
+
+        if (name_params) {
+            findOptions.where = {
+                name: { contains: name_params },
+            };
+        }
+
+        if (limit) {
+            findOptions.take = parseInt(limit);
+        }
+
+        if (skip) {
+            findOptions.skip = parseInt(skip);
+        }
+
+        if (sort) {
+            findOptions.orderBy = {
+                name: sort,
+            };
+        }
+
+        const users = await prisma.users.findMany(findOptions);
+        // Fetch total count
+        const totalCount = await prisma.users.count({
+            where: findOptions.where,
         });
+
+        // Calculate next cursor
+        const nextCursor =
+            parseInt(skip) + users.length < totalCount
+                ? parseInt(skip) + users.length
+                : null;
+
         if (users.length === 0)
             return NextResponse.json(
                 { status: "error", message: "No Users Found" },
                 { status: 200 }
             );
-        return NextResponse.json({ status: "success", users }, { status: 200 });
+        return NextResponse.json(
+            { status: "success", users, totalCount, nextCursor },
+            { status: 200 }
+        );
     } catch (error: any) {
         console.log(error);
         return NextResponse.json(

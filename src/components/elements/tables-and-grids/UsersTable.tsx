@@ -27,7 +27,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { User } from "@/types/user.types";
 import { capitalizeFirstLetter } from "@/utils/formattedDate";
@@ -57,20 +57,74 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import { useMediaQuery } from "usehooks-ts";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface UsersTableProps {
-    users: User[];
+    // users: User[];
     keyword: string;
 }
 
-export default function UsersTable({ users, keyword }: UsersTableProps) {
+export default function UsersTable({ keyword }: UsersTableProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [showSize, setShowSize] = useState(15);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, //initial page index
+        pageSize: 15, //default page size
+    });
 
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const router = useRouter();
+
+    const fetchUsers = async ({ pageParam = 0 }) => {
+        const res = await axios.get(`/api/users`, {
+            params: {
+                plain: true,
+                limit: pagination.pageSize,
+                skip: pageParam,
+            },
+        });
+        return res.data;
+    };
+
+    const {
+        data,
+        fetchNextPage,
+        isFetchingNextPage,
+        hasNextPage,
+        isLoading: isLoadingData,
+    } = useInfiniteQuery({
+        queryKey: ["users"],
+        queryFn: fetchUsers,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    const users: User[] = useMemo(() => {
+        return (
+            data?.pages.flatMap((page) => {
+                if (page?.message || page?.users?.length === 0) {
+                    return [];
+                }
+
+                return page.users;
+            }) || []
+        );
+    }, [data]);
+
+    const previousTotalCountRef = useRef(0);
+    const totalCount = useMemo(() => {
+        if (data?.pages) {
+            const pageWithTotalCount = data.pages.find(
+                (page) => !page.message && page.totalCount
+            );
+            const newTotalCount =
+                pageWithTotalCount?.totalCount ?? previousTotalCountRef.current;
+            previousTotalCountRef.current = newTotalCount;
+            return newTotalCount;
+        }
+        return previousTotalCountRef.current;
+    }, [data]);
 
     const columns: ColumnDef<User>[] = [
         {
@@ -235,16 +289,17 @@ export default function UsersTable({ users, keyword }: UsersTableProps) {
         return (users ?? []).filter((item: User) =>
             item.name.toLowerCase().includes(keyword.toLowerCase())
         );
-    }, [keyword, users]);
+    }, [users, keyword]);
 
     const table = useReactTable({
         data: filteredData,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        onPaginationChange: setPagination,
         initialState: {
             pagination: {
-                pageSize: showSize,
+                pageSize: pagination.pageSize,
             },
         },
         onSortingChange: setSorting,
@@ -254,11 +309,28 @@ export default function UsersTable({ users, keyword }: UsersTableProps) {
         state: {
             sorting,
             columnFilters,
+            pagination,
         },
     });
 
+    const handleNextPage = async () => {
+        const hasMoreData = users.length < totalCount;
+
+        if (table.getCanNextPage()) {
+            table.nextPage();
+        } else if (hasNextPage && hasMoreData) {
+            await fetchNextPage();
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (table.getCanPreviousPage()) {
+            table.previousPage();
+        }
+    };
+
     const sizeSet = ({ size }: { size: number }) => {
-        setShowSize(size);
+        setPagination({ ...pagination, pageSize: size });
         table.setPageSize(size);
     };
 
@@ -347,11 +419,17 @@ export default function UsersTable({ users, keyword }: UsersTableProps) {
                 </TableBody>
             </Table>
 
+            {isLoadingData && (
+                <div className="text-center text-sm my-3">
+                    Memuat data baru...
+                </div>
+            )}
+
             <div className="flex items-center justify-between space-x-2 py-4">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="gap-2">
-                            <span>Tampil {showSize}</span>
+                            <span>Tampil {pagination.pageSize}</span>
                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                                 unfold_more
                             </span>
@@ -394,15 +472,20 @@ export default function UsersTable({ users, keyword }: UsersTableProps) {
                 <div className="flex items-center gap-2">
                     <Button
                         variant="outline"
-                        onClick={() => table.previousPage()}
+                        // onClick={() => table.previousPage()}
+                        onClick={handlePreviousPage}
                         disabled={!table.getCanPreviousPage()}
                     >
                         Previous
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        // onClick={() => table.nextPage()}
+                        onClick={handleNextPage}
+                        // disabled={!table.getCanNextPage()}
+                        disabled={
+                            isLoadingData || isFetchingNextPage || !hasNextPage
+                        }
                     >
                         Next
                     </Button>

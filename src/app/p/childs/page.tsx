@@ -41,39 +41,42 @@ export default function Template({}) {
                     </div>
                 </>
             ) : (
-                <div
-                    className={`max-w-4xl w-full mx-auto h-full mt-3 grid grid-cols-${
-                        childs?.length == 0 || childs?.length == 1 ? "1" : "2"
-                    } gap-2`}
-                >
-                    {!childs ||
-                        (childs.length == 0 && (
-                            <div className="flex items-center justify-center w-full">
-                                <div className="max-w-md w-full border border-gray-300 rounded-lg p-2 dark:border-gray-600">
-                                    <p className="text-center mb-2">
-                                        Tidak ada data anak yang anda miliki
-                                    </p>
-                                    <Button
-                                        variant={"default"}
-                                        className="w-full"
-                                        asChild
-                                    >
-                                        <Link href={"/p/childs/add"}>
-                                            Tambah Anak{" "}
-                                            <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
-                                                person_add
-                                            </span>
-                                        </Link>
-                                    </Button>
+                <div>
+                    <div
+                        className={`max-w-4xl w-full mx-auto h-full mt-3 grid grid-cols-${
+                            childs?.length == 0 || childs?.length == 1
+                                ? "1"
+                                : "2"
+                        } gap-2`}
+                    >
+                        {/* {!childs ||
+                            (childs.length == 0 && (
+                                <div className="flex items-center justify-center w-full">
+                                    <div className="max-w-md w-full border border-gray-300 rounded-lg p-2 dark:border-gray-600">
+                                        <p className="text-center mb-2">
+                                            Tidak ada data anak yang anda miliki
+                                        </p>
+                                        <Button
+                                            variant={"default"}
+                                            className="w-full"
+                                            asChild
+                                        >
+                                            <Link href={"/p/childs/add"}>
+                                                Tambah Anak{" "}
+                                                <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
+                                                    person_add
+                                                </span>
+                                            </Link>
+                                        </Button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))} */}
 
-                    {childs &&
-                        childs.map((child) => (
-                            <ChildCard key={child.id} child={child} />
-                        ))}
-                    {/* 
+                        {childs &&
+                            childs.map((child) => (
+                                <ChildCard key={child.id} child={child} />
+                            ))}
+                        {/* 
                     <div className="flex justify-center items-center col-span-2">
                         <Button variant={"default"} asChild>
                             <Link
@@ -87,6 +90,18 @@ export default function Template({}) {
                             </Link>
                         </Button>
                     </div> */}
+                    </div>
+
+                    <div className="flex justify-center mt-3">
+                        <Button variant={"default"} asChild>
+                            <Link href={"/p/childs/add"}>
+                                Tambah Anak{" "}
+                                <span className="material-symbols-outlined ms-1 !leading-none !text-xl hover:no-underline">
+                                    person_add
+                                </span>
+                            </Link>
+                        </Button>
+                    </div>
                 </div>
             )}
         </div>

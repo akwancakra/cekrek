@@ -129,7 +129,7 @@ export default function PreviewData({
     return (
         <>
             <div>
-                <div className="divider mb-1 mt-4"></div>
+                <div className="divider mb-1 mt-4 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                 <p className="text-large font-semibold tracking-tight mb-3">
                     Biodata
                 </p>
@@ -265,7 +265,7 @@ export default function PreviewData({
             </div>
 
             <div>
-                <div className="divider mb-1 mt-4"></div>
+                <div className="divider mb-1 mt-4 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                 <p className="text-large font-semibold tracking-tight mb-3">
                     Riwayat Kehamilan
                 </p>
@@ -324,7 +324,7 @@ export default function PreviewData({
             </div>
 
             <div>
-                <div className="divider mb-1 mt-4"></div>
+                <div className="divider mb-1 mt-4 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                 <p className="text-large font-semibold tracking-tight mb-3">
                     Hasil Ahli
                 </p>
@@ -382,7 +382,7 @@ export default function PreviewData({
             </div>
 
             <div>
-                <div className="divider mb-1 mt-4"></div>
+                <div className="divider mb-1 mt-4 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                 <p className="text-large font-semibold tracking-tight mb-3">
                     Kesehatan
                 </p>
