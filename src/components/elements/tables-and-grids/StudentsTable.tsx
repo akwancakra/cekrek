@@ -57,7 +57,7 @@ interface StudentsTableProps {
 export default function StudentsTable({
     keyword,
     link,
-    role = "a",
+    role,
 }: StudentsTableProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sorting, setSorting] = useState<SortingState>([]);

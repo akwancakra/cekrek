@@ -97,7 +97,11 @@ export default function Assessments() {
                     </div>
                 </div>
 
-                <StudentsTable keyword={keyword} link={`/api/children`} />
+                <StudentsTable
+                    keyword={keyword}
+                    link={`/api/children`}
+                    role="a"
+                />
             </section>
         </>
     );
