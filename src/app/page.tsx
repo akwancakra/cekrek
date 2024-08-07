@@ -612,13 +612,12 @@ export default function Home() {
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
-                                            className="rounded-full"
+                                            className="rounded-full object-cover bg-center"
                                             src="/static/images/tim/merah-akwan.jpg"
                                             alt="user avatar"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             draggable={false}
+                                            fill={true}
                                         />
                                     </AspectRatio>
                                 </div>
@@ -644,13 +643,12 @@ export default function Home() {
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
-                                            className="rounded-full"
+                                            className="rounded-full object-cover bg-center"
                                             src="/static/images/tim/merah-krisna.jpg"
                                             alt="user avatar"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             draggable={false}
+                                            fill={true}
                                         />
                                     </AspectRatio>
                                 </div>
@@ -677,13 +675,12 @@ export default function Home() {
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
-                                            className="rounded-full"
+                                            className="rounded-full object-cover bg-center"
                                             src="/static/images/tim/merah-indri.jpg"
                                             alt="user avatar"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             draggable={false}
+                                            fill={true}
                                         />
                                     </AspectRatio>
                                 </div>
@@ -711,13 +708,12 @@ export default function Home() {
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
-                                            className="rounded-full"
+                                            className="rounded-full object-cover bg-center"
                                             src="/static/images/tim/merah-anisa.jpg"
                                             alt="user avatar"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             draggable={false}
+                                            fill={true}
                                         />
                                     </AspectRatio>
                                 </div>
@@ -741,13 +737,12 @@ export default function Home() {
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
-                                            className="rounded-full"
+                                            className="rounded-full object-cover bg-center"
                                             src="/static/images/tim/merah-tiara.jpg"
                                             alt="user avatar"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             draggable={false}
+                                            fill={true}
                                         />
                                     </AspectRatio>
                                 </div>
@@ -773,13 +768,12 @@ export default function Home() {
                                 <div className="w-12">
                                     <AspectRatio ratio={1 / 1}>
                                         <Image
-                                            className="rounded-full"
+                                            className="rounded-full object-cover bg-center"
                                             src="/static/images/user-default.jpg"
                                             alt="user avatar"
-                                            width={400}
-                                            height={400}
                                             loading="lazy"
                                             draggable={false}
+                                            fill={true}
                                         />
                                     </AspectRatio>
                                 </div>

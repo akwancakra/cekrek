@@ -42,10 +42,11 @@ import { Child } from "@/types/children.types";
 import { getChildrenImage } from "@/utils/fetcher";
 import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";
 
@@ -66,18 +67,64 @@ export default function ConnectStudentDialog({
     const [search, setSearch] = useState("");
     const [selectedProfile, setSelectedProfile] = useState<Child | undefined>();
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, //initial page index
+        pageSize: 15, //default page size
+    });
+
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const { profile, isReady } = useProfile();
 
-    const filteredStudents = students.filter(
-        (student) =>
-            student.full_name.toLowerCase().includes(search.toLowerCase()) ||
-            student?.risk_category?.toLowerCase().includes(search.toLowerCase())
-    );
+    /**
+     * Fetches children from the API.
+     * Ini buat dapetin data children atau siswa dari API
+     */
+    const fetchChildren = async ({ pageParam = 0 }) => {
+        const res = await axios.get("/api/children", {
+            params: {
+                plain: true,
+                limit: pagination.pageSize,
+                skip: pageParam,
+                // name: search,
+            },
+        });
+        return res.data;
+    };
+
+    const {
+        data,
+        status,
+        fetchNextPage,
+        isFetching,
+        isFetchingNextPage,
+        hasNextPage,
+        isLoading,
+    } = useInfiniteQuery({
+        queryKey: ["children"],
+        queryFn: fetchChildren,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    // Filter students data to remove any that are already in the students parameter
+    const filteredChildren = useMemo(() => {
+        const studentIds = new Set(students.map((student) => student.id));
+        return (
+            data?.pages.flatMap((page) =>
+                page.children.filter((child) => !studentIds.has(child.id))
+            ) || []
+        );
+    }, [data, students]);
+
+    // const filteredStudents = students.filter(
+    //     (student) =>
+    //         student.full_name.toLowerCase().includes(search.toLowerCase()) ||
+    //         student?.risk_category?.toLowerCase().includes(search.toLowerCase())
+    // );
 
     const getStudentById = (studentId: string) => {
-        const student: Child | undefined = students.find(
-            (student) => student.id.toString() === studentId
+        const student: Child | undefined = filteredChildren.find(
+            (std) => std.id.toString() === studentId
         );
 
         setSelectedProfile(student);
@@ -176,7 +223,7 @@ export default function ConnectStudentDialog({
                                                     align="start"
                                                 >
                                                     <Command className="w-96">
-                                                        {/* <CommandInput
+                                                        <CommandInput
                                                             placeholder="Cari nama anak..."
                                                             value={search}
                                                             onValueChange={(
@@ -184,8 +231,8 @@ export default function ConnectStudentDialog({
                                                             ) =>
                                                                 setSearch(value)
                                                             }
-                                                        /> */}
-                                                        <div className="p-2">
+                                                        />
+                                                        {/* <div className="p-2">
                                                             <input
                                                                 type="text"
                                                                 placeholder="Cari siswa..."
@@ -198,42 +245,86 @@ export default function ConnectStudentDialog({
                                                                 }
                                                                 className="w-full p-2 border-b border-gray-300 text-small"
                                                             />
-                                                        </div>
+                                                        </div> */}
                                                         <CommandList>
-                                                            <CommandEmpty>
-                                                                No results
-                                                                found.
-                                                            </CommandEmpty>
-                                                            <CommandGroup>
-                                                                {filteredStudents.map(
-                                                                    (
-                                                                        student
-                                                                    ) => (
+                                                            {isFetching ||
+                                                            status ===
+                                                                "pending" ? (
+                                                                <CommandEmpty>
+                                                                    Mendapatkan
+                                                                    data...
+                                                                </CommandEmpty>
+                                                            ) : (
+                                                                <>
+                                                                    <CommandEmpty>
+                                                                        Tidak
+                                                                        ada
+                                                                        data.
+                                                                    </CommandEmpty>
+                                                                    <CommandGroup>
+                                                                        {filteredChildren.map(
+                                                                            (
+                                                                                student
+                                                                            ) => (
+                                                                                <CommandItem
+                                                                                    key={
+                                                                                        student.id
+                                                                                    }
+                                                                                    value={
+                                                                                        student.id.toString() +
+                                                                                        "-" +
+                                                                                        student.full_name
+                                                                                    }
+                                                                                    onSelect={(
+                                                                                        value
+                                                                                    ) => {
+                                                                                        const studentId =
+                                                                                            value.split(
+                                                                                                "-"
+                                                                                            )[0];
+
+                                                                                        setValue(
+                                                                                            studentId
+                                                                                        );
+                                                                                        setOpen(
+                                                                                            false
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <StudentItem
+                                                                                        student={
+                                                                                            student
+                                                                                        }
+                                                                                    />
+                                                                                </CommandItem>
+                                                                            )
+                                                                        )}
+                                                                    </CommandGroup>
+                                                                    {hasNextPage && (
                                                                         <CommandItem
-                                                                            key={
-                                                                                student.id
+                                                                            asChild
+                                                                            value={
+                                                                                "z " +
+                                                                                search
                                                                             }
-                                                                            value={student.id.toString()}
-                                                                            onSelect={(
-                                                                                value
-                                                                            ) => {
-                                                                                setValue(
-                                                                                    value
-                                                                                );
-                                                                                setOpen(
-                                                                                    false
-                                                                                );
-                                                                            }}
                                                                         >
-                                                                            <StudentItem
-                                                                                student={
-                                                                                    student
+                                                                            <Button
+                                                                                onClick={() =>
+                                                                                    fetchNextPage()
                                                                                 }
-                                                                            />
+                                                                                disabled={
+                                                                                    isFetchingNextPage
+                                                                                }
+                                                                                className="cursor-pointer w-full flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                                                            >
+                                                                                {isFetchingNextPage
+                                                                                    ? "Memuat data..."
+                                                                                    : "Lihat Lainnya"}
+                                                                            </Button>
                                                                         </CommandItem>
-                                                                    )
-                                                                )}
-                                                            </CommandGroup>
+                                                                    )}
+                                                                </>
+                                                            )}
                                                         </CommandList>
                                                     </Command>
                                                 </PopoverContent>
@@ -286,7 +377,7 @@ export default function ConnectStudentDialog({
                                     </p>
                                 </div>
                             </div>
-                            {selectedProfile?.id && (
+                            {/* {selectedProfile?.id && (
                                 <Button
                                     variant={"outline"}
                                     className="w-full"
@@ -299,7 +390,7 @@ export default function ConnectStudentDialog({
                                         Lihat detil
                                     </Link>
                                 </Button>
-                            )}
+                            )} */}
                             <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <AlertDialogDescription />
                         </AlertDialogHeader>
@@ -369,7 +460,16 @@ export default function ConnectStudentDialog({
                                                     align="start"
                                                 >
                                                     <Command className="w-80">
-                                                        <div className="p-2">
+                                                        <CommandInput
+                                                            placeholder="Cari nama anak..."
+                                                            value={search}
+                                                            onValueChange={(
+                                                                value
+                                                            ) =>
+                                                                setSearch(value)
+                                                            }
+                                                        />
+                                                        {/* <div className="p-2">
                                                             <input
                                                                 type="text"
                                                                 placeholder="Cari siswa..."
@@ -382,42 +482,86 @@ export default function ConnectStudentDialog({
                                                                 }
                                                                 className="w-full p-2 border-b border-gray-300 text-small"
                                                             />
-                                                        </div>
+                                                        </div> */}
                                                         <CommandList>
-                                                            <CommandEmpty>
-                                                                No results
-                                                                found.
-                                                            </CommandEmpty>
-                                                            <CommandGroup>
-                                                                {filteredStudents.map(
-                                                                    (
-                                                                        student
-                                                                    ) => (
+                                                            {isFetching ||
+                                                            status ===
+                                                                "pending" ? (
+                                                                <CommandEmpty>
+                                                                    Mendapatkan
+                                                                    data...
+                                                                </CommandEmpty>
+                                                            ) : (
+                                                                <>
+                                                                    <CommandEmpty>
+                                                                        Tidak
+                                                                        ada
+                                                                        data.
+                                                                    </CommandEmpty>
+                                                                    <CommandGroup>
+                                                                        {filteredChildren.map(
+                                                                            (
+                                                                                student
+                                                                            ) => (
+                                                                                <CommandItem
+                                                                                    key={
+                                                                                        student.id
+                                                                                    }
+                                                                                    value={
+                                                                                        student.id.toString() +
+                                                                                        "-" +
+                                                                                        student.full_name
+                                                                                    }
+                                                                                    onSelect={(
+                                                                                        value
+                                                                                    ) => {
+                                                                                        const studentId =
+                                                                                            value.split(
+                                                                                                "-"
+                                                                                            )[0];
+
+                                                                                        setValue(
+                                                                                            studentId
+                                                                                        );
+                                                                                        setOpen(
+                                                                                            false
+                                                                                        );
+                                                                                    }}
+                                                                                >
+                                                                                    <StudentItem
+                                                                                        student={
+                                                                                            student
+                                                                                        }
+                                                                                    />
+                                                                                </CommandItem>
+                                                                            )
+                                                                        )}
+                                                                    </CommandGroup>
+                                                                    {hasNextPage && (
                                                                         <CommandItem
-                                                                            key={
-                                                                                student.id
+                                                                            asChild
+                                                                            value={
+                                                                                "z " +
+                                                                                search
                                                                             }
-                                                                            value={student.id.toString()}
-                                                                            onSelect={(
-                                                                                value
-                                                                            ) => {
-                                                                                setValue(
-                                                                                    value
-                                                                                );
-                                                                                setPopoverOpen(
-                                                                                    false
-                                                                                );
-                                                                            }}
                                                                         >
-                                                                            <StudentItem
-                                                                                student={
-                                                                                    student
+                                                                            <Button
+                                                                                onClick={() =>
+                                                                                    fetchNextPage()
                                                                                 }
-                                                                            />
+                                                                                disabled={
+                                                                                    isFetchingNextPage
+                                                                                }
+                                                                                className="cursor-pointer w-full flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                                                            >
+                                                                                {isFetchingNextPage
+                                                                                    ? "Memuat data..."
+                                                                                    : "Lihat Lainnya"}
+                                                                            </Button>
                                                                         </CommandItem>
-                                                                    )
-                                                                )}
-                                                            </CommandGroup>
+                                                                    )}
+                                                                </>
+                                                            )}
                                                         </CommandList>
                                                     </Command>
                                                 </PopoverContent>

@@ -30,14 +30,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsClient } from "usehooks-ts";
-import useSWR from "swr";
-import { fetcher } from "@/utils/fetcher";
 import { User } from "@/types/user.types";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { getImageUrl } from "@/utils/converters";
 import { ChildrenData } from "@/types/childrenData.type";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -145,6 +143,7 @@ export default function BiodataWrapper({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     // const [parentsData, setParentsData] = useState<User[]>([]);
     const [selectedParent, setSelectedParent] = useState<Parents>({});
     const isClient = useIsClient();
@@ -358,6 +357,9 @@ export default function BiodataWrapper({
                 });
             }
         }
+
+        // Make sure all data is loaded to formik
+        setIsDataLoaded(true);
     }, [localData]);
 
     // useEffect(() => {
@@ -474,7 +476,7 @@ export default function BiodataWrapper({
     return (
         <>
             {/* isLoadingParent */}
-            {(isLoading || !isClient) && (
+            {(isLoading || !isClient || !isDataLoaded) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -518,7 +520,7 @@ export default function BiodataWrapper({
             )}
 
             {/* !isLoadingParent */}
-            {!isLoading && isClient && (
+            {!isLoading && isClient && isDataLoaded && (
                 <FormikProvider value={formik}>
                     <Form>
                         <div>
@@ -1488,35 +1490,42 @@ interface ParentPickerProps {
     parentId: string;
     setParentId: (parentId: string) => void;
     setSelectedParent: (any) => void;
-    // parentsData?: User[];
+    // parentsData: User[];
 }
 
 const ParentPicker = ({
     parentType,
     parentId,
     setParentId,
+    // parentsData,
     setSelectedParent,
-}: // parentsData,
-ParentPickerProps) => {
+}: ParentPickerProps) => {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [open, setOpen] = useState(false);
+    const [parentValue, setParentValue] = useState("");
     // const router = useRouter();
     const isClient = useIsClient();
     const currentUrl =
         typeof window !== "undefined" ? window.location.href : "";
-    // const [parentOptions, setParentOptions] = useState<
-    //     { label: string; value: string }[]
-    // >([]);
 
-    // const [page, setPage] = useState(0);
     const [parentsData, setParentsData] = useState<User[]>([]);
     const [search, setSearch] = useState("");
     const limit = 25;
 
     const fetchParents = async ({ pageParam = 0 }) => {
-        const res = await fetch(
-            `/api/parents?plain=true&type=${parentType}&limit=${limit}&skip=${pageParam}&sort=asc`
-        );
-        return res.json();
+        const res = await axios.get(`/api/parents`, {
+            params: {
+                id: parentId,
+                plain: true,
+                limit: limit,
+                skip: pageParam,
+                sort: "asc",
+                type: parentType,
+                // name: keyword,
+            },
+        });
+
+        return res.data;
     };
 
     const {
@@ -1535,13 +1544,23 @@ ParentPickerProps) => {
     });
 
     const parentOptions = useMemo(() => {
+        const uniqueIds = new Set();
         return data?.pages.flatMap((page) => {
             if (page?.message || page?.parents?.length === 0) {
                 return [];
             }
 
-            return page?.parents
+            return page.parents
                 .filter((parent) => parent.type === parentType)
+                .filter((parent) => {
+                    // Check if the ID is already in the Set
+                    if (uniqueIds.has(parent.id)) {
+                        return false; // Skip this parent if the ID is already in the Set
+                    } else {
+                        uniqueIds.add(parent.id); // Add the ID to the Set
+                        return true; // Include this parent
+                    }
+                })
                 .map((parent) => ({
                     label: parent.name,
                     value: parent.id.toString() + "-" + parent.name,
@@ -1551,8 +1570,9 @@ ParentPickerProps) => {
 
     useEffect(() => {
         if (data) {
+            const newParents = data.pages.flatMap((page) => page.parents);
+
             setParentsData((prev) => {
-                const newParents = data.pages.flatMap((page) => page.parents);
                 const uniqueNewParents = newParents.filter(
                     (newParent) =>
                         !prev.some(
@@ -1563,8 +1583,23 @@ ParentPickerProps) => {
 
                 return [...prev, ...uniqueNewParents];
             });
+
+            // Set parentValue when data is loaded
+            const selectedParent = newParents.find(
+                (parent) => parent.id.toString() === parentId
+            );
+
+            if (selectedParent) {
+                const newParentValue = `${selectedParent.id} - ${selectedParent.name}`;
+                setParentValue(newParentValue);
+
+                // Update setSelectedParent based on parentType
+                updateParent(selectedParent);
+            }
+
+            setIsDataLoaded(true);
         }
-    }, [data]);
+    }, [data, parentId]);
 
     const updateParent = (parent: User) => {
         setSelectedParent((prev: any) => {
@@ -1592,6 +1627,13 @@ ParentPickerProps) => {
         return null;
     }
 
+    if (!isDataLoaded) {
+        <div className="flex flex-col gap-2">
+            <div className="skeleton rounded-lg w-1/2 h-6"></div>
+            <div className="skeleton rounded-lg w-full h-9"></div>
+        </div>;
+    }
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -1601,32 +1643,22 @@ ParentPickerProps) => {
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {parentId && !isFetching
-                        ? parentOptions.find(
-                              (parent) => parent.value === parentId
-                          )?.label
-                        : `Pilih ${
-                              parentType.charAt(0).toUpperCase() +
-                              parentType.slice(1)
-                          }...`}
+                    {parentValue ||
+                        `Pilih ${
+                            parentType.charAt(0).toUpperCase() +
+                            parentType.slice(1)
+                        }...`}
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         unfold_more
                     </span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className=" p-0" align="start">
+            <PopoverContent className="p-0" align="start">
                 <Command>
                     <CommandInput
                         placeholder={`Cari ${parentType}...`}
                         onValueChange={setSearch}
                     />
-                    {/* <div className="my-2">
-                        <input
-                            placeholder={`Cari ${parentType}...`}
-                            onChange={(e) => handleSearchChange(e.target.value)}
-                            value={search}
-                        />
-                    </div> */}
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
                         {isFetching || status === "pending" ? (
                             <CommandEmpty>Mendapatkan data...</CommandEmpty>
@@ -1634,10 +1666,10 @@ ParentPickerProps) => {
                             <>
                                 <CommandEmpty asChild>
                                     <Link
-                                        href={`/t/parents/add?callback=${encodeURIComponent(
+                                        href={`/a/users/add?callback=${encodeURIComponent(
                                             currentUrl
                                         )}`}
-                                        className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
+                                        className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
                                     >
                                         <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
                                             add
@@ -1647,39 +1679,17 @@ ParentPickerProps) => {
                                             parentType.slice(1)}
                                     </Link>
                                 </CommandEmpty>
-                                {parentOptions.length === 0 && (
-                                    <CommandItem value="add-new" asChild>
-                                        <Link
-                                            href={`/t/parents/add?callback=${encodeURIComponent(
-                                                currentUrl
-                                            )}`}
-                                            className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200 dark:hover:bg-neutral-700"
-                                        >
-                                            <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                                add
-                                            </span>
-                                            Tambah{" "}
-                                            {parentType
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                                parentType.slice(1)}
-                                        </Link>
-                                    </CommandItem>
-                                )}
                                 <CommandGroup>
                                     {parentOptions.map((parent, index) => (
                                         <CommandItem
                                             key={index}
                                             value={parent.value}
                                             onSelect={(currentValue) => {
-                                                const selectedId =
-                                                    currentValue.split("-")[0];
-
-                                                setParentId(
-                                                    selectedId === parentId
-                                                        ? ""
-                                                        : currentValue
-                                                );
+                                                const selectedId = currentValue
+                                                    .split("-")[0]
+                                                    .trim();
+                                                setParentId(selectedId);
+                                                setParentValue(currentValue);
                                                 setOpen(false);
 
                                                 const setParent =
@@ -1700,10 +1710,10 @@ ParentPickerProps) => {
                                                     {
                                                         "opacity-100":
                                                             parent.value ===
-                                                            parentId,
+                                                            parentValue,
                                                         "opacity-0":
                                                             parent.value !==
-                                                            parentId,
+                                                            parentValue,
                                                     }
                                                 )}
                                             >
@@ -1734,7 +1744,6 @@ ParentPickerProps) => {
         </Popover>
     );
 };
-
 // const {
 //     data,
 //     error,

@@ -813,7 +813,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Email
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.email || "N/A"}
                                     </p>
                                 </div>
@@ -821,7 +821,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Nama
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.name || "N/A"}
                                     </p>
                                 </div>
@@ -830,7 +830,7 @@ export default function AddParentPage() {
                                         <p className="text-xs text-gray-400">
                                             Tipe Orang Tua
                                         </p>
-                                        <p className="text-medium font-semibold">
+                                        <p className="text-medium font-semibold break-words">
                                             {formik.values.type
                                                 ? capitalizeFirstLetter(
                                                       formik.values.type
@@ -845,7 +845,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Agama
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.religion ||
                                                     "N/A"}
                                             </p>
@@ -854,7 +854,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Tempat Lahir
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.place_birth ||
                                                     "N/A"}
                                             </p>
@@ -863,7 +863,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Tanggal Lahir
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.date_birth
                                                     ? formattedDate(
                                                           formik.values.date_birth.toString()
@@ -875,7 +875,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Pendidikan
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.education ||
                                                     "N/A"}
                                             </p>
@@ -884,7 +884,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Pekerjaan
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.job || "N/A"}
                                             </p>
                                         </div>
@@ -892,7 +892,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Alamat
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.address || "N/A"}
                                             </p>
                                         </div>
@@ -900,7 +900,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Nomor Telepon
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.phone || "N/A"}
                                             </p>
                                         </div>

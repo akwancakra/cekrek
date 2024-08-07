@@ -2,15 +2,19 @@
 
 import UsersTable from "@/components/elements/tables-and-grids/UsersTable";
 import { Button } from "@/components/ui/button";
-import { User } from "@/types/user.types";
-import { fetcher } from "@/utils/fetcher";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 
 export default function UsersListAdmin() {
     // const isDesktop = useMediaQuery("(min-width: 768px)");
     const [keyword, setKeyword] = useState("");
+    const searchParams = useSearchParams();
+    const urlKeyword = searchParams.get("keyword");
+
+    useEffect(() => {
+        setKeyword(urlKeyword || "");
+    }, [urlKeyword]);
 
     // const addAccountButton = () => {
     //     console.log("Account Add Button Clicked");
@@ -59,7 +63,11 @@ export default function UsersListAdmin() {
                                 </span>
                             </Link>
                         </Button>
-                        <form className="w-full grow">
+                        <form
+                            className="w-full grow"
+                            method="GET"
+                            onSubmit={(event) => event.preventDefault()}
+                        >
                             <label className="input w-full input-bordered rounded-lg flex items-center gap-2 py-2 px-3 text-sm h-fit min-h-fit sm:w-fit group-[.open]:w-full md:group-[.open]:w-fit dark:bg-neutral-800 dark:border-neutral-600">
                                 <input
                                     type="text"
@@ -72,6 +80,7 @@ export default function UsersListAdmin() {
                                 <Button
                                     variant={"outline"}
                                     className="p-0 border-none h-fit"
+                                    type="button"
                                 >
                                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-4 opacity-70">
                                         search

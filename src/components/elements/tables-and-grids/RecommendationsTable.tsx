@@ -27,7 +27,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Recommendation } from "@/types/recommendation.type";
 import { capitalizeFirstLetter } from "@/utils/formattedDate";
@@ -57,24 +57,23 @@ import { useMediaQuery } from "usehooks-ts";
 import { toast } from "sonner";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 interface Props {
-    recommendations: Recommendation[];
     keyword: string;
 }
 
-export default function RecommendationsTable({
-    recommendations,
-    keyword,
-}: Props) {
-    const [isLoading, setIsLoading] = useState(false);
-    const [showSize, setShowSize] = useState(15);
+export default function RecommendationsTable({ keyword }: Props) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, //initial page index
+        pageSize: 15, //default page size
+    });
 
     const isDesktop = useMediaQuery("(min-width: 768px)");
-
-    const { push } = useRouter();
+    const router = useRouter();
 
     const columns: ColumnDef<Recommendation>[] = [
         {
@@ -210,21 +209,73 @@ export default function RecommendationsTable({
         },
     ];
 
-    const filteredData = useMemo(() => {
-        if (!keyword) return recommendations ?? [];
-        return (recommendations ?? []).filter((item: Recommendation) =>
-            item.title.toLowerCase().includes(keyword.toLowerCase())
+    const fetchRecommendations = async ({ pageParam = 0 }) => {
+        const res = await axios.get(`/api/recommendations`, {
+            params: {
+                plain: true,
+                limit: pagination.pageSize,
+                skip: pageParam,
+                name: keyword,
+            },
+        });
+        return res.data;
+    };
+
+    const {
+        data,
+        fetchNextPage,
+        isFetchingNextPage,
+        hasNextPage,
+        isLoading: isLoadingData,
+        refetch,
+    } = useInfiniteQuery({
+        queryKey: ["recommendations"],
+        queryFn: fetchRecommendations,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    // const filteredData = useMemo(() => {
+    //     if (!keyword) return recommendations ?? [];
+    //     return (recommendations ?? []).filter((item: Recommendation) =>
+    //         item.title.toLowerCase().includes(keyword.toLowerCase())
+    //     );
+    // }, [keyword, recommendations]);
+
+    const recommendations: Recommendation[] = useMemo(() => {
+        return (
+            data?.pages.flatMap((page) => {
+                if (page?.message || page?.recommendations?.length === 0) {
+                    return [];
+                }
+
+                return page.recommendations;
+            }) || []
         );
-    }, [keyword, recommendations]);
+    }, [data]);
+
+    const previousTotalCountRef = useRef(0);
+    const totalCount = useMemo(() => {
+        if (data?.pages) {
+            const pageWithTotalCount = data.pages.find(
+                (page) => !page.message && page.totalCount
+            );
+            const newTotalCount =
+                pageWithTotalCount?.totalCount ?? previousTotalCountRef.current;
+            previousTotalCountRef.current = newTotalCount;
+            return newTotalCount;
+        }
+        return previousTotalCountRef.current;
+    }, [data]);
 
     const table = useReactTable({
-        data: filteredData,
+        data: recommendations || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         initialState: {
             pagination: {
-                pageSize: showSize,
+                pageSize: pagination.pageSize,
             },
         },
         onSortingChange: setSorting,
@@ -237,8 +288,24 @@ export default function RecommendationsTable({
         },
     });
 
+    const handleNextPage = async () => {
+        const hasMoreData = recommendations.length < totalCount;
+
+        if (table.getCanNextPage()) {
+            table.nextPage();
+        } else if (hasNextPage && hasMoreData) {
+            await fetchNextPage();
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (table.getCanPreviousPage()) {
+            table.previousPage();
+        }
+    };
+
     const sizeSet = ({ size }: { size: number }) => {
-        setShowSize(size);
+        setPagination({ ...pagination, pageSize: size });
         table.setPageSize(size);
     };
 
@@ -259,10 +326,10 @@ export default function RecommendationsTable({
             loading: "Mengirimkan data...",
             success: () => {
                 setIsLoading(false);
-                push("/a/recommendations");
-                return "Berhasil menghapus data!";
+                router.refresh();
+                return "Berhasil menghapus rekomendasi!";
             },
-            error: (data) => {
+            error: (data: any) => {
                 setIsLoading(false);
                 if (data?.response?.status === 400) {
                     return data?.response?.data?.message;
@@ -274,6 +341,10 @@ export default function RecommendationsTable({
             },
         });
     };
+
+    useEffect(() => {
+        refetch(); // Refetch data when keyword changes
+    }, [keyword, refetch]);
 
     return (
         <>
@@ -327,11 +398,17 @@ export default function RecommendationsTable({
                 </TableBody>
             </Table>
 
+            {isLoadingData && (
+                <div className="text-center text-sm my-3">
+                    Memuat data baru...
+                </div>
+            )}
+
             <div className="flex items-center justify-between space-x-2 py-4">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="gap-2">
-                            <span>Tampil {showSize}</span>
+                            <span>Tampil {pagination.pageSize}</span>
                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                                 unfold_more
                             </span>
@@ -374,15 +451,17 @@ export default function RecommendationsTable({
                 <div className="flex items-center gap-2">
                     <Button
                         variant="outline"
-                        onClick={() => table.previousPage()}
+                        onClick={handlePreviousPage}
                         disabled={!table.getCanPreviousPage()}
                     >
                         Previous
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={handleNextPage}
+                        disabled={
+                            isLoadingData || isFetchingNextPage || !hasNextPage
+                        }
                     >
                         Next
                     </Button>

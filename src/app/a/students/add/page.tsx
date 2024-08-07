@@ -316,7 +316,7 @@ export default function AddStudentPage() {
                         <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                             <div>
                                 <p className="text-xs text-gray-400">Nama</p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.full_name || "N/A"}
                                 </p>
                             </div>
@@ -324,7 +324,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Nama Panggilan
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.nick_name || "N/A"}
                                 </p>
                             </div>
@@ -332,7 +332,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Jenis Kelamin
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.gender
                                         ? capitalizeFirstLetter(
                                               value.biodata.gender
@@ -342,7 +342,7 @@ export default function AddStudentPage() {
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">Agama</p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.religion
                                         ? capitalizeFirstLetter(
                                               value.biodata.religion
@@ -354,7 +354,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Tempat Lahir
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.place_birth || "N/A"}
                                 </p>
                             </div>
@@ -362,7 +362,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Tanggal Lahir
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.date_birth
                                         ? formattedDate(
                                               value.biodata.date_birth
@@ -374,7 +374,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Pendengaran
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.hearing
                                         ? capitalizeFirstLetter(
                                               value.biodata.hearing
@@ -386,7 +386,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Jumlah Saudara
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.count_of_siblings || "N/A"}
                                 </p>
                             </div>

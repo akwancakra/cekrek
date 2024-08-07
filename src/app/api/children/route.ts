@@ -51,40 +51,57 @@ export async function GET(req: NextRequest) {
     try {
         const url = new URL(req.url);
         const name_params = url?.searchParams?.get("name") || "";
-        const plain = url?.searchParams?.get("plain") === "true";
-
+        const plain = url.searchParams.get("plain") === "true";
         const limit = url?.searchParams?.get("limit") as string;
         const skip = url?.searchParams?.get("skip") as string;
+        const sort = url.searchParams.get("sort"); // asc, desc
 
-        const include = plain
-            ? {}
-            : {
-                  birth_history: true,
-                  health_status: true,
-                  expert_examination: true,
-                  child_recommendations: {
-                      include: {
-                          recommendations: true,
-                      },
-                  },
-              };
+        // Inisialisasi findOptions sebagai objek kosong
+        let findOptions: any = {};
 
-        const query: any = {
-            where: {
-                full_name: { contains: name_params },
-            },
-            include,
-        };
+        if (!plain) {
+            findOptions.include = {
+                birth_history: true,
+                health_status: true,
+                expert_examination: true,
+                child_recommendations: {
+                    include: {
+                        recommendations: true,
+                    },
+                },
+            };
+        }
+
+        if (name_params) {
+            findOptions.where = {
+                name: { contains: name_params },
+            };
+        }
 
         if (limit) {
-            query.take = parseInt(limit);
+            findOptions.take = parseInt(limit);
         }
 
         if (skip) {
-            query.skip = parseInt(skip);
+            findOptions.skip = parseInt(skip);
         }
 
-        const children = await prisma.children.findMany(query);
+        if (sort) {
+            findOptions.orderBy = {
+                name: sort,
+            };
+        }
+
+        const children = await prisma.children.findMany(findOptions);
+        // Fetch total count
+        const totalCount = await prisma.children.count({
+            where: findOptions.where,
+        });
+        // Calculate next cursor
+        const nextCursor =
+            parseInt(skip) + children.length < totalCount
+                ? parseInt(skip) + children.length
+                : null;
 
         const childrenWithLastAssesmentDate = await Promise.all(
             children.map(async (child) => {
@@ -115,7 +132,12 @@ export async function GET(req: NextRequest) {
         }
 
         return NextResponse.json(
-            { status: "success", children: childrenWithLastAssesmentDate },
+            {
+                status: "success",
+                children: childrenWithLastAssesmentDate,
+                totalCount,
+                nextCursor,
+            },
             { status: 200 }
         );
     } catch (error: any) {

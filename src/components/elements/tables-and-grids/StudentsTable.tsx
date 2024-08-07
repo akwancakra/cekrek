@@ -27,7 +27,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Child } from "@/types/children.types";
 import { capitalizeFirstLetter } from "@/utils/formattedDate";
@@ -42,22 +42,33 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import axios from "axios";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useMediaQuery } from "usehooks-ts";
+import { useRouter } from "next/navigation";
 
 interface StudentsTableProps {
-    students: Child[];
     keyword: string;
-    removeStudent: (id: string) => void;
+    link: string;
+    role: string;
 }
 
 export default function StudentsTable({
-    students,
     keyword,
-    removeStudent,
+    link,
+    role = "a",
 }: StudentsTableProps) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, //initial page index
+        pageSize: 15, //default page size
+    });
 
-    const [showSize, setShowSize] = useState(15);
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+    const router = useRouter();
 
     const columns: ColumnDef<Child>[] = [
         {
@@ -101,7 +112,7 @@ export default function StudentsTable({
                 return (
                     <div className="flex items-center gap-2">
                         <Link
-                            href={`/a/students/${row.getValue("id")}`}
+                            href={`/${role}/students/${row.getValue("id")}`}
                             className="hover:text-primary"
                         >
                             <span>{row.getValue("full_name")}</span>
@@ -188,7 +199,7 @@ export default function StudentsTable({
                                 className="cursor-pointer"
                                 asChild
                             >
-                                <Link href={`/a/students/${studentId}`}>
+                                <Link href={`/${role}/students/${studentId}`}>
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         contacts
                                     </span>{" "}
@@ -223,7 +234,9 @@ export default function StudentsTable({
                                 className="cursor-pointer"
                                 asChild
                             >
-                                <Link href={`/a/students/${studentId}/edit`}>
+                                <Link
+                                    href={`/${role}/students/${studentId}/edit`}
+                                >
                                     <span className="material-symbols-outlined cursor-pointer me-1 !text-xl !leading-4 opacity-70">
                                         edit
                                     </span>{" "}
@@ -278,7 +291,9 @@ export default function StudentsTable({
                                                 <Button
                                                     variant={"destructive"}
                                                     onClick={() =>
-                                                        removeStudent(studentId)
+                                                        removeChildren(
+                                                            studentId
+                                                        )
                                                     }
                                                     className="bg-red-500 text-white hover:bg-red-700"
                                                 >
@@ -303,24 +318,62 @@ export default function StudentsTable({
     //     );
     // }, [keyword]);
 
-    const filteredData = useMemo(() => {
-        if (!keyword) return students;
-        return students.filter((item) => {
-            const matchesKeyword = item.full_name
-                .toLowerCase()
-                .includes(keyword.toLowerCase());
-            return matchesKeyword;
+    // const filteredData = useMemo(() => {
+    //     if (!keyword) return students;
+    //     return students.filter((item) => {
+    //         const matchesKeyword = item.full_name
+    //             .toLowerCase()
+    //             .includes(keyword.toLowerCase());
+    //         return matchesKeyword;
+    //     });
+    // }, [students, keyword]);
+
+    const fetchChildren = async ({ pageParam = 0 }) => {
+        const res = await axios.get(link, {
+            params: {
+                plain: true,
+                limit: pagination.pageSize,
+                skip: pageParam,
+                name: keyword,
+            },
         });
-    }, [students, keyword]);
+        return res.data;
+    };
+
+    const {
+        data,
+        fetchNextPage,
+        isFetchingNextPage,
+        hasNextPage,
+        isLoading: isLoadingData,
+        refetch,
+    } = useInfiniteQuery({
+        queryKey: ["children"],
+        queryFn: fetchChildren,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
+
+    const children: Child[] = useMemo(() => {
+        return (
+            data?.pages.flatMap((page) => {
+                if (page?.message || page?.children?.length === 0) {
+                    return [];
+                }
+
+                return page.children;
+            }) || []
+        );
+    }, [data]);
 
     const table = useReactTable({
-        data: filteredData,
+        data: children || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         initialState: {
             pagination: {
-                pageSize: showSize,
+                pageSize: pagination.pageSize,
             },
         },
         onSortingChange: setSorting,
@@ -333,10 +386,77 @@ export default function StudentsTable({
         },
     });
 
+    const previousTotalCountRef = useRef(0);
+    const totalCount = useMemo(() => {
+        if (data?.pages) {
+            const pageWithTotalCount = data.pages.find(
+                (page) => !page.message && page.totalCount
+            );
+            const newTotalCount =
+                pageWithTotalCount?.totalCount ?? previousTotalCountRef.current;
+            previousTotalCountRef.current = newTotalCount;
+            return newTotalCount;
+        }
+        return previousTotalCountRef.current;
+    }, [data]);
+
+    const handleNextPage = async () => {
+        const hasMoreData = children.length < totalCount;
+
+        if (table.getCanNextPage()) {
+            table.nextPage();
+        } else if (hasNextPage && hasMoreData) {
+            await fetchNextPage();
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (table.getCanPreviousPage()) {
+            table.previousPage();
+        }
+    };
+
     const sizeSet = ({ size }: { size: number }) => {
-        setShowSize(size);
+        setPagination({ ...pagination, pageSize: size });
         table.setPageSize(size);
     };
+
+    const removeChildren = (id: string) => {
+        setIsLoading(true);
+
+        const submitPromise = new Promise<void>(async (resolve, reject) => {
+            try {
+                await axios.delete(`/api/children/${id}`);
+
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
+
+        toast.promise(submitPromise, {
+            loading: "Mengirimkan data...",
+            success: () => {
+                setIsLoading(false);
+                router.refresh();
+                return "Berhasil menghapus siswa!";
+            },
+            error: (data: any) => {
+                setIsLoading(false);
+                if (data?.response?.status === 400) {
+                    return data?.response?.data?.message;
+                } else if (data?.response?.status === 500) {
+                    return "Server Error";
+                } else {
+                    return "Terjadi kesalahan";
+                }
+            },
+        });
+    };
+
+    useEffect(() => {
+        refetch(); // Refetch data when keyword changes
+    }, [keyword, refetch]);
 
     return (
         <>
@@ -390,11 +510,17 @@ export default function StudentsTable({
                 </TableBody>
             </Table>
 
+            {isLoadingData && (
+                <div className="text-center text-sm my-3">
+                    Memuat data baru...
+                </div>
+            )}
+
             <div className="flex items-center justify-between space-x-2 py-4">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="gap-2">
-                            <span>Tampil {showSize}</span>
+                            <span>Tampil {pagination.pageSize}</span>
                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                                 unfold_more
                             </span>
@@ -437,15 +563,17 @@ export default function StudentsTable({
                 <div className="flex items-center gap-2">
                     <Button
                         variant="outline"
-                        onClick={() => table.previousPage()}
+                        onClick={handlePreviousPage}
                         disabled={!table.getCanPreviousPage()}
                     >
                         Previous
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={handleNextPage}
+                        disabled={
+                            isLoadingData || isFetchingNextPage || !hasNextPage
+                        }
                     >
                         Next
                     </Button>

@@ -37,6 +37,8 @@ import { ChildrenData } from "@/types/childrenData.type";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import Link from "next/link";
+import axios from "axios";
 
 const validationSchema = Yup.object().shape({
     teacher_id: Yup.string().required("Guru hapus dipilih"),
@@ -109,6 +111,7 @@ export default function BiodataWrapper({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     // const [teachersData, setTeachersData] = useState<User[]>([]);
     const [selectedTeacher, setSelectedTeacher] = useState<User>({} as User);
     const isClient = useIsClient();
@@ -230,6 +233,9 @@ export default function BiodataWrapper({
                 });
             }
         }
+
+        // Make sure all data is loaded to formik
+        setIsDataLoaded(true);
     }, [localData]);
 
     const resetForm = () => {
@@ -282,7 +288,7 @@ export default function BiodataWrapper({
 
     return (
         <>
-            {(isLoading || !isClient) && (
+            {(isLoading || !isClient || !isDataLoaded) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -325,7 +331,7 @@ export default function BiodataWrapper({
                 </>
             )}
 
-            {!isLoading && isClient && (
+            {!isLoading && isClient && isDataLoaded && (
                 <FormikProvider value={formik}>
                     <Form>
                         <div>
@@ -1119,31 +1125,40 @@ const CityPicker = ({ city, setCity }: CityPickerProps) => {
 
 interface TeacherPickerProps {
     teacherId: string;
-    setTeacherId: (teacherId: string) => void;
-    // teachersData: User[];
+    setTeacherId: (parentId: string) => void;
+    // teachers: User[];
     setSelectedTeacher: (any) => void;
 }
 
 const TeacherPicker = ({
     teacherId,
     setTeacherId,
-    // teachersData,
     setSelectedTeacher,
-}: TeacherPickerProps) => {
+}: // teachers,
+TeacherPickerProps) => {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [open, setOpen] = useState(false);
-    // const router = useRouter();
+    const [teacherValue, setTeacherValue] = useState("");
     const isClient = useIsClient();
-    // const currentUrl =
-    //     typeof window !== "undefined" ? window.location.href : "";
+    const currentUrl =
+        typeof window !== "undefined" ? window.location.href : "";
+
     const [teachersData, setTeachersData] = useState<User[]>([]);
     const [search, setSearch] = useState("");
     const limit = 25;
 
     const fetchTeachers = async ({ pageParam = 0 }) => {
-        const res = await fetch(
-            `/api/teachers?plain=true&limit=${limit}&skip=${pageParam}&sort=asc`
-        );
-        return res.json();
+        const res = await axios.get(`/api/teachers`, {
+            params: {
+                plain: true,
+                limit: limit,
+                skip: pageParam,
+                sort: "asc",
+                // name: keyword,
+            },
+        });
+
+        return res.data;
     };
 
     const {
@@ -1161,28 +1176,34 @@ const TeacherPicker = ({
         getNextPageParam: (lastPage) => lastPage.nextCursor,
     });
 
-    // const teacherOptions = teachersData.map((teacher) => ({
-    //     label: teacher.name,
-    //     value: teacher.id.toString() + "-" + teacher.name,
-    // }));
-
-    const teacherOptions = useMemo(() => {
+    const teachersOptions = useMemo(() => {
+        const uniqueIds = new Set();
         return data?.pages.flatMap((page) => {
             if (page?.message || page?.teachers?.length === 0) {
                 return [];
             }
 
-            return page?.teachers.map((teacher) => ({
-                label: teacher.name,
-                value: teacher.id.toString() + "-" + teacher.name,
-            }));
+            return page.teachers
+                .filter((teacher) => {
+                    if (uniqueIds.has(teacher.id)) {
+                        return false;
+                    } else {
+                        uniqueIds.add(teacher.id);
+                        return true;
+                    }
+                })
+                .map((teacher) => ({
+                    label: teacher.name,
+                    value: teacher.id.toString() + " - " + teacher.name,
+                }));
         });
     }, [data]);
 
     useEffect(() => {
         if (data) {
+            const newTeachers = data.pages.flatMap((page) => page.teachers);
+
             setTeachersData((prev) => {
-                const newTeachers = data.pages.flatMap((page) => page.teachers);
                 const uniqueNewTeachers = newTeachers.filter(
                     (newTeacher) =>
                         !prev.some(
@@ -1193,11 +1214,40 @@ const TeacherPicker = ({
 
                 return [...prev, ...uniqueNewTeachers];
             });
+
+            // Set teacherValue when data is loaded
+            const selectedTeacher = newTeachers.find(
+                (teacher) => teacher.id.toString() === teacherId
+            );
+
+            if (selectedTeacher) {
+                const newTeacherValue = `${selectedTeacher.id} - ${selectedTeacher.name}`;
+                setTeacherValue(newTeacherValue);
+
+                // Update setSelectedTeacher
+                setSelectedTeacher(selectedTeacher);
+            }
+
+            setIsDataLoaded(true);
         }
-    }, [data]);
+    }, [data, teacherId, setSelectedTeacher]);
+
+    // const teachersOptions = teachers.map((parent) => ({
+    //     label: parent.name,
+    //     value: parent.id.toString(),
+    // }));
 
     if (!isClient) {
         return null;
+    }
+
+    if (!isDataLoaded) {
+        return (
+            <div className="flex flex-col gap-2">
+                <div className="skeleton rounded-lg w-1/2 h-6"></div>
+                <div className="skeleton rounded-lg w-full h-9"></div>
+            </div>
+        );
     }
 
     return (
@@ -1209,20 +1259,16 @@ const TeacherPicker = ({
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {teacherId && !isFetching
-                        ? teacherOptions.find(
-                              (parent) => parent.value === teacherId
-                          )?.label
-                        : `Pilih Guru...`}
+                    {teacherValue || "Pilih Guru..."}
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         unfold_more
                     </span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="p-0 border-neutral-600" align="start">
+            <PopoverContent className="p-0" align="start">
                 <Command>
                     <CommandInput
-                        placeholder={`Cari Guru...`}
+                        placeholder="Cari Guru..."
                         onValueChange={setSearch}
                     />
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
@@ -1230,30 +1276,36 @@ const TeacherPicker = ({
                             <CommandEmpty>Mendapatkan data...</CommandEmpty>
                         ) : (
                             <>
-                                <CommandEmpty>
-                                    Guru tidak ditemukan
+                                <CommandEmpty asChild>
+                                    <Link
+                                        href={`/a/users/add?callback=${encodeURIComponent(
+                                            currentUrl
+                                        )}`}
+                                        className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
+                                    >
+                                        <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
+                                            add
+                                        </span>
+                                        Tambah Guru
+                                    </Link>
                                 </CommandEmpty>
                                 <CommandGroup>
-                                    {teacherOptions.map((parent, index) => (
+                                    {teachersOptions?.map((teacher, index) => (
                                         <CommandItem
                                             key={index}
-                                            value={parent.value}
-                                            defaultValue={parent.value}
+                                            value={teacher.value}
                                             onSelect={(currentValue) => {
-                                                const selectedId =
-                                                    currentValue.split("-")[0];
-
-                                                setTeacherId(
-                                                    selectedId === teacherId
-                                                        ? ""
-                                                        : currentValue
-                                                );
+                                                const selectedId = currentValue
+                                                    .split("-")[0]
+                                                    .trim();
+                                                setTeacherId(selectedId);
+                                                setTeacherValue(currentValue);
                                                 setOpen(false);
 
                                                 const setTeacher =
                                                     teachersData.find(
-                                                        (p: User) =>
-                                                            p.id.toString() ===
+                                                        (t: User) =>
+                                                            t.id.toString() ===
                                                             selectedId
                                                     );
 
@@ -1269,17 +1321,17 @@ const TeacherPicker = ({
                                                     "material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4",
                                                     {
                                                         "opacity-100":
-                                                            parent.value ===
-                                                            teacherId,
+                                                            teacher.value ===
+                                                            teacherValue,
                                                         "opacity-0":
-                                                            parent.value !==
-                                                            teacherId,
+                                                            teacher.value !==
+                                                            teacherValue,
                                                     }
                                                 )}
                                             >
                                                 check
                                             </span>
-                                            {parent.label}
+                                            {teacher.label}
                                         </CommandItem>
                                     ))}
                                 </CommandGroup>

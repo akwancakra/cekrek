@@ -7,30 +7,39 @@ const prisma = new PrismaClient();
 
 export async function GET(req: NextRequest) {
     try {
-        // Extract query parameters
         const url = new URL(req.url);
-        const limit = url?.searchParams?.get("limit");
-        const skip = url?.searchParams?.get("skip");
         const name_params = url?.searchParams?.get("name") || "";
-        const data = url?.searchParams?.get("data") || "";
+        const limit = url?.searchParams?.get("limit") as string;
+        const skip = url?.searchParams?.get("skip") as string;
+        const sort = url.searchParams.get("sort"); // asc, desc
         const main = url?.searchParams?.get("main");
+        const data = url?.searchParams?.get("data");
 
-        let recommendations;
+        // Inisialisasi findOptions sebagai objek kosong
+        let findOptions: any = {};
 
-        const queryOptions: any = {
-            include: { children: true },
-        };
+        if (name_params) {
+            findOptions.where = {
+                name: { contains: name_params },
+            };
+        }
+
+        if (limit) {
+            findOptions.take = parseInt(limit);
+        }
+
+        if (skip) {
+            findOptions.skip = parseInt(skip);
+        }
+
+        if (sort) {
+            findOptions.orderBy = {
+                name: sort,
+            };
+        }
 
         if (main) {
-            queryOptions.where = { is_main: main === "true" ? true : false };
-        }
-
-        // Apply limit and skip if they exist
-        if (limit) {
-            queryOptions.take = parseInt(limit);
-        }
-        if (skip) {
-            queryOptions.skip = parseInt(skip);
+            findOptions.where = { is_main: main === "true" ? true : false };
         }
 
         if (data) {
@@ -45,7 +54,7 @@ export async function GET(req: NextRequest) {
                   )
                 : [];
 
-            queryOptions.where = {
+            findOptions.where = {
                 AND: [
                     { is_main: true },
                     {
@@ -58,12 +67,24 @@ export async function GET(req: NextRequest) {
                 ],
             };
         } else {
-            queryOptions.where = {
+            findOptions.where = {
                 title: { contains: name_params },
             };
         }
 
-        recommendations = await prisma.recommendations.findMany(queryOptions);
+        const recommendations = await prisma.recommendations.findMany(
+            findOptions
+        );
+        // Fetch total count
+        const totalCount = await prisma.recommendations.count({
+            where: findOptions.where,
+        });
+
+        // Calculate next cursor
+        const nextCursor =
+            parseInt(skip) + recommendations.length < totalCount
+                ? parseInt(skip) + recommendations.length
+                : null;
 
         if (recommendations.length === 0) {
             return NextResponse.json(
@@ -77,7 +98,7 @@ export async function GET(req: NextRequest) {
         }
 
         return NextResponse.json(
-            { status: "success", recommendations },
+            { status: "success", recommendations, totalCount, nextCursor },
             { status: 200 }
         );
     } catch (error: any) {

@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
         const skip = url.searchParams.get("skip") as string;
         const type = url.searchParams.get("type"); // ayah, ibu, wali
         const sort = url.searchParams.get("sort"); // asc, desc
+        const id = url.searchParams.get("id");
 
         // Deklarasikan findOptions sebagai any untuk mengizinkan properti dinamis
         let findOptions: any = {
@@ -71,7 +72,27 @@ export async function GET(req: NextRequest) {
             };
         }
 
-        const parents = await prisma.users.findMany(findOptions);
+        let parents = await prisma.users.findMany(findOptions);
+        let getParent;
+        if (id) {
+            getParent = await prisma.users.findUnique({
+                where: {
+                    id: parseInt(id),
+                    role: "parent",
+                },
+            });
+        }
+
+        // CHECK IF PARENT IS NOT EXIST IN PARENTS
+        if (getParent) {
+            const isParentExists = parents.some(
+                (parent) => parent.id === getParent.id
+            );
+
+            if (!isParentExists) {
+                parents.push(getParent);
+            }
+        }
 
         // Fetch total count
         const totalCount = await prisma.users.count({

@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
         const name_params = url?.searchParams?.get("name") || "";
         const sort = url.searchParams.get("sort"); // asc, desc
         const plain = url?.searchParams?.get("plain") === "true";
+        const id = url.searchParams.get("id");
 
         // Deklarasikan findOptions sebagai any untuk mengizinkan properti dinamis
         let findOptions: any = { where: { role: "teacher" } };
@@ -42,10 +43,26 @@ export async function GET(req: NextRequest) {
         }
 
         const teachers = await prisma.users.findMany(findOptions);
-        // where: { role: "teacher", name: { contains: name_params } },
-        // include: { children: true },
-        // take: parseInt(limit),
-        // skip: parseInt(skip),
+        let getTeacher;
+        if (id) {
+            getTeacher = await prisma.users.findUnique({
+                where: {
+                    id: parseInt(id),
+                    role: "teacher",
+                },
+            });
+        }
+
+        // CHECK IF PARENT IS NOT EXIST IN PARENTS
+        if (getTeacher) {
+            const isTeacherExists = teachers.some(
+                (parent) => parent.id === getTeacher.id
+            );
+
+            if (!isTeacherExists) {
+                teachers.push(getTeacher);
+            }
+        }
 
         // Fetch total count
         const totalCount = await prisma.users.count({

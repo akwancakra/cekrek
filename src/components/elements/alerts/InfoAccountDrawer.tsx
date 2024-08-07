@@ -38,7 +38,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                         <DrawerDescription>
                             <div className="col-span-3">
                                 <p className="text-small -mb-1">Nama</p>
-                                <p className="text-medium font-semibold tracking-tight">
+                                <p className="text-medium font-semibold tracking-tight break-words">
                                     {profile?.name || "N/A"}
                                 </p>
                             </div>
@@ -46,7 +46,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                             <div className="grid grid-cols-3 gap-2 justify-between">
                                 <div>
                                     <p className="text-small -mb-1">E-mail</p>
-                                    <p className="text-medium font-semibold tracking-tight">
+                                    <p className="text-medium font-semibold tracking-tight break-words">
                                         {profile?.email || "N/A"}
                                     </p>
                                 </div>
@@ -54,14 +54,14 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                     <p className="text-small -mb-1">
                                         Peran Akun
                                     </p>
-                                    <p className="text-medium font-semibold tracking-tight">
+                                    <p className="text-medium font-semibold tracking-tight break-words">
                                         {profile?.role || "N/A"}
                                     </p>
                                 </div>
                                 {profile?.role === "parent" && (
                                     <div>
                                         <p className="text-small -mb-1">Tipe</p>
-                                        <p className="text-medium font-semibold tracking-tight">
+                                        <p className="text-medium font-semibold tracking-tight break-words">
                                             {profile?.type || "N/A"}
                                         </p>
                                     </div>
@@ -72,7 +72,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 Agama
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.religion || "N/A"}
                                             </p>
                                         </div>
@@ -80,7 +80,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 Pendidikan
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.education || "N/A"}
                                             </p>
                                         </div>
@@ -88,7 +88,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 Pekerjaan
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.job || "N/A"}
                                             </p>
                                         </div>
@@ -96,7 +96,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 Tempat Lahir
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.place_birth || "N/A"}
                                             </p>
                                         </div>
@@ -104,7 +104,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 Tgl Lahir
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.date_time_birth &&
                                                 typeof profile?.date_time_birth !=
                                                     "string"
@@ -118,7 +118,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 No. Tlp
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.phone || "N/A"}
                                             </p>
                                         </div>
@@ -126,7 +126,7 @@ export default function InfoAccountDrawer({ profile }: Props) {
                                             <p className="text-small -mb-1">
                                                 Alamat
                                             </p>
-                                            <p className="text-medium font-semibold tracking-tight">
+                                            <p className="text-medium font-semibold tracking-tight break-words">
                                                 {profile?.address || "N/A"}
                                             </p>
                                         </div>

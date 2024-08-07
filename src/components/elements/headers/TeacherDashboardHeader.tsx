@@ -23,7 +23,7 @@ interface TeacherDashboardHeaderType {
     keyword: string;
     category: string;
     students: Child[];
-    studentsFull: Child[];
+    // studentsFull: Child[];
     setCategory: React.Dispatch<React.SetStateAction<string>>;
     setShowType: React.Dispatch<React.SetStateAction<string>>;
     setKeyword: React.Dispatch<React.SetStateAction<string>>;
@@ -40,7 +40,7 @@ export default function TeacherDashboardHeader({
     handleSearch,
     category,
     setCategory,
-    studentsFull,
+    // studentsFull,
     mutate,
 }: TeacherDashboardHeaderType) {
     return (
@@ -141,7 +141,7 @@ export default function TeacherDashboardHeader({
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                         <ConnectStudentDialog
-                            students={studentsFull}
+                            students={students}
                             mutate={mutate}
                         >
                             <button
@@ -260,7 +260,7 @@ export default function TeacherDashboardHeader({
                         <DropdownMenuSeparator />
                         <DropdownMenuLabel>Aksi</DropdownMenuLabel>
                         <ConnectStudentDialog
-                            students={studentsFull}
+                            students={students}
                             mutate={mutate}
                         >
                             <button

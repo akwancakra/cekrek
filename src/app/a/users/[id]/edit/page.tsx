@@ -22,15 +22,51 @@ import {
 } from "@/components/ui/select";
 import { User } from "@/types/user.types";
 import { fetcher } from "@/utils/fetcher";
-import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import {
+    capitalizeFirstLetter,
+    formattedDate,
+    formattedDateStripYearFirst,
+} from "@/utils/formattedDate";
 import axios from "axios";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
 import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import * as Yup from "yup";
+
+const roleOptions = [
+    { value: "parent", label: "Orang Tua" },
+    { value: "teacher", label: "Guru" },
+    { value: "admin", label: "Admin" },
+];
+
+const typeOptions = [
+    { value: "ayah", label: "Ayah" },
+    { value: "ibu", label: "Ibu" },
+    { value: "wali", label: "Wali" },
+];
+
+const religionOptions = [
+    { value: "islam", label: "Islam" },
+    { value: "kristen", label: "Kristen" },
+    { value: "katolik", label: "Katolik" },
+    { value: "hindu", label: "Hindu" },
+    { value: "buddha", label: "Buddha" },
+    { value: "konghucu", label: "Konghucu" },
+];
+
+const educationOptions = [
+    { value: "Tidak Sekolah", label: "Tidak Sekolah" },
+    { value: "SD", label: "SD" },
+    { value: "SMP", label: "SMP" },
+    { value: "SMA", label: "SMA" },
+    { value: "Diploma", label: "Diploma" },
+    { value: "Sarjana (S1)", label: "Sarjana (S1)" },
+    { value: "Pasca Sarjana (S2)", label: "Pasca Sarjana (S2)" },
+    { value: "Doktoral (S3)", label: "Doktoral (S3)" },
+];
 
 const initialValues = {
     name: "",
@@ -39,7 +75,7 @@ const initialValues = {
     type: "",
     role: "",
     place_birth: "",
-    date_birth: new Date(),
+    date_birth: "",
     religion: "",
     education: "",
     job: "",
@@ -131,6 +167,7 @@ const validationSchema = Yup.object().shape({
 export default function AddParentPage() {
     const [user, setUser] = useState<User>();
     const [isSubmit, setIsSubmit] = useState(false);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const { id } = useParams();
     const router = useRouter();
@@ -199,7 +236,9 @@ export default function AddParentPage() {
                     type: data.user.type || "",
                     place_birth: data.user.place_birth || "",
                     date_birth: data.user.date_time_birth
-                        ? new Date(data.user.date_time_birth)
+                        ? formattedDateStripYearFirst(
+                              data.user.date_time_birth.toString()
+                          )
                         : null,
                     religion: data.user.religion || "",
                     education: data.user.education || "",
@@ -207,6 +246,8 @@ export default function AddParentPage() {
                     address: data.user.address || "",
                     phone: data.user.phone || "",
                 });
+
+                setIsDataLoaded(true);
             } else {
                 router.back();
             }
@@ -218,7 +259,7 @@ export default function AddParentPage() {
             <section className="mx-auto max-w-7xl">
                 <div className="rounded-lg mb-3 p-4 w-full flex items-center bg-gradient-to-r from-purple-400 to-purple-600 h-28 sm:h-36">
                     <div>
-                        <p className="text-white text-sm -mb-1">Tambah Akun</p>
+                        <p className="text-white text-sm -mb-1">Ubah Akun</p>
                         <p className="font-semibold tracking-tight text-xl text-white">
                             CekRek
                         </p>
@@ -237,8 +278,8 @@ export default function AddParentPage() {
                 </div>
 
                 <div className="sm:flex gap-3 group-[.open]:block md:group-[.open]:flex">
-                    <div className=" w-full border border-gray-300 rounded-lg p-3 sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                        {isLoading ? (
+                    <div className=" w-full border border-gray-300 rounded-lg p-3 sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3 dark:border-neutral-600">
+                        {isLoading || !isDataLoaded ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                     <div className="flex flex-col gap-2">
@@ -339,110 +380,38 @@ export default function AddParentPage() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="form-control w-full">
-                                                <div className="label ps-0">
-                                                    <span className="label-text">
-                                                        Peran{" "}
-                                                        {formik.errors.role && (
-                                                            <span className="text-red-500 text-xs italic">
-                                                                *wajib diisi
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                </div>
-                                                <Select
-                                                    defaultValue={
-                                                        formik.values.role
-                                                    }
-                                                    onValueChange={(value) =>
-                                                        formik.setFieldValue(
-                                                            "role",
-                                                            value
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger
-                                                        name="role"
-                                                        className="w-full"
-                                                        onBlur={
-                                                            formik.handleBlur
-                                                        }
-                                                    >
-                                                        <SelectValue placeholder="Pilih Peran" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="parent">
-                                                            Orang Tua
-                                                        </SelectItem>
-                                                        <SelectItem value="teacher">
-                                                            Guru
-                                                        </SelectItem>
-                                                        <SelectItem value="admin">
-                                                            Admin
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                            </label>
-                                            <ErrorMessage
+                                            <SelectOption
+                                                formik={formik}
+                                                options={roleOptions}
                                                 name="role"
-                                                component="div"
-                                                className="text-red-500 text-xs sm:text-sm"
+                                                label="Peran"
+                                                placeholder="Pilih Peran"
                                             />
                                         </div>
                                         {formik.values.role === "parent" && (
                                             <div>
-                                                <div className="label ps-0">
-                                                    <span className="label-text">
-                                                        Tipe orang tua{" "}
-                                                        {formik.errors.type && (
-                                                            <span className="text-red-500 text-xs italic">
-                                                                *wajib diisi
-                                                            </span>
-                                                        )}
-                                                    </span>
-                                                </div>
-                                                <Select
-                                                    defaultValue={
-                                                        formik.values.type
-                                                    }
-                                                    value={formik.values.type}
-                                                    onValueChange={(value) =>
-                                                        formik.setFieldValue(
-                                                            "type",
-                                                            value
-                                                        )
-                                                    }
-                                                >
-                                                    <SelectTrigger
-                                                        name="type"
-                                                        className="w-full"
-                                                        onBlur={
-                                                            formik.handleBlur
-                                                        }
-                                                    >
-                                                        <SelectValue placeholder="Pilih Tipe" />
-                                                    </SelectTrigger>
-                                                    <SelectContent>
-                                                        <SelectItem value="ayah">
-                                                            Ayah
-                                                        </SelectItem>
-                                                        <SelectItem value="ibu">
-                                                            Ibu
-                                                        </SelectItem>
-                                                        <SelectItem value="wali">
-                                                            Wali
-                                                        </SelectItem>
-                                                    </SelectContent>
-                                                </Select>
-                                                <ErrorMessage
+                                                <SelectOption
+                                                    formik={formik}
+                                                    options={typeOptions}
                                                     name="type"
-                                                    component="div"
-                                                    className="text-red-500 text-xs sm:text-sm"
+                                                    label="Tipe Orang Tua"
+                                                    placeholder="Pilih Tipe Orang Tua"
                                                 />
                                             </div>
                                         )}
                                         {formik.values.role !== "admin" && (
                                             <>
+                                                <div>
+                                                    <SelectOption
+                                                        formik={formik}
+                                                        options={
+                                                            religionOptions
+                                                        }
+                                                        name="religion"
+                                                        label="Agama"
+                                                        placeholder="Pilih Agama"
+                                                    />
+                                                </div>
                                                 <div>
                                                     <label className="form-control w-full">
                                                         <div className="label ps-0">
@@ -501,142 +470,14 @@ export default function AddParentPage() {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="form-control w-full">
-                                                        <div className="label ps-0">
-                                                            <span className="label-text">
-                                                                Agama{" "}
-                                                                {formik.errors
-                                                                    .religion && (
-                                                                    <span className="text-red-500 text-xs italic">
-                                                                        *wajib
-                                                                        diisi
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                        <Select
-                                                            defaultValue={
-                                                                formik.values
-                                                                    .religion
-                                                            }
-                                                            onValueChange={(
-                                                                value
-                                                            ) =>
-                                                                formik.setFieldValue(
-                                                                    "religion",
-                                                                    value
-                                                                )
-                                                            }
-                                                        >
-                                                            <SelectTrigger
-                                                                name="religion"
-                                                                className="w-full"
-                                                                onBlur={
-                                                                    formik.handleBlur
-                                                                }
-                                                            >
-                                                                <SelectValue placeholder="Pilih Agama" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="islam">
-                                                                    Islam
-                                                                </SelectItem>
-                                                                <SelectItem value="kristen">
-                                                                    Kristen
-                                                                </SelectItem>
-                                                                <SelectItem value="katolik">
-                                                                    Katolik
-                                                                </SelectItem>
-                                                                <SelectItem value="hindu">
-                                                                    Hindu
-                                                                </SelectItem>
-                                                                <SelectItem value="buddha">
-                                                                    Buddha
-                                                                </SelectItem>
-                                                                <SelectItem value="konghucu">
-                                                                    Konghucu
-                                                                </SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </label>
-                                                    <ErrorMessage
-                                                        name="religion"
-                                                        component="div"
-                                                        className="text-red-500 text-xs sm:text-sm"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="form-control w-full">
-                                                        <div className="label ps-0">
-                                                            <span className="label-text">
-                                                                Pendidikan{" "}
-                                                                {formik.errors
-                                                                    .education && (
-                                                                    <span className="text-red-500 text-xs italic">
-                                                                        *wajib
-                                                                        diisi
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                        </div>
-                                                        <Select
-                                                            defaultValue={
-                                                                formik.values
-                                                                    .education
-                                                            }
-                                                            onValueChange={(
-                                                                value
-                                                            ) =>
-                                                                formik.setFieldValue(
-                                                                    "education",
-                                                                    value
-                                                                )
-                                                            }
-                                                        >
-                                                            <SelectTrigger
-                                                                name="education"
-                                                                className="w-full"
-                                                                onBlur={
-                                                                    formik.handleBlur
-                                                                }
-                                                            >
-                                                                <SelectValue placeholder="Pilih Pendidikan Terakhir" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                <SelectItem value="Tidak Sekolah">
-                                                                    Tidak
-                                                                    Sekolah
-                                                                </SelectItem>
-                                                                <SelectItem value="SD">
-                                                                    SD
-                                                                </SelectItem>
-                                                                <SelectItem value="SMP">
-                                                                    SMP
-                                                                </SelectItem>
-                                                                <SelectItem value="SMA">
-                                                                    SMA
-                                                                </SelectItem>
-                                                                <SelectItem value="Diploma">
-                                                                    Diploma
-                                                                </SelectItem>
-                                                                <SelectItem value="Sarjana (S1)">
-                                                                    Sarjana (S1)
-                                                                </SelectItem>
-                                                                <SelectItem value="Pasca Sarjana (S2)">
-                                                                    Pasca
-                                                                    Sarjana (S2)
-                                                                </SelectItem>
-                                                                <SelectItem value="Doktoral (S3)">
-                                                                    Doktoral
-                                                                    (S3)
-                                                                </SelectItem>
-                                                            </SelectContent>
-                                                        </Select>
-                                                    </label>
-                                                    <ErrorMessage
+                                                    <SelectOption
+                                                        formik={formik}
+                                                        options={
+                                                            educationOptions
+                                                        }
                                                         name="education"
-                                                        component="div"
-                                                        className="text-red-500 text-xs sm:text-sm"
+                                                        label="Pendidikan"
+                                                        placeholder="Pilih Pendidikan Terakhir"
                                                     />
                                                 </div>
                                                 <div>
@@ -809,7 +650,8 @@ export default function AddParentPage() {
                             </FormikProvider>
                         )}
                     </div>
-                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3">
+
+                    <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                         {isLoading ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
@@ -845,7 +687,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Email
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.email || "N/A"}
                                     </p>
                                 </div>
@@ -853,7 +695,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Nama
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.name || "N/A"}
                                     </p>
                                 </div>
@@ -862,7 +704,7 @@ export default function AddParentPage() {
                                         <p className="text-xs text-gray-400">
                                             Tipe Orang Tua
                                         </p>
-                                        <p className="text-medium font-semibold">
+                                        <p className="text-medium font-semibold break-words">
                                             {formik.values.type
                                                 ? capitalizeFirstLetter(
                                                       formik.values.type
@@ -877,7 +719,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Agama
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.religion ||
                                                     "N/A"}
                                             </p>
@@ -886,7 +728,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Tempat Lahir
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.place_birth ||
                                                     "N/A"}
                                             </p>
@@ -895,7 +737,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Tanggal Lahir
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.date_birth
                                                     ? formattedDate(
                                                           formik.values.date_birth.toString()
@@ -907,7 +749,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Pendidikan
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.education ||
                                                     "N/A"}
                                             </p>
@@ -916,7 +758,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Pekerjaan
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.job || "N/A"}
                                             </p>
                                         </div>
@@ -924,7 +766,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Alamat
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.address || "N/A"}
                                             </p>
                                         </div>
@@ -932,7 +774,7 @@ export default function AddParentPage() {
                                             <p className="text-xs text-gray-400">
                                                 Nomor Telepon
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {formik.values.phone || "N/A"}
                                             </p>
                                         </div>
@@ -946,3 +788,43 @@ export default function AddParentPage() {
         </>
     );
 }
+
+const SelectOption = ({ formik, options, name, label, placeholder }) => {
+    return (
+        <div>
+            <label className="form-control w-full">
+                <div className="label ps-0">
+                    <span className="label-text">
+                        {label}{" "}
+                        {formik.errors[name] && (
+                            <span className="text-red-500 text-xs italic">
+                                *wajib diisi
+                            </span>
+                        )}
+                    </span>
+                </div>
+                <Select
+                    name={name}
+                    defaultValue={formik.values[name]}
+                    onValueChange={(value) => formik.setFieldValue(name, value)}
+                >
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder={placeholder} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {options.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                                {option.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </label>
+            <ErrorMessage
+                name={name}
+                component="div"
+                className="text-red-500 text-xs sm:text-sm"
+            />
+        </div>
+    );
+};

@@ -30,14 +30,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useIsClient } from "usehooks-ts";
-import useSWR from "swr";
-import { fetcher } from "@/utils/fetcher";
 import { User } from "@/types/user.types";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ChildrenData } from "@/types/childrenData.type";
 import { getImageUrl } from "@/utils/converters";
 import { useInfiniteQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 const oneOfThreeRequired = (fields: any) => {
     return Yup.string().test(
@@ -146,24 +144,25 @@ export default function BiodataWrapper({
     const [date, setDate] = useState<Date | undefined>(new Date());
     const [isLoading, setIsLoading] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
-    const [parentsData, setParentsData] = useState<User[]>([]);
-    const [teachers, setTeachers] = useState<User[]>([]);
+    // const [parentsData, setParentsData] = useState<User[]>([]);
+    // const [teachers, setTeachers] = useState<User[]>([]);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const [selectedTeacher, setSelectedTeacher] = useState<User>({} as User);
     const [selectedParent, setSelectedParent] = useState<Parents>({});
     const isClient = useIsClient();
 
-    const {
-        data: parentsRaw,
-        isLoading: isLoadingParent,
-    }: { data: { status: string; parents: User[] }; isLoading: boolean } =
-        useSWR("/api/parents?plain=true", fetcher);
+    // const {
+    //     data: parentsRaw,
+    //     isLoading: isLoadingParent,
+    // }: { data: { status: string; parents: User[] }; isLoading: boolean } =
+    //     useSWR("/api/parents?plain=true", fetcher);
 
-    const {
-        data: teacherRow,
-        isLoading: isLoadingTeacher,
-    }: { data: { status: string; teachers: User[] }; isLoading: boolean } =
-        useSWR("/api/teachers?plain=true", fetcher);
+    // const {
+    //     data: teacherRow,
+    //     isLoading: isLoadingTeacher,
+    // }: { data: { status: string; teachers: User[] }; isLoading: boolean } =
+    //     useSWR("/api/teachers?plain=true", fetcher);
 
     // const initialValues: { [key: string]: any } = {
     //     // id: "",
@@ -376,6 +375,9 @@ export default function BiodataWrapper({
                 });
             }
         }
+
+        // Make sure all data is loaded to formik
+        setIsDataLoaded(true);
     }, [localData]);
 
     // useEffect(() => {
@@ -494,7 +496,7 @@ export default function BiodataWrapper({
 
     return (
         <>
-            {(isLoading || !isClient) && (
+            {(isLoading || !isClient || !isDataLoaded) && (
                 <>
                     <div className="mb-3">
                         <p className="text-large font-semibold tracking-tight">
@@ -537,7 +539,7 @@ export default function BiodataWrapper({
                 </>
             )}
 
-            {!isLoading && isClient && (
+            {!isLoading && isClient && isDataLoaded && (
                 <FormikProvider value={formik}>
                     <Form>
                         <div>
@@ -1591,8 +1593,9 @@ const TeacherPicker = ({
     setSelectedTeacher,
 }: // teachers,
 TeacherPickerProps) => {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [open, setOpen] = useState(false);
-    // const router = useRouter();
+    const [teacherValue, setTeacherValue] = useState("");
     const isClient = useIsClient();
     const currentUrl =
         typeof window !== "undefined" ? window.location.href : "";
@@ -1602,10 +1605,17 @@ TeacherPickerProps) => {
     const limit = 25;
 
     const fetchTeachers = async ({ pageParam = 0 }) => {
-        const res = await fetch(
-            `/api/teachers?plain=true&limit=${limit}&skip=${pageParam}&sort=asc`
-        );
-        return res.json();
+        const res = await axios.get(`/api/teachers`, {
+            params: {
+                plain: true,
+                limit: limit,
+                skip: pageParam,
+                sort: "asc",
+                // name: keyword,
+            },
+        });
+
+        return res.data;
     };
 
     const {
@@ -1624,22 +1634,33 @@ TeacherPickerProps) => {
     });
 
     const teachersOptions = useMemo(() => {
+        const uniqueIds = new Set();
         return data?.pages.flatMap((page) => {
             if (page?.message || page?.teachers?.length === 0) {
                 return [];
             }
 
-            return page.teachers.map((teacher) => ({
-                label: teacher.name,
-                value: teacher.id.toString() + "-" + teacher.name,
-            }));
+            return page.teachers
+                .filter((teacher) => {
+                    if (uniqueIds.has(teacher.id)) {
+                        return false;
+                    } else {
+                        uniqueIds.add(teacher.id);
+                        return true;
+                    }
+                })
+                .map((teacher) => ({
+                    label: teacher.name,
+                    value: teacher.id.toString() + " - " + teacher.name,
+                }));
         });
     }, [data]);
 
     useEffect(() => {
         if (data) {
+            const newTeachers = data.pages.flatMap((page) => page.teachers);
+
             setTeachersData((prev) => {
-                const newTeachers = data.pages.flatMap((page) => page.teachers);
                 const uniqueNewTeachers = newTeachers.filter(
                     (newTeacher) =>
                         !prev.some(
@@ -1650,8 +1671,23 @@ TeacherPickerProps) => {
 
                 return [...prev, ...uniqueNewTeachers];
             });
+
+            // Set teacherValue when data is loaded
+            const selectedTeacher = newTeachers.find(
+                (teacher) => teacher.id.toString() === teacherId
+            );
+
+            if (selectedTeacher) {
+                const newTeacherValue = `${selectedTeacher.id} - ${selectedTeacher.name}`;
+                setTeacherValue(newTeacherValue);
+
+                // Update setSelectedTeacher
+                setSelectedTeacher(selectedTeacher);
+            }
+
+            setIsDataLoaded(true);
         }
-    }, [data]);
+    }, [data, teacherId, setSelectedTeacher]);
 
     // const teachersOptions = teachers.map((parent) => ({
     //     label: parent.name,
@@ -1660,6 +1696,15 @@ TeacherPickerProps) => {
 
     if (!isClient) {
         return null;
+    }
+
+    if (!isDataLoaded) {
+        return (
+            <div className="flex flex-col gap-2">
+                <div className="skeleton rounded-lg w-1/2 h-6"></div>
+                <div className="skeleton rounded-lg w-full h-9"></div>
+            </div>
+        );
     }
 
     return (
@@ -1671,20 +1716,16 @@ TeacherPickerProps) => {
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {teacherId && !isFetching
-                        ? teachersOptions.find(
-                              (parent) => parent.value === teacherId
-                          )?.label
-                        : `Pilih Guru...`}
+                    {teacherValue || "Pilih Guru..."}
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         unfold_more
                     </span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className=" p-0" align="start">
+            <PopoverContent className="p-0" align="start">
                 <Command>
                     <CommandInput
-                        placeholder={`Cari Guru...`}
+                        placeholder="Cari Guru..."
                         onValueChange={setSearch}
                     />
                     <CommandList className="overflow-y-auto max-h-40 md:max-h-80">
@@ -1705,41 +1746,23 @@ TeacherPickerProps) => {
                                         Tambah Guru
                                     </Link>
                                 </CommandEmpty>
-                                {teachersOptions.length === 0 && (
-                                    <CommandItem value="add-new" asChild>
-                                        <Link
-                                            href={`/a/users/add?callback=${encodeURIComponent(
-                                                currentUrl
-                                            )}`}
-                                            className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                                        >
-                                            <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                                add
-                                            </span>
-                                            Tambah Guru
-                                        </Link>
-                                    </CommandItem>
-                                )}
                                 <CommandGroup>
-                                    {teachersOptions.map((teacher, index) => (
+                                    {teachersOptions?.map((teacher, index) => (
                                         <CommandItem
                                             key={index}
                                             value={teacher.value}
                                             onSelect={(currentValue) => {
-                                                const selectedId =
-                                                    currentValue.split("-")[0];
-
-                                                setTeacherId(
-                                                    selectedId === teacherId
-                                                        ? ""
-                                                        : currentValue
-                                                );
+                                                const selectedId = currentValue
+                                                    .split("-")[0]
+                                                    .trim();
+                                                setTeacherId(selectedId);
+                                                setTeacherValue(currentValue);
                                                 setOpen(false);
 
                                                 const setTeacher =
                                                     teachersData.find(
-                                                        (p: User) =>
-                                                            p.id.toString() ===
+                                                        (t: User) =>
+                                                            t.id.toString() ===
                                                             selectedId
                                                     );
 
@@ -1756,10 +1779,10 @@ TeacherPickerProps) => {
                                                     {
                                                         "opacity-100":
                                                             teacher.value ===
-                                                            teacherId,
+                                                            teacherValue,
                                                         "opacity-0":
                                                             teacher.value !==
-                                                            teacherId,
+                                                            teacherValue,
                                                     }
                                                 )}
                                             >
@@ -1769,7 +1792,6 @@ TeacherPickerProps) => {
                                         </CommandItem>
                                     ))}
                                 </CommandGroup>
-
                                 {hasNextPage && (
                                     <CommandItem asChild value={"z " + search}>
                                         <Button
@@ -1796,8 +1818,8 @@ interface ParentPickerProps {
     parentType: "ayah" | "ibu" | "wali";
     parentId: string;
     setParentId: (parentId: string) => void;
-    // parentsData: User[];
     setSelectedParent: (any) => void;
+    // parentsData: User[];
 }
 
 const ParentPicker = ({
@@ -1807,7 +1829,9 @@ const ParentPicker = ({
     // parentsData,
     setSelectedParent,
 }: ParentPickerProps) => {
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [open, setOpen] = useState(false);
+    const [parentValue, setParentValue] = useState("");
     // const router = useRouter();
     const isClient = useIsClient();
     const currentUrl =
@@ -1818,10 +1842,19 @@ const ParentPicker = ({
     const limit = 25;
 
     const fetchParents = async ({ pageParam = 0 }) => {
-        const res = await fetch(
-            `/api/parents?plain=true&type=${parentType}&limit=${limit}&skip=${pageParam}&sort=asc`
-        );
-        return res.json();
+        const res = await axios.get(`/api/parents`, {
+            params: {
+                id: parentId,
+                plain: true,
+                limit: limit,
+                skip: pageParam,
+                sort: "asc",
+                type: parentType,
+                // name: keyword,
+            },
+        });
+
+        return res.data;
     };
 
     const {
@@ -1840,6 +1873,7 @@ const ParentPicker = ({
     });
 
     const parentOptions = useMemo(() => {
+        const uniqueIds = new Set();
         return data?.pages.flatMap((page) => {
             if (page?.message || page?.parents?.length === 0) {
                 return [];
@@ -1847,6 +1881,15 @@ const ParentPicker = ({
 
             return page.parents
                 .filter((parent) => parent.type === parentType)
+                .filter((parent) => {
+                    // Check if the ID is already in the Set
+                    if (uniqueIds.has(parent.id)) {
+                        return false; // Skip this parent if the ID is already in the Set
+                    } else {
+                        uniqueIds.add(parent.id); // Add the ID to the Set
+                        return true; // Include this parent
+                    }
+                })
                 .map((parent) => ({
                     label: parent.name,
                     value: parent.id.toString() + "-" + parent.name,
@@ -1856,8 +1899,9 @@ const ParentPicker = ({
 
     useEffect(() => {
         if (data) {
+            const newParents = data.pages.flatMap((page) => page.parents);
+
             setParentsData((prev) => {
-                const newParents = data.pages.flatMap((page) => page.parents);
                 const uniqueNewParents = newParents.filter(
                     (newParent) =>
                         !prev.some(
@@ -1868,8 +1912,23 @@ const ParentPicker = ({
 
                 return [...prev, ...uniqueNewParents];
             });
+
+            // Set parentValue when data is loaded
+            const selectedParent = newParents.find(
+                (parent) => parent.id.toString() === parentId
+            );
+
+            if (selectedParent) {
+                const newParentValue = `${selectedParent.id} - ${selectedParent.name}`;
+                setParentValue(newParentValue);
+
+                // Update setSelectedParent based on parentType
+                updateParent(selectedParent);
+            }
+
+            setIsDataLoaded(true);
         }
-    }, [data]);
+    }, [data, parentId]);
 
     const updateParent = (parent: User) => {
         setSelectedParent((prev: any) => {
@@ -1897,6 +1956,13 @@ const ParentPicker = ({
         return null;
     }
 
+    if (!isDataLoaded) {
+        <div className="flex flex-col gap-2">
+            <div className="skeleton rounded-lg w-1/2 h-6"></div>
+            <div className="skeleton rounded-lg w-full h-9"></div>
+        </div>;
+    }
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -1906,20 +1972,17 @@ const ParentPicker = ({
                     aria-expanded={open}
                     className="w-full justify-between text-sm"
                 >
-                    {parentId && !isFetching
-                        ? parentOptions.find(
-                              (parent) => parent.value === parentId
-                          )?.label
-                        : `Pilih ${
-                              parentType.charAt(0).toUpperCase() +
-                              parentType.slice(1)
-                          }...`}
+                    {parentValue ||
+                        `Pilih ${
+                            parentType.charAt(0).toUpperCase() +
+                            parentType.slice(1)
+                        }...`}
                     <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                         unfold_more
                     </span>
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className=" p-0" align="start">
+            <PopoverContent className="p-0" align="start">
                 <Command>
                     <CommandInput
                         placeholder={`Cari ${parentType}...`}
@@ -1945,39 +2008,17 @@ const ParentPicker = ({
                                             parentType.slice(1)}
                                     </Link>
                                 </CommandEmpty>
-                                {parentOptions.length === 0 && (
-                                    <CommandItem value="add-new" asChild>
-                                        <Link
-                                            href={`/a/users/add?callback=${encodeURIComponent(
-                                                currentUrl
-                                            )}`}
-                                            className="cursor-pointer flex justify-center items-center text-small p-4 transition-all ease-in-out hover:bg-gray-200"
-                                        >
-                                            <span className="material-symbols-outlined cursor-pointer !text-lg !leading-none mr-2 h-4 w-4">
-                                                add
-                                            </span>
-                                            Tambah{" "}
-                                            {parentType
-                                                .charAt(0)
-                                                .toUpperCase() +
-                                                parentType.slice(1)}
-                                        </Link>
-                                    </CommandItem>
-                                )}
                                 <CommandGroup>
                                     {parentOptions.map((parent, index) => (
                                         <CommandItem
                                             key={index}
                                             value={parent.value}
                                             onSelect={(currentValue) => {
-                                                const selectedId =
-                                                    currentValue.split("-")[0];
-
-                                                setParentId(
-                                                    selectedId === parentId
-                                                        ? ""
-                                                        : currentValue
-                                                );
+                                                const selectedId = currentValue
+                                                    .split("-")[0]
+                                                    .trim();
+                                                setParentId(selectedId);
+                                                setParentValue(currentValue);
                                                 setOpen(false);
 
                                                 const setParent =
@@ -1998,10 +2039,10 @@ const ParentPicker = ({
                                                     {
                                                         "opacity-100":
                                                             parent.value ===
-                                                            parentId,
+                                                            parentValue,
                                                         "opacity-0":
                                                             parent.value !==
-                                                            parentId,
+                                                            parentValue,
                                                     }
                                                 )}
                                             >

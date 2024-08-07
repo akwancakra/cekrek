@@ -2,17 +2,21 @@
 
 import RecommendationsTable from "@/components/elements/tables-and-grids/RecommendationsTable";
 import { Button } from "@/components/ui/button";
-import { Recommendation } from "@/types/recommendation.type";
-import { fetcher } from "@/utils/fetcher";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import useSWR from "swr";
 
 export default function RecommendationsAdmin() {
     const [keyword, setKeyword] = useState("");
-    const [recommendations, setRecommendations] = useState<Recommendation[]>(
-        []
-    );
+    const searchParams = useSearchParams();
+    const urlKeyword = searchParams.get("keyword");
+
+    useEffect(() => {
+        setKeyword(urlKeyword || "");
+    }, [urlKeyword]);
+    // const [recommendations, setRecommendations] = useState<Recommendation[]>(
+    //     []
+    // );
 
     // const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
     //     event.preventDefault();
@@ -22,19 +26,19 @@ export default function RecommendationsAdmin() {
     //     setKeyword(target.keyword.value);
     // };
 
-    const {
-        data,
-        isLoading,
-    }: {
-        data: { status: string; recommendations: Recommendation[] };
-        isLoading: boolean;
-    } = useSWR("/api/recommendations", fetcher);
+    // const {
+    //     data,
+    //     isLoading,
+    // }: {
+    //     data: { status: string; recommendations: Recommendation[] };
+    //     isLoading: boolean;
+    // } = useSWR("/api/recommendations", fetcher);
 
-    useEffect(() => {
-        if (!isLoading && data?.recommendations) {
-            setRecommendations(data?.recommendations || []);
-        }
-    }, [data, isLoading]);
+    // useEffect(() => {
+    //     if (!isLoading && data?.recommendations) {
+    //         setRecommendations(data?.recommendations || []);
+    //     }
+    // }, [data, isLoading]);
 
     return (
         <>
@@ -104,18 +108,7 @@ export default function RecommendationsAdmin() {
                     </div>
                 </div>
 
-                {isLoading ? (
-                    <>
-                        <div>
-                            <div className="skeleton w-full h-72 rounded-lg"></div>
-                        </div>
-                    </>
-                ) : (
-                    <RecommendationsTable
-                        recommendations={recommendations}
-                        keyword={keyword}
-                    />
-                )}
+                <RecommendationsTable keyword={keyword} />
             </section>
         </>
     );

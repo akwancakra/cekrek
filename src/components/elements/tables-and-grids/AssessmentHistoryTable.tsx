@@ -27,7 +27,7 @@ import {
     DropdownMenuLabel,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
     AlertDialog,
@@ -50,14 +50,14 @@ import { fetcher } from "@/utils/fetcher";
 import useSWR from "swr";
 import { Child } from "@/types/children.types";
 import useProfile from "@/utils/useProfile";
+import { useMediaQuery } from "usehooks-ts";
+import { useRouter } from "next/navigation";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 interface AssessmentHistoryTableProps {
     keyword?: string;
 }
-
-const removeAssessmentButton = (id: number, date: string) => {
-    console.log("Assessment Removed!");
-};
 
 // JALANIN FUNGSINYA
 const columns: ColumnDef<ProcessedAssessment>[] = [
@@ -269,7 +269,7 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
                                             <Button
                                                 variant={"destructive"}
                                                 onClick={() =>
-                                                    removeAssessmentButton(
+                                                    removeAssessment(
                                                         parseInt(childId),
                                                         formattedDate
                                                     )
@@ -290,52 +290,121 @@ const columns: ColumnDef<ProcessedAssessment>[] = [
     },
 ];
 
+const removeAssessment = (id: number, date: string) => {
+    // setIsLoading(true);
+    console.log("Assessment Removed!");
+    // setIsLoading(false);
+};
+
 export default function AssessmentHistoryTable({
     keyword,
 }: AssessmentHistoryTableProps) {
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [sorting, setSorting] = useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-    const [historyAssessmen, setHistoryAssessmen] = useState<
-        ProcessedAssessment[] | undefined
-    >(undefined);
-    const { profile, isReady } = useProfile();
+    // const [historyAssessmen, setHistoryAssessmen] = useState<
+    //     ProcessedAssessment[] | undefined
+    // >(undefined);
+    const [pagination, setPagination] = useState({
+        pageIndex: 0, //initial page index
+        pageSize: 15, //default page size
+    });
 
-    const [showSize, setShowSize] = useState(15);
+    const { profile, isReady } = useProfile();
+    const isDesktop = useMediaQuery("(min-width: 768px)");
+    const router = useRouter();
+
+    const fetchAssessments = async ({ pageParam = 0 }) => {
+        const res = await axios.get(
+            `/api/teachers/${profile?.id}/child-assessments`,
+            {
+                params: {
+                    limit: pagination.pageSize,
+                    skip: pageParam,
+                    name: keyword,
+                },
+            }
+        );
+        return res.data;
+    };
 
     const {
         data,
-        isLoading,
-    }: {
-        data: { status: string; childrenAssessments: Child[] };
-        isLoading: boolean;
-    } = useSWR(`/api/teachers/${profile?.id}/child-assessments`, fetcher);
+        fetchNextPage,
+        isFetchingNextPage,
+        hasNextPage,
+        isLoading: isLoadingData,
+        refetch,
+    } = useInfiniteQuery({
+        queryKey: ["assessments"],
+        queryFn: fetchAssessments,
+        initialPageParam: 0,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+    });
 
-    useEffect(() => {
-        if (data) {
-            // console.log(data);
-            const history = processMultiChildAssessments(
-                data.childrenAssessments
-            );
-
-            setHistoryAssessmen(history);
+    const assessments: ProcessedAssessment[] = useMemo(() => {
+        if (!data?.pages) {
+            return [];
         }
+
+        const rawChildAssessments: Child[] = data.pages.flatMap((page) => {
+            if (page?.message || page?.childrenAssessments?.length === 0) {
+                return [];
+            }
+            return page.childrenAssessments;
+        });
+
+        const history = processMultiChildAssessments(rawChildAssessments);
+
+        return history;
     }, [data]);
 
-    const filteredData = useMemo(() => {
-        if (!keyword) return historyAssessmen ?? [];
-        return (historyAssessmen ?? []).filter((item: ProcessedAssessment) =>
-            item.nama.toLowerCase().includes(keyword.toLowerCase())
-        );
-    }, [keyword, historyAssessmen]);
+    // const assessments: ProcessedAssessment[] = useMemo(() => {
+    //     console.log(data?.pages[0]);
+    //     return (
+    //         data?.pages.flatMap((page) => {
+    //             if (page?.message || page?.childrenAssessments?.length === 0) {
+    //                 return [];
+    //             }
+
+    //             return page.childrenAssessments;
+    //         }) || []
+    //     );
+    // }, [data]);
+
+    // useEffect(() => {
+    //     if (data) {
+    //         // console.log(data);
+    //         const history = processMultiChildAssessments(
+    //             data.childrenAssessments
+    //         );
+
+    //         setHistoryAssessmen(history);
+    //     }
+    // }, [data]);
+
+    const previousTotalCountRef = useRef(0);
+    const totalCount = useMemo(() => {
+        if (data?.pages) {
+            const pageWithTotalCount = data.pages.find(
+                (page) => !page.message && page.totalCount
+            );
+            const newTotalCount =
+                pageWithTotalCount?.totalCount ?? previousTotalCountRef.current;
+            previousTotalCountRef.current = newTotalCount;
+            return newTotalCount;
+        }
+        return previousTotalCountRef.current;
+    }, [data]);
 
     const table = useReactTable({
-        data: filteredData,
+        data: assessments || [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         initialState: {
             pagination: {
-                pageSize: showSize,
+                pageSize: pagination.pageSize,
             },
         },
         onSortingChange: setSorting,
@@ -348,10 +417,30 @@ export default function AssessmentHistoryTable({
         },
     });
 
+    const handleNextPage = async () => {
+        const hasMoreData = assessments.length < totalCount;
+
+        if (table.getCanNextPage()) {
+            table.nextPage();
+        } else if (hasNextPage && hasMoreData) {
+            await fetchNextPage();
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (table.getCanPreviousPage()) {
+            table.previousPage();
+        }
+    };
+
     const sizeSet = ({ size }: { size: number }) => {
-        setShowSize(size);
+        setPagination({ ...pagination, pageSize: size });
         table.setPageSize(size);
     };
+
+    useEffect(() => {
+        refetch(); // Refetch data when keyword changes
+    }, [keyword, refetch]);
 
     return (
         <>
@@ -376,7 +465,7 @@ export default function AssessmentHistoryTable({
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {isLoading ? (
+                    {isLoading || !isReady ? (
                         <TableRow>
                             <TableCell
                                 colSpan={columns.length}
@@ -416,11 +505,17 @@ export default function AssessmentHistoryTable({
                 </TableBody>
             </Table>
 
+            {isLoadingData && (
+                <div className="text-center text-sm my-3">
+                    Memuat data baru...
+                </div>
+            )}
+
             <div className="flex items-center justify-between space-x-2 py-4">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="outline" className="gap-2">
-                            <span>Tampil {showSize}</span>
+                            <span>Tampil {pagination.pageSize}</span>
                             <span className="material-symbols-outlined cursor-pointer !text-xl !leading-none opacity-70">
                                 unfold_more
                             </span>
@@ -463,15 +558,17 @@ export default function AssessmentHistoryTable({
                 <div className="flex items-center gap-2">
                     <Button
                         variant="outline"
-                        onClick={() => table.previousPage()}
+                        onClick={handlePreviousPage}
                         disabled={!table.getCanPreviousPage()}
                     >
                         Previous
                     </Button>
                     <Button
                         variant="outline"
-                        onClick={() => table.nextPage()}
-                        disabled={!table.getCanNextPage()}
+                        onClick={handleNextPage}
+                        disabled={
+                            isLoadingData || isFetchingNextPage || !hasNextPage
+                        }
                     >
                         Next
                     </Button>

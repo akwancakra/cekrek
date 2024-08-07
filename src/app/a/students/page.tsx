@@ -2,32 +2,35 @@
 
 import StudentsTable from "@/components/elements/tables-and-grids/StudentsTable";
 import { Button } from "@/components/ui/button";
-import { Child } from "@/types/children.types";
-import { fetcher } from "@/utils/fetcher";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import useSWR from "swr";
 
 export default function Assessments() {
-    const [students, setStudents] = useState<Child[]>([]);
+    // const [students, setStudents] = useState<Child[]>([]);
     const [keyword, setKeyword] = useState<string>("");
-
-    const {
-        data,
-        isLoading,
-    }: { data: { status: string; children: Child[] }; isLoading: boolean } =
-        useSWR("/api/children", fetcher);
-
-    const removeStudent = (studentId: string) => {
-        toast.success("Siswa berhasil dihapus");
-    };
+    const searchParams = useSearchParams();
+    const urlKeyword = searchParams.get("keyword");
 
     useEffect(() => {
-        if (data?.children) {
-            setStudents(data.children);
-        }
-    }, [data]);
+        setKeyword(urlKeyword || "");
+    }, [urlKeyword]);
+
+    // const {
+    //     data,
+    //     isLoading,
+    // }: { data: { status: string; children: Child[] }; isLoading: boolean } =
+    //     useSWR("/api/children", fetcher);
+
+    // const removeStudent = (studentId: string) => {
+    //     toast.success("Siswa berhasil dihapus");
+    // };
+
+    // useEffect(() => {
+    //     if (data?.children) {
+    //         setStudents(data.children);
+    //     }
+    // }, [data]);
 
     return (
         <>
@@ -94,19 +97,7 @@ export default function Assessments() {
                     </div>
                 </div>
 
-                {isLoading ? (
-                    <>
-                        <div>
-                            <div className="skeleton w-full h-72 rounded-lg"></div>
-                        </div>
-                    </>
-                ) : (
-                    <StudentsTable
-                        students={students}
-                        keyword={keyword}
-                        removeStudent={removeStudent}
-                    />
-                )}
+                <StudentsTable keyword={keyword} link={`/api/children`} />
             </section>
         </>
     );

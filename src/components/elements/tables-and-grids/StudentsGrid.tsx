@@ -1,12 +1,3 @@
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
 import StudentCard from "../cards/StudentCard";
 import { useMemo } from "react";
 import { Child } from "@/types/children.types";

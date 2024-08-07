@@ -1,7 +1,5 @@
 "use client";
 
-import DeleteAccountDialog from "@/components/elements/alerts/DeleteAccountDialog";
-import DeleteAccountDrawer from "@/components/elements/alerts/DeleteAccountDrawer";
 import EditProfileDialog from "@/components/elements/alerts/EditProfileDialog";
 import EditProfileDrawer from "@/components/elements/alerts/EditProfileDrawer";
 import InfoAccountDialog from "@/components/elements/alerts/InfoAccountDialog";
@@ -35,10 +33,10 @@ export default function AdminSettings({}) {
         fetcher
     );
 
-    const removeAccountButton = () => {
-        toast.success("Akun berhasil dihapus！");
-        console.log("Account Remove Button Clicked!");
-    };
+    // const removeAccountButton = () => {
+    //     toast.success("Akun berhasil dihapus！");
+    //     console.log("Account Remove Button Clicked!");
+    // };
 
     return (
         <section className="mx-auto max-w-7xl mb-4">
@@ -123,7 +121,7 @@ export default function AdminSettings({}) {
                         <InfoAccountDrawer profile={data?.user} />
                     )}
                 </div>
-                <div className="flex justify-between items-center my-3">
+                {/* <div className="flex justify-between items-center my-3">
                     <div>
                         <p className="text-medium">Hapus akun saya</p>
                         <p className="text-gray-400 text-small">
@@ -140,7 +138,7 @@ export default function AdminSettings({}) {
                             removeAccountButton={removeAccountButton}
                         />
                     )}
-                </div>
+                </div> */}
                 <div className="flex justify-between items-center my-3">
                     <p className="text-medium">Keluar akun</p>
                     <Button

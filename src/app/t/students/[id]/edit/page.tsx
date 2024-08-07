@@ -22,6 +22,7 @@ import { ChildrenData } from "@/types/childrenData.type";
 export default function AddStudentPage() {
     const [currentStage, setCurrentStage] = useState(1);
     // const [isLoading, setIsLoading] = useState(false);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [value, setValue, removeValue] = useLocalStorage<ChildrenData>(
         "children-data-edit",
         {} as ChildrenData
@@ -298,6 +299,9 @@ export default function AddStudentPage() {
                 healthStatus,
             });
 
+            // Make sure all data is loaded to formik
+            setIsDataLoaded(true);
+
             console.log("Value: ", value);
         }
     }, [data?.child]);
@@ -422,7 +426,7 @@ export default function AddStudentPage() {
 
                 <div className="sm:flex group-[.open]:block md;group-[.open]:flex">
                     <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                        {getStageComponent()}
+                        {isDataLoaded && getStageComponent()}
                     </div>
                     <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                         <div className="max-w-32 mb-3 bg-gray-300 border border-gray-300 rounded-lg overflow-hidden dark:border-gray-700">
@@ -439,7 +443,7 @@ export default function AddStudentPage() {
                         <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                             <div>
                                 <p className="text-xs text-gray-400">Nama</p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.full_name || "N/A"}
                                 </p>
                             </div>
@@ -447,7 +451,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Nama Panggilan
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.nick_name || "N/A"}
                                 </p>
                             </div>
@@ -455,7 +459,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Jenis Kelamin
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.gender
                                         ? capitalizeFirstLetter(
                                               value.biodata.gender
@@ -465,7 +469,7 @@ export default function AddStudentPage() {
                             </div>
                             <div>
                                 <p className="text-xs text-gray-400">Agama</p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.religion
                                         ? capitalizeFirstLetter(
                                               value.biodata.religion
@@ -477,7 +481,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Tempat Lahir
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.place_birth || "N/A"}
                                 </p>
                             </div>
@@ -485,7 +489,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Tanggal Lahir
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.date_birth
                                         ? formattedDate(
                                               value.biodata.date_birth
@@ -497,7 +501,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Pendengaran
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.hearing
                                         ? capitalizeFirstLetter(
                                               value.biodata.hearing
@@ -509,7 +513,7 @@ export default function AddStudentPage() {
                                 <p className="text-xs text-gray-400">
                                     Jumlah Saudara
                                 </p>
-                                <p className="text-medium font-semibold">
+                                <p className="text-medium font-semibold break-words">
                                     {value?.biodata?.count_of_siblings || "N/A"}
                                 </p>
                             </div>

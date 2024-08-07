@@ -22,7 +22,11 @@ import {
 } from "@/components/ui/select";
 import { User } from "@/types/user.types";
 import { fetcher } from "@/utils/fetcher";
-import { capitalizeFirstLetter, formattedDate } from "@/utils/formattedDate";
+import {
+    capitalizeFirstLetter,
+    formattedDate,
+    formattedDateStripYearFirst,
+} from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
 import axios from "axios";
 import { ErrorMessage, Field, Form, FormikProvider, useFormik } from "formik";
@@ -61,7 +65,7 @@ type UserAdd = {
     name: string;
     type?: string;
     place_birth?: string;
-    date_time_birth?: Date;
+    date_time_birth?: string;
     religion?: string;
     education?: string;
     job?: string;
@@ -76,7 +80,7 @@ const initialValues: UserAdd = {
     type: "",
     role: "parent",
     place_birth: "",
-    date_time_birth: new Date(),
+    date_time_birth: "",
     religion: "",
     education: "",
     job: "",
@@ -86,10 +90,11 @@ const initialValues: UserAdd = {
 
 export default function AddParentPage() {
     const [isSubmit, setIsSubmit] = useState(false);
-    const [value, setValue, removeValue] = useLocalStorage(
-        "parent-data",
-        {} as UserAdd
-    );
+    const [isLoadedData, setIsLoadedData] = useState(false);
+    // const [value, setValue, removeValue] = useLocalStorage(
+    //     "parent-data",
+    //     {} as UserAdd
+    // );
     const { profile, isReady } = useProfile();
 
     const searchParams = useSearchParams();
@@ -110,9 +115,9 @@ export default function AddParentPage() {
         onSubmit: async (values) => {
             setIsSubmit(true);
 
-            setValue({
-                ...values,
-            });
+            // setValue({
+            //     ...values,
+            // });
 
             console.log(values);
 
@@ -152,20 +157,25 @@ export default function AddParentPage() {
 
     useEffect(() => {
         if (!isLoading && data?.parent) {
-            console.log(data);
             formik.setValues({
                 email: data.parent.email,
                 name: data.parent.name,
                 type: data.parent.type,
                 role: data.parent.role, // Pastikan properti role ada
                 place_birth: data.parent.place_birth,
-                date_time_birth: data.parent.date_time_birth,
+                date_time_birth: data?.parent?.date_time_birth
+                    ? formattedDateStripYearFirst(
+                          data.parent.date_time_birth.toString()
+                      )
+                    : "",
                 religion: data.parent.religion,
                 education: data.parent.education,
                 job: data.parent.job,
                 address: data.parent.address,
                 phone: data.parent.phone,
             });
+
+            setIsLoadedData(true);
         }
     }, [isLoading, data]);
 
@@ -188,7 +198,7 @@ export default function AddParentPage() {
                 <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                 <div className="sm:flex group-[.open]:block md:group-[.open]:flex">
                     <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                        {isLoading ? (
+                        {isLoading || !isLoadedData ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                     <div className="flex flex-col gap-2">
@@ -687,7 +697,7 @@ export default function AddParentPage() {
                         )}
                     </div>
                     <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
-                        {isLoading ? (
+                        {isLoading || !isLoadedData ? (
                             <>
                                 <div className="grid gap-4 mb-3 grid-cols-1 sm:grid-cols-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-2">
                                     <div className="flex flex-col gap-2">
@@ -722,7 +732,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Email
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.email || "N/A"}
                                     </p>
                                 </div>
@@ -730,7 +740,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Nama
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.name || "N/A"}
                                     </p>
                                 </div>
@@ -738,7 +748,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Tipe Orang Tua
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.type
                                             ? capitalizeFirstLetter(
                                                   formik.values.type
@@ -750,7 +760,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Agama
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.religion || "N/A"}
                                     </p>
                                 </div>
@@ -758,7 +768,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Tempat Lahir
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.place_birth || "N/A"}
                                     </p>
                                 </div>
@@ -766,7 +776,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Tanggal Lahir
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.date_time_birth
                                             ? formattedDate(
                                                   formik.values.date_time_birth.toString()
@@ -778,7 +788,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Pendidikan
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.education || "N/A"}
                                     </p>
                                 </div>
@@ -786,7 +796,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Pekerjaan
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.job || "N/A"}
                                     </p>
                                 </div>
@@ -794,7 +804,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Alamat
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.address || "N/A"}
                                     </p>
                                 </div>
@@ -802,7 +812,7 @@ export default function AddParentPage() {
                                     <p className="text-xs text-gray-400">
                                         Nomor Telepon
                                     </p>
-                                    <p className="text-medium font-semibold">
+                                    <p className="text-medium font-semibold break-words">
                                         {formik.values.phone || "N/A"}
                                     </p>
                                 </div>

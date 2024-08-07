@@ -35,7 +35,7 @@ import HealthWrapper from "@/components/elements/child-add/HealthWrapper";
 
 export default function EditStudentPage() {
     const [currentStage, setCurrentStage] = useState(1);
-    // const [isLoading, setIsLoading] = useState(false);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [value, setValue, removeValue] = useLocalStorage<ChildrenData>(
         "children-data-edit-admin",
         {} as ChildrenData
@@ -308,6 +308,8 @@ export default function EditStudentPage() {
                 healthStatus,
             });
 
+            // Make sure all data is loaded to formik
+            setIsDataLoaded(true);
             // console.log("Value: ", value);
         }
     }, [data?.child]);
@@ -428,7 +430,7 @@ export default function EditStudentPage() {
 
                 <div className="sm:flex group-[.open]:block md;group-[.open]:flex">
                     <div className=" w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
-                        {getStageComponent()}
+                        {isDataLoaded && getStageComponent()}
                     </div>
                     <div className="sticky top-4 rounded-lg p-2 bg-white border border-gray-300 w-full h-fit sm:w-1/3 mt-3 sm:mt-0 group-[.open]:mt-3 md:group-[.open]:mt-0 group-[.open]:w-full md:group-[.open]:w-1/3 dark:bg-neutral-800 dark:border-neutral-600">
                         <div className="max-w-32 mb-3 bg-gray-300 border border-gray-300 rounded-lg overflow-hidden">

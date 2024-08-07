@@ -74,7 +74,7 @@ export default function EditRecommendatioPage() {
     const [assessments, setAssessments] = useState([] as Assessment[]);
     const [recommendation, setRecommendation] = useState<Recommendation>();
     const [isSubmit, setIsSubmit] = useState(false);
-    // const [image, setImage] = useState<string>("");
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     const { id } = useParams();
     const { push } = useRouter();
@@ -161,35 +161,39 @@ export default function EditRecommendatioPage() {
     }, [data, isLoading]);
 
     useEffect(() => {
-        if (recommendationData?.recommendation) {
-            setRecommendation(recommendationData?.recommendation);
+        if (!isLoading) {
+            if (recommendationData?.recommendation) {
+                setRecommendation(recommendationData?.recommendation);
 
-            const {
-                title,
-                description,
-                icon,
-                is_main,
-                assesment_number,
-                frequency,
-                risk_category,
-            } = recommendationData.recommendation;
-            formik.setValues({
-                title: title || "",
-                description: description || "",
-                icon: icon || "",
-                is_main: is_main || false,
-                assesment_number: assesment_number.toString() || "0",
-                frequency: frequency || "",
-                risk_category: risk_category || "other",
-            });
+                const {
+                    title,
+                    description,
+                    icon,
+                    is_main,
+                    assesment_number,
+                    frequency,
+                    risk_category,
+                } = recommendationData.recommendation;
 
-            // if (icon) {
-            //     setImage(icon);
-            // }
+                formik.setValues({
+                    title: title || "",
+                    description: description || "",
+                    icon: icon || "",
+                    is_main: is_main || false,
+                    assesment_number: assesment_number.toString() || "0",
+                    frequency: frequency || "",
+                    risk_category: risk_category || "other",
+                });
 
-            // console.log(recommendationData?.recommendation);
+                setIsDataLoaded(true);
+                // if (icon) {
+                //     setImage(icon);
+                // }
+
+                // console.log(recommendationData?.recommendation);
+            }
         }
-    }, [recommendationData]);
+    }, [recommendationData, isLoading]);
 
     // useEffect(() => {
     //     if (image) {
@@ -223,7 +227,7 @@ export default function EditRecommendatioPage() {
                 </div>
 
                 <div className="sm:flex group-[.open]:block md:group-[.open]:flex">
-                    {isLoading || recommendationIsLoading ? (
+                    {isLoading || recommendationIsLoading || !isDataLoaded ? (
                         <>
                             <div className="w-full sm:pe-3 sm:w-2/3 group-[.open]:pe-0 md:group-[.open]:pe-3 group-[.open]:w-full md:group-[.open]:w-2/3">
                                 <div className="skeleton w-full h-[400px] rounded-lg"></div>

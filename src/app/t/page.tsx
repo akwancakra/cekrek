@@ -18,7 +18,7 @@ export default function HomeTeacher({}) {
     const [keyword, setKeyword] = useState("");
     const [category, setCategory] = useState("");
     const [students, setStudents] = useState<Child[]>([]);
-    const [studentsFull, setStudentsFull] = useState<Child[]>([]);
+    // const [studentsFull, setStudentsFull] = useState<Child[]>([]);
     const [isLoadingPost, setIsLoadingPost] = useState<boolean>(false);
     const { profile, isReady } = useProfile();
 
@@ -35,11 +35,11 @@ export default function HomeTeacher({}) {
         fetcher
     );
 
-    const {
-        data: fullStudents,
-        isLoading: isLoadingFull,
-    }: { data: { status: string; children: Child[] }; isLoading: boolean } =
-        useSWR(`/api/children?plain=true`, fetcher);
+    // const {
+    //     data: fullStudents,
+    //     isLoading: isLoadingFull,
+    // }: { data: { status: string; children: Child[] }; isLoading: boolean } =
+    //     useSWR(`/api/children?plain=true`, fetcher);
 
     const removeStudent = async (studentId: string) => {
         if (isReady && profile?.id) {
@@ -65,19 +65,20 @@ export default function HomeTeacher({}) {
     };
 
     useEffect(() => {
-        if (data && fullStudents) {
+        // && fullStudents
+        if (data && !isLoading) {
             // Filter out children from fullStudents that are already in data.children
-            const filteredStudentsFull = fullStudents.children.filter(
-                (fullStudent) =>
-                    data.children.every(
-                        (student) => student.id !== fullStudent.id
-                    )
-            );
+            // const filteredStudentsFull = fullStudents.children.filter(
+            //     (fullStudent) =>
+            //         data.children.every(
+            //             (student) => student.id !== fullStudent.id
+            //         )
+            // );
 
             setStudents(data.children);
-            setStudentsFull(filteredStudentsFull);
+            // setStudentsFull(filteredStudentsFull);
         }
-    }, [data, fullStudents]);
+    }, [data, isLoading]);
 
     const handleSearch = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -125,12 +126,13 @@ export default function HomeTeacher({}) {
                         category={category}
                         setCategory={setCategory}
                         students={students}
-                        studentsFull={studentsFull}
+                        // studentsFull={studentsFull}
                         mutate={mutate}
                     />
                 )}
 
-                {isLoading || isLoadingFull ? (
+                {/* || isLoadingFull */}
+                {isLoading ? (
                     <>
                         <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-6 group-[.open]:grid-cols-2 md:group-[.open]:grid-cols-3 lg:group-[.open]:grid-cols-6">
                             {Array.from({ length: 12 }).map((_, i) => (
@@ -149,9 +151,9 @@ export default function HomeTeacher({}) {
                             />
                         ) : (
                             <StudentsTable
-                                students={students}
                                 keyword={keyword}
-                                removeStudent={removeStudent}
+                                link={`/api/teachers/${profile?.id}/students`}
+                                role="t"
                             />
                         )}
                     </span>

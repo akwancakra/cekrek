@@ -82,6 +82,7 @@ export default function UsersTable({ keyword }: UsersTableProps) {
                 plain: true,
                 limit: pagination.pageSize,
                 skip: pageParam,
+                name: keyword,
             },
         });
         return res.data;
@@ -93,6 +94,7 @@ export default function UsersTable({ keyword }: UsersTableProps) {
         isFetchingNextPage,
         hasNextPage,
         isLoading: isLoadingData,
+        refetch,
     } = useInfiniteQuery({
         queryKey: ["users"],
         queryFn: fetchUsers,
@@ -284,15 +286,15 @@ export default function UsersTable({ keyword }: UsersTableProps) {
         },
     ];
 
-    const filteredData = useMemo(() => {
-        if (!keyword) return users ?? [];
-        return (users ?? []).filter((item: User) =>
-            item.name.toLowerCase().includes(keyword.toLowerCase())
-        );
-    }, [users, keyword]);
+    // const filteredData = useMemo(() => {
+    //     if (!keyword) return users ?? [];
+    //     return (users ?? []).filter((item: User) =>
+    //         item.name.toLowerCase().includes(keyword.toLowerCase())
+    //     );
+    // }, [users, keyword]);
 
     const table = useReactTable({
-        data: filteredData,
+        data: users ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -366,6 +368,10 @@ export default function UsersTable({ keyword }: UsersTableProps) {
             },
         });
     };
+
+    useEffect(() => {
+        refetch(); // Refetch data when keyword changes
+    }, [keyword, refetch]);
 
     return (
         <>
