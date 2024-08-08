@@ -107,12 +107,19 @@ export default function HomeParent({}) {
     );
 }
 
+/**
+ * Renders a single child card component.
+ *
+ * @param {Object} props - The props object.
+ * @param {Child[]} props.data - The array of child objects.
+ * @return {JSX.Element} The rendered single child card component.
+ */
 const SingleChildCard = ({ data }: { data: Child[] }) => {
     return (
         <section className="mx-auto max-w-7xl flex gap-2 p-3 border rounded-lg border-gray-300 dark:border-neutral-600">
             <div className="mb-2 group-[.open]:mb-2 group-[.open]:w-full sm:mb-0 sm:w-7/12 md:group-[.open]:mb-0 md:group-[.open]:w-7/12">
                 <p className="font-semibold tracking-tighter text-large">
-                    Aktifitas hari ini
+                    Aktifitas {data[0]?.full_name} hari ini
                 </p>
                 <p className="text-gray-500 text-small dark:text-neutral-300">
                     Rekomendasi aktifitas yang harus anak ini lakukan atau
@@ -143,7 +150,7 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
 
                 {data[0]?.child_recommendations?.length === 0 ? (
                     <div className="my-6 text-center text-small">
-                        <p>Tidak ada data rekomendasi anak</p>
+                        <p>Tidak ada data rekomendasi {data[0]?.full_name}</p>
                         <p>
                             Lakukan asesmen terlebih dahulu, anda dapat
                             menghubungi guru terkait
@@ -201,6 +208,13 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
     );
 };
 
+/**
+ * Renders a multiple child card component.
+ *
+ * @param {Object} props - The properties for the component.
+ * @param {Child[]} props.data - The array of child data.
+ * @return {JSX.Element} The rendered multiple child card component.
+ */
 const MultipleChildCard = ({ data }: { data: Child[] }) => {
     const [api, setApi] = useState<CarouselApi>();
     const [current, setCurrent] = useState(0);
@@ -230,7 +244,7 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
                         >
                             <div className="mb-2 group-[.open]:mb-2 group-[.open]:w-full sm:mb-0 sm:w-7/12 md:group-[.open]:mb-0 md:group-[.open]:w-7/12">
                                 <p className="font-semibold tracking-tighter text-large">
-                                    Aktifitas hari ini
+                                    Aktifitas {child.full_name} hari ini
                                 </p>
                                 <p className="text-gray-500 text-small dark:text-neutral-400">
                                     Rekomendasi aktifitas yang harus anak ini
@@ -273,7 +287,10 @@ const MultipleChildCard = ({ data }: { data: Child[] }) => {
 
                                 {child?.child_recommendations?.length === 0 ? (
                                     <div className="my-6 text-center text-small">
-                                        <p>Tidak ada data rekomendasi anak</p>
+                                        <p>
+                                            Tidak ada data rekomendasi{" "}
+                                            {child.full_name}
+                                        </p>
                                         <p>
                                             Lakukan asesmen terlebih dahulu,
                                             anda dapat menghubungi guru terkait
