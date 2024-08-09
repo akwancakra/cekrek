@@ -6,8 +6,22 @@ const prisma = new PrismaClient();
 
 export async function GET(req: any, { params }: any) {
     try {
+        if (!params.id || !params.childId) {
+            return NextResponse.json(
+                { status: "error", message: "Invalid parameters" },
+                { status: 400 }
+            );
+        }
+
         const parentId = parseInt(params.id);
         const childId = parseInt(params.childId);
+
+        if (isNaN(parentId) || isNaN(childId)) {
+            return NextResponse.json(
+                { status: "error", message: "Invalid ID format" },
+                { status: 400 }
+            );
+        }
 
         const child = await prisma.children.findUnique({
             where: { id: childId },
@@ -32,15 +46,18 @@ export async function GET(req: any, { params }: any) {
             },
         });
 
-        const teacher = await prisma.users.findUnique({
-            where: { id: child?.teacher_id },
-        });
-
         if (!child) {
             return NextResponse.json(
                 { status: "error", message: "Child Not Found" },
                 { status: 200 }
             );
+        }
+
+        let teacher = null;
+        if (child && child.teacher_id) {
+            teacher = await prisma.users.findUnique({
+                where: { id: child.teacher_id },
+            });
         }
 
         // Get the latest child_assesment date for the current child

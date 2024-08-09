@@ -86,7 +86,7 @@ export default function AddStudentPage() {
     const handleResetValues = ({ push }: { push?: boolean }) => {
         removeValue();
         if (push) {
-            router.push("/t");
+            router.push(`/t/students/${id}`);
         }
     };
 

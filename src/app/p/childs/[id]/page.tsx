@@ -42,7 +42,6 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import {
     AssesmentWrap,
     MonitorRecommendationWrap,
@@ -153,12 +152,16 @@ export default function Template({}) {
     };
 
     useEffect(() => {
-        if (data?.child) {
-            setProfile(data.child);
-            // setSelectedChildId(data.child.id.toString());
-            setHistoryAssessmen(processChildAssessments(data.child));
+        if (!isLoading && isReady) {
+            if (!data?.child) {
+                push("/p/childs");
+            } else {
+                setProfile(data.child);
+                // setSelectedChildId(data.child.id.toString());
+                setHistoryAssessmen(processChildAssessments(data.child));
+            }
         }
-    }, [data]);
+    }, [data, isLoading, isReady]);
 
     return (
         <section className="mx-auto max-w-7xl mb-4">
@@ -432,6 +435,45 @@ export default function Template({}) {
                                         </DropdownMenuGroup>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
+                            </div>
+
+                            {/* DATA GURU */}
+                            <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
+                                <p className="font-semibold tracking-tight text-lg mb-2">
+                                    Informasi Guru
+                                </p>
+                                <div className="divider my-2 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
+                                <div className="flex flex-col gap-2">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                Nama
+                                            </p>
+                                            <p className="text-sm font-medium">
+                                                {profile?.teacher?.name ||
+                                                    "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                E-mail
+                                            </p>
+                                            <p className="text-sm font-medium">
+                                                {profile?.teacher?.email ||
+                                                    "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                No Telp
+                                            </p>
+                                            <p className="text-sm font-medium">
+                                                {profile?.teacher?.phone ||
+                                                    "N/A"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                             {/* BIODATA */}

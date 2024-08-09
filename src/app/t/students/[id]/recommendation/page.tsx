@@ -34,7 +34,7 @@ import {
 } from "chart.js";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
@@ -91,14 +91,15 @@ const datasets1 = [
 export default function RecomendationStudent({}) {
     const [date, setDate] = useState<Date>(new Date());
     const { profile, isReady } = useProfile();
+    const [student, setStudent] = useState<Child>();
     // const [recommendations, setRecommendations] = useState<
     //     ChildRecommendation[]
     // >([]);
 
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
+    const { push } = useRouter();
 
-    const [student, setStudent] = useState<Child>();
     const today = formattedDateStripYearFirst(new Date().toString());
 
     const { id } = useParams();
@@ -127,10 +128,14 @@ export default function RecomendationStudent({}) {
     }, [paramDate]);
 
     useEffect(() => {
-        if (data?.child) {
-            setStudent(data?.child);
+        if (!isLoading && profile?.id) {
+            if (!data?.child) {
+                push("/t");
+            } else {
+                setStudent(data?.child);
+            }
         }
-    }, [data]);
+    }, [data, isLoading]);
 
     return (
         <section className="mx-auto max-w-7xl mb-4">
@@ -147,7 +152,7 @@ export default function RecomendationStudent({}) {
                     <p className="text-gray-400 text-small">
                         Monitoring Asesmen M-Chart-R/F
                     </p>
-                    {isLoading ? (
+                    {isLoading || !isReady ? (
                         <div className="flex flex-col gap-1">
                             <div className="skeleton h-4 w-36 rounded-lg"></div>
                             <div className="skeleton h-5 w-24 rounded-lg"></div>
@@ -171,7 +176,7 @@ export default function RecomendationStudent({}) {
                     )}
                 </div>
                 <div className="mt-3 group-[.open]:mt-3 lg:group-[.open]:mt-0 sm:mt-0">
-                    {isLoading ? (
+                    {isLoading || !isReady ? (
                         <div>
                             <div className="skeleton h-9 w-44 rounded-lg"></div>
                         </div>
@@ -181,7 +186,7 @@ export default function RecomendationStudent({}) {
                                 href={`/t/students/${id}/recommendation/compare`}
                                 className="flex gap-1 items-center"
                             >
-                                Bandingkan hasil monitoring versi orang tua{" "}
+                                Bandingkan{" "}
                                 <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
                                     arrow_forward
                                 </span>
@@ -191,7 +196,7 @@ export default function RecomendationStudent({}) {
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
-                {isLoading ? (
+                {isLoading || !isReady ? (
                     <>
                         <div className="skeleton w-full h-48 rounded-lg"></div>
                         <div className="skeleton w-full h-48 rounded-lg"></div>
@@ -371,15 +376,26 @@ export default function RecomendationStudent({}) {
                         Berbicara (2)
                     </p> */}
                     <div className="flex flex-col gap-2">
-                        {!isLoading &&
+                        {(!isLoading || isReady) &&
                             student?.child_recommendations?.length == 0 && (
                                 <div className="text-center">
                                     <p>Tidak ada data rekomendasi</p>
                                     <p>Lakukan asesmen jika belum melakukan</p>
+                                    <Button
+                                        asChild
+                                        disabled={isLoading}
+                                        className="mt-3"
+                                    >
+                                        <Link
+                                            href={`/t/students/${id}/assessment`}
+                                        >
+                                            Lakukan Asesmen
+                                        </Link>
+                                    </Button>
                                 </div>
                             )}
 
-                        {!isLoading &&
+                        {(!isLoading || isReady) &&
                             student?.child_recommendations?.map((rec, idx) =>
                                 rec?.recommendations ? (
                                     <RecomendationCard

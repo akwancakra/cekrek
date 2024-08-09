@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
         secret: process.env.NEXTAUTH_SECRET,
     })) as Session | null;
 
-    console.log(pathname);
+    // console.log(pathname);
 
     // console.log(token);
 

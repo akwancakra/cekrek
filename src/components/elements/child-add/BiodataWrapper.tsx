@@ -1569,14 +1569,17 @@ const ParentPicker = ({
     }, [data, parentType]);
 
     useEffect(() => {
-        if (data) {
-            const newParents = data.pages.flatMap((page) => page.parents);
+        if (data && data.pages) {
+            const newParents = data.pages.flatMap((page) => page.parents || []);
 
             setParentsData((prev) => {
                 const uniqueNewParents = newParents.filter(
                     (newParent) =>
+                        newParent &&
+                        newParent.id &&
                         !prev.some(
                             (existingParent) =>
+                                existingParent &&
                                 existingParent.id === newParent.id
                         )
                 );
@@ -1585,16 +1588,19 @@ const ParentPicker = ({
             });
 
             // Set parentValue when data is loaded
-            const selectedParent = newParents.find(
-                (parent) => parent.id.toString() === parentId
-            );
+            if (parentId) {
+                const selectedParent = newParents.find(
+                    (parent) =>
+                        parent && parent.id && parent.id.toString() === parentId
+                );
 
-            if (selectedParent) {
-                const newParentValue = `${selectedParent.id} - ${selectedParent.name}`;
-                setParentValue(newParentValue);
+                if (selectedParent) {
+                    const newParentValue = `${selectedParent.id} - ${selectedParent.name}`;
+                    setParentValue(newParentValue);
 
-                // Update setSelectedParent based on parentType
-                updateParent(selectedParent);
+                    // Update setSelectedParent based on parentType
+                    updateParent(selectedParent);
+                }
             }
 
             setIsDataLoaded(true);

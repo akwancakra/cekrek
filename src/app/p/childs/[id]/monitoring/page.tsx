@@ -161,10 +161,14 @@ export default function MonitoringRecommendationsParent() {
     }, [date]);
 
     useEffect(() => {
-        if (data?.child) {
-            setStudent(data.child);
+        if (!isLoading && isReady) {
+            if (!data?.child) {
+                push("/p/childs");
+            } else {
+                setStudent(data.child);
+            }
         }
-    }, [isLoading, data]);
+    }, [isLoading, data, isReady]);
 
     return (
         <>

@@ -202,99 +202,108 @@ export default function EditChildParentPage() {
     useEffect(() => {
         // console.log("Main: ", data);
         const childData = data?.child;
-        if (childData) {
-            removeValue();
 
-            // console.log(value);
+        if (!isLoading && isReady) {
+            if (!childData) {
+                router.push("/p/childs");
+            } else {
+                removeValue();
 
-            const biodata = {
-                id: childData.id.toString(),
-                teacher_id: childData.teacher_id.toString() || "",
-                risk_category: childData.risk_category || "",
-                parent_dad:
-                    childData.parent
-                        ?.find((parent) => parent.type === "ayah")
-                        ?.id?.toString() || "",
-                parent_mother:
-                    childData.parent
-                        ?.find((parent) => parent.type === "ibu")
-                        ?.id?.toString() || "",
-                parent_wali:
-                    childData.parent
-                        ?.find((parent) => parent.type === "wali")
-                        ?.id?.toString() || "",
-                full_name: childData.full_name || "",
-                nick_name: childData.nick_name || "",
-                gender: childData.gender || "",
-                religion: childData.religion || "",
-                place_birth: childData.place_birth || "",
-                date_birth: childData.date_time_birth
-                    ? new Date(childData.date_time_birth).toISOString()
-                    : "",
-                hearing: childData.hearing_test || "",
-                count_of_siblings: childData.count_of_siblings || 0,
-                picture: childData.picture || null,
-            };
+                // console.log(value);
 
-            const birthHistory = {
-                healthy_pregnancy:
-                    childData.birth_history?.healthy_pregnancy || "",
-                pregnancy_illness:
-                    childData.birth_history?.pregnancy_illness || "",
-                gestation_details:
-                    childData.birth_history?.gestation_details || "",
-                birthplace: childData.birth_history?.birthplace || "",
-                birth_assistance:
-                    childData.birth_history?.birth_assistance || "",
-                delivery_process:
-                    childData.birth_history?.delivery_process || "",
-                congenital_anomalies:
-                    childData.birth_history?.congenital_anomalies || "",
-                first_food: childData.birth_history?.first_food || "",
-                formula_milk: childData.birth_history?.formula_milk || "",
-                immunization: childData.birth_history?.immunization || "",
-            };
+                const biodata = {
+                    id: childData.id.toString(),
+                    teacher_id: childData.teacher_id.toString() || "",
+                    risk_category: childData.risk_category || "",
+                    parent_dad:
+                        childData.parent
+                            ?.find((parent) => parent.type === "ayah")
+                            ?.id?.toString() || "",
+                    parent_mother:
+                        childData.parent
+                            ?.find((parent) => parent.type === "ibu")
+                            ?.id?.toString() || "",
+                    parent_wali:
+                        childData.parent
+                            ?.find((parent) => parent.type === "wali")
+                            ?.id?.toString() || "",
+                    full_name: childData.full_name || "",
+                    nick_name: childData.nick_name || "",
+                    gender: childData.gender || "",
+                    religion: childData.religion || "",
+                    place_birth: childData.place_birth || "",
+                    date_birth: childData.date_time_birth
+                        ? new Date(childData.date_time_birth).toISOString()
+                        : "",
+                    hearing: childData.hearing_test || "",
+                    count_of_siblings: childData.count_of_siblings || 0,
+                    picture: childData.picture || null,
+                };
 
-            const expertExamination = {
-                pediatrician: childData.expert_examination?.pediatrician || "",
-                rehabilitation:
-                    childData.expert_examination?.rehabilitation || "",
-                psychologist: childData.expert_examination?.psychologist || "",
-                therapist: childData.expert_examination?.therapist || "",
-            };
+                const birthHistory = {
+                    healthy_pregnancy:
+                        childData.birth_history?.healthy_pregnancy || "",
+                    pregnancy_illness:
+                        childData.birth_history?.pregnancy_illness || "",
+                    gestation_details:
+                        childData.birth_history?.gestation_details || "",
+                    birthplace: childData.birth_history?.birthplace || "",
+                    birth_assistance:
+                        childData.birth_history?.birth_assistance || "",
+                    delivery_process:
+                        childData.birth_history?.delivery_process || "",
+                    congenital_anomalies:
+                        childData.birth_history?.congenital_anomalies || "",
+                    first_food: childData.birth_history?.first_food || "",
+                    formula_milk: childData.birth_history?.formula_milk || "",
+                    immunization: childData.birth_history?.immunization || "",
+                };
 
-            const healthStatus = {
-                serious_illness: childData.health_status?.serious_illness || "",
-                current_diseases:
-                    childData.health_status?.current_diseases || "",
-                treatment_location:
-                    childData.health_status?.treatment_location || "",
-                treatment_duration:
-                    childData.health_status?.treatment_duration || "",
-                general_comparison:
-                    childData.health_status?.general_comparison || "",
-                crawling_development:
-                    childData.health_status?.crawling_development || "",
-                sitting_development:
-                    childData.health_status?.sitting_development || "",
-                walking_development:
-                    childData.health_status?.walking_development || "",
-                first_words_age: childData.health_status?.first_words_age || "",
-                speaking_fluency_age:
-                    childData.health_status?.speaking_fluency_age || "",
-                bedwetting: childData.health_status?.bedwetting || "",
-            };
+                const expertExamination = {
+                    pediatrician:
+                        childData.expert_examination?.pediatrician || "",
+                    rehabilitation:
+                        childData.expert_examination?.rehabilitation || "",
+                    psychologist:
+                        childData.expert_examination?.psychologist || "",
+                    therapist: childData.expert_examination?.therapist || "",
+                };
 
-            setValue({
-                biodata,
-                birthHistory,
-                expertExamination,
-                healthStatus,
-            });
+                const healthStatus = {
+                    serious_illness:
+                        childData.health_status?.serious_illness || "",
+                    current_diseases:
+                        childData.health_status?.current_diseases || "",
+                    treatment_location:
+                        childData.health_status?.treatment_location || "",
+                    treatment_duration:
+                        childData.health_status?.treatment_duration || "",
+                    general_comparison:
+                        childData.health_status?.general_comparison || "",
+                    crawling_development:
+                        childData.health_status?.crawling_development || "",
+                    sitting_development:
+                        childData.health_status?.sitting_development || "",
+                    walking_development:
+                        childData.health_status?.walking_development || "",
+                    first_words_age:
+                        childData.health_status?.first_words_age || "",
+                    speaking_fluency_age:
+                        childData.health_status?.speaking_fluency_age || "",
+                    bedwetting: childData.health_status?.bedwetting || "",
+                };
 
-            console.log("Value: ", value);
+                setValue({
+                    biodata,
+                    birthHistory,
+                    expertExamination,
+                    healthStatus,
+                });
+
+                console.log("Value: ", value);
+            }
         }
-    }, [data?.child]);
+    }, [isLoading, data?.child, isReady]);
 
     if (!data?.child || isLoading) {
         return (

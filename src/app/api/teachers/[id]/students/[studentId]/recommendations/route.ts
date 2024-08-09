@@ -8,6 +8,7 @@ export async function GET(req: any, { params }: any) {
         const url = new URL(req.url);
         const limit = url?.searchParams?.get("limit") || "10";
         const skip = url?.searchParams?.get("skip") || "0";
+        const teacherId = parseInt(params.id);
         const studentId = parseInt(params.studentId);
         const date: string | Date =
             url?.searchParams?.get("date") || new Date();
@@ -18,7 +19,7 @@ export async function GET(req: any, { params }: any) {
         endDate.setDate(startDate.getDate() + 1);
 
         const child = await prisma.children.findFirstOrThrow({
-            where: { id: studentId },
+            where: { id: studentId, teacher_id: teacherId },
             include: {
                 child_recommendations: {
                     include: {

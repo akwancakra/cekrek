@@ -1200,14 +1200,19 @@ TeacherPickerProps) => {
     }, [data]);
 
     useEffect(() => {
-        if (data) {
-            const newTeachers = data.pages.flatMap((page) => page.teachers);
+        if (data && data.pages) {
+            const newTeachers = data.pages.flatMap(
+                (page) => page.teachers || []
+            );
 
             setTeachersData((prev) => {
                 const uniqueNewTeachers = newTeachers.filter(
                     (newTeacher) =>
+                        newTeacher &&
+                        newTeacher.id &&
                         !prev.some(
                             (existingTeacher) =>
+                                existingTeacher &&
                                 existingTeacher.id === newTeacher.id
                         )
                 );
@@ -1216,22 +1221,26 @@ TeacherPickerProps) => {
             });
 
             // Set teacherValue when data is loaded
-            const selectedTeacher = newTeachers.find(
-                (teacher) => teacher.id.toString() === teacherId
-            );
+            if (teacherId) {
+                const selectedTeacher = newTeachers.find(
+                    (teacher) =>
+                        teacher &&
+                        teacher.id &&
+                        teacher.id.toString() === teacherId
+                );
 
-            if (selectedTeacher) {
-                const newTeacherValue = `${selectedTeacher.id} - ${selectedTeacher.name}`;
-                setTeacherValue(newTeacherValue);
+                if (selectedTeacher) {
+                    const newTeacherValue = `${selectedTeacher.id} - ${selectedTeacher.name}`;
+                    setTeacherValue(newTeacherValue);
 
-                // Update setSelectedTeacher
-                setSelectedTeacher(selectedTeacher);
+                    // Update setSelectedTeacher
+                    setSelectedTeacher(selectedTeacher);
+                }
             }
 
             setIsDataLoaded(true);
         }
     }, [data, teacherId, setSelectedTeacher]);
-
     // const teachersOptions = teachers.map((parent) => ({
     //     label: parent.name,
     //     value: parent.id.toString(),

@@ -41,12 +41,14 @@ export default function CompareMonitoringParentLayout() {
     }, [paramDate]);
 
     useEffect(() => {
-        if (data?.child) {
-            setStudent(data.child);
-        } else if (!isLoading && !data?.child) {
-            router.push(`/p/childs/${id}`);
+        if (!isLoading && isReady) {
+            if (!data?.child) {
+                router.push("/p/childs");
+            } else {
+                setStudent(data.child);
+            }
         }
-    }, [isLoading, data]);
+    }, [isLoading, data, isReady]);
 
     return (
         <>

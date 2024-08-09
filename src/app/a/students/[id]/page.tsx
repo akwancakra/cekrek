@@ -366,13 +366,126 @@ export default function StudentDetails({}) {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+
+                    {/* DATA ORANG TUA */}
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
+                        <p className="font-semibold tracking-tight text-lg mb-2">
+                            Informasi Orang Tua
+                        </p>
+                        <div className="divider my-2 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
+                        <div className="flex flex-col gap-2">
+                            {["ayah", "ibu", "wali"].map((parentType) => {
+                                const parent = data?.parent?.find(
+                                    (item) =>
+                                        item.type?.toLowerCase() === parentType
+                                );
+                                return (
+                                    <div
+                                        key={parentType}
+                                        className="border p-3 rounded-md dark:border-neutral-700"
+                                    >
+                                        <p className="font-semibold text-md mb-2">
+                                            {capitalizeFirstLetter(parentType)}
+                                        </p>
+                                        {parent ? (
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        Nama
+                                                    </p>
+                                                    <p className="text-sm font-medium">
+                                                        {parent.name || "N/A"}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        Pendidikan
+                                                    </p>
+                                                    <p className="text-sm font-medium">
+                                                        {parent.education ||
+                                                            "N/A"}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        E-mail
+                                                    </p>
+                                                    <p className="text-sm font-medium">
+                                                        {parent.email || "N/A"}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        No Telp
+                                                    </p>
+                                                    <p className="text-sm font-medium">
+                                                        {parent.phone || "N/A"}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                        Alamat
+                                                    </p>
+                                                    <p className="text-sm font-medium">
+                                                        {parent.address ||
+                                                            "N/A"}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                Tidak ada {parentType}
+                                            </p>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    {/* DATA GURU */}
+                    <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
+                        <p className="font-semibold tracking-tight text-lg mb-2">
+                            Informasi Guru
+                        </p>
+                        <div className="divider my-2 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
+                        <div className="flex flex-col gap-2">
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        Nama
+                                    </p>
+                                    <p className="text-sm font-medium">
+                                        {data?.teacher?.name || "N/A"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        E-mail
+                                    </p>
+                                    <p className="text-sm font-medium">
+                                        {data?.teacher?.email || "N/A"}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                                        No Telp
+                                    </p>
+                                    <p className="text-sm font-medium">
+                                        {data?.teacher?.phone || "N/A"}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* PROFILE DATA */}
                     <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
                         <div>
                             <p className="font-semibold tracking-tight text-lg">
                                 Biodata
                             </p>
-                            <div className="divider my-1 dark:before:!bg-neutral-600" />
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 <div className="my-1">
                                     <p className="text-xs text-gray-400">
@@ -452,14 +565,6 @@ export default function StudentDetails({}) {
                                         {data?.count_of_siblings || "N/A"}
                                     </p>
                                 </div>
-                                <div className="my-1 col-span-3">
-                                    <p className="text-xs text-gray-400">
-                                        Guru
-                                    </p>
-                                    <p className="text-medium font-semibold">
-                                        {data?.teacher?.name || "N/A"}
-                                    </p>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -469,7 +574,7 @@ export default function StudentDetails({}) {
                             <p className="font-semibold tracking-tight text-lg">
                                 Riwayat Kehamilan/Kelahiran
                             </p>
-                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
+                            <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
                             <div className="w-full grid grid-cols-3 gap-2">
                                 {!data?.birth_history && (
                                     <div className="col-span-3 text-center py-3 text-small">

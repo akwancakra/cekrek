@@ -12,7 +12,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { fetcher, getChildrenImage } from "@/utils/fetcher";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getRiskCategory } from "@/utils/converters";
 import { ChildRecommendation } from "@/types/childRecommendation.type";
 import {
@@ -32,11 +32,12 @@ import useProfile from "@/utils/useProfile";
 
 export default function AssessmentDetail({}) {
     const [data, setData] = useState<Child>();
-    const { profile, isReady } = useProfile();
 
+    const { profile, isReady } = useProfile();
+    const { push } = useRouter();
+    const { id } = useParams();
     const searchParams = useSearchParams();
     const date = searchParams.get("date");
-    const { id } = useParams();
 
     const {
         data: childAssesment,
@@ -106,10 +107,14 @@ export default function AssessmentDetail({}) {
     };
 
     useEffect(() => {
-        if (childAssesment?.child) {
-            setData(childAssesment.child);
+        if (!isLoading) {
+            if (!childAssesment || !childAssesment.child) {
+                push("/t/assessments");
+            } else {
+                setData(childAssesment.child);
+            }
         }
-    }, [childAssesment]);
+    }, [childAssesment, isLoading]);
 
     return (
         <>
@@ -126,7 +131,7 @@ export default function AssessmentDetail({}) {
                 </div>
 
                 <div className="block gap-4 group-[.open]:block lg:group-[.open]:flex md:flex">
-                    {isLoading ? (
+                    {isLoading || !isReady ? (
                         <>
                             <div className="top-5 flex flex-col items-center w-full static group-[.open]:static group-[.open]:w-full lg:group-[.open]:w-1/3 md:w-1/3 lg:group-[.open]:sticky lg:group-[.open]:h-full md:sticky md:h-full">
                                 <div className="relative rounded-lg max-w-xs w-full lg:max-w-none">

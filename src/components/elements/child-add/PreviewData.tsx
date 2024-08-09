@@ -100,10 +100,8 @@ export default function PreviewData({
             success: () => {
                 // setIsSubmit(false);
                 resetLocal({ push: true });
-                router.push("/t");
-                // if (id) {
+                router.push(`/t/students/${id}`);
                 return "Berhasil menyimpan data!";
-                // }
             },
             error: (error) => {
                 setIsSubmit(false);

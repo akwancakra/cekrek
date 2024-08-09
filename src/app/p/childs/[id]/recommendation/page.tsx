@@ -34,7 +34,7 @@ import {
 } from "chart.js";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
@@ -97,6 +97,7 @@ export default function RecomendationStudent({}) {
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
     const { id } = useParams();
+    const { push } = useRouter();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
         isReady &&
@@ -122,10 +123,14 @@ export default function RecomendationStudent({}) {
     }, [paramDate]);
 
     useEffect(() => {
-        if (data?.child) {
-            setStudent(data?.child);
+        if (!isLoading && isReady) {
+            if (!data?.child) {
+                push("/p/childs");
+            } else {
+                setStudent(data.child);
+            }
         }
-    }, [data]);
+    }, [isLoading, data, isReady]);
 
     return (
         <section className="mx-auto max-w-7xl mb-4">
@@ -165,7 +170,7 @@ export default function RecomendationStudent({}) {
                                 }`}
                                 className="flex gap-1 items-center"
                             >
-                                Bandingkan hasil monitoring versi guru{" "}
+                                Bandingkan{" "}
                                 <span className="material-symbols-outlined ms-1 !leading-none !text-xl me-1 hover:no-underline">
                                     arrow_forward
                                 </span>

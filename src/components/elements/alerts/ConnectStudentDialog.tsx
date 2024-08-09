@@ -148,7 +148,7 @@ export default function ConnectStudentDialog({
         }
 
         const postData = {
-            teacher_id: 1,
+            teacher_id: profile?.id,
             student_id: selectedProfile?.id,
         };
 

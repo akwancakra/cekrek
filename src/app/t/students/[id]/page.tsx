@@ -122,8 +122,8 @@ export default function StudentDetails({}) {
     const [historyAssessmen, setHistoryAssessmen] = useState<
         ProcessedAssessment[]
     >([]);
-    const { profile, isReady } = useProfile();
 
+    const { profile, isReady } = useProfile();
     const { id } = useParams();
     const { push } = useRouter();
 
@@ -137,8 +137,10 @@ export default function StudentDetails({}) {
 
     useEffect(() => {
         // console.log(childData);
-        if (!isLoading && profile) {
-            if (childData && childData.child) {
+        if (!isLoading && isReady) {
+            if (!childData && !childData.child) {
+                push("/t");
+            } else {
                 // const assessmentWraps = generateAssessmentWrap(childData.child);
 
                 // childData.child = {
@@ -151,9 +153,6 @@ export default function StudentDetails({}) {
                 const history = processChildAssessments(childData.child);
                 setHistoryAssessmen(history);
             }
-            // else {
-            // push("/t");
-            // }
         }
     }, [childData, isLoading]);
 
@@ -183,7 +182,7 @@ export default function StudentDetails({}) {
 
     return (
         <section className="mx-auto max-w-7xl mb-4">
-            {isLoading ? (
+            {isLoading || !isReady ? (
                 <>
                     <div className="skeleton h-9 w-28 rounded-lg mb-3"></div>
                     <div className="block gap-4 group-[.open]:block lg:group-[.open]:flex md:flex">
@@ -274,7 +273,7 @@ export default function StudentDetails({}) {
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent
                                         className="w-56"
-                                        align="start"
+                                        align="end"
                                     >
                                         <DropdownMenuLabel>
                                             Aksi
@@ -419,25 +418,88 @@ export default function StudentDetails({}) {
                                 </DropdownMenu>
                             </div>
 
+                            {/* DATA ORANG TUA */}
                             <div className="border border-gray-300 p-2 rounded-lg my-3 dark:border-neutral-600">
-                                <p className="font-semibold tracking-tight text-lg">
-                                    Orang Tua
+                                <p className="font-semibold tracking-tight text-lg mb-2">
+                                    Informasi Orang Tua
                                 </p>
-                                <div className="divider my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
-                                <div className="w-full grid grid-cols-3 gap-2">
-                                    {data?.parent?.map((item, index) => (
-                                        <div className="my-1" key={index}>
-                                            <p className="text-xs text-gray-400">
-                                                {item?.type &&
-                                                    capitalizeFirstLetter(
-                                                        item.type
+                                <div className="divider my-2 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600" />
+                                <div className="flex flex-col gap-2">
+                                    {["ayah", "ibu", "wali"].map(
+                                        (parentType) => {
+                                            const parent = data?.parent?.find(
+                                                (item) =>
+                                                    item.type?.toLowerCase() ===
+                                                    parentType
+                                            );
+                                            return (
+                                                <div
+                                                    key={parentType}
+                                                    className="border p-3 rounded-md dark:border-neutral-700"
+                                                >
+                                                    <p className="font-semibold text-md mb-2">
+                                                        {capitalizeFirstLetter(
+                                                            parentType
+                                                        )}
+                                                    </p>
+                                                    {parent ? (
+                                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                                                            <div>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    Nama
+                                                                </p>
+                                                                <p className="text-sm font-medium">
+                                                                    {parent.name ||
+                                                                        "N/A"}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    Pendidikan
+                                                                </p>
+                                                                <p className="text-sm font-medium">
+                                                                    {parent.education ||
+                                                                        "N/A"}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    E-mail
+                                                                </p>
+                                                                <p className="text-sm font-medium">
+                                                                    {parent.email ||
+                                                                        "N/A"}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    No Telp
+                                                                </p>
+                                                                <p className="text-sm font-medium">
+                                                                    {parent.phone ||
+                                                                        "N/A"}
+                                                                </p>
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                                    Alamat
+                                                                </p>
+                                                                <p className="text-sm font-medium">
+                                                                    {parent.address ||
+                                                                        "N/A"}
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                            Tidak ada{" "}
+                                                            {parentType}
+                                                        </p>
                                                     )}
-                                            </p>
-                                            <p className="text-medium font-semibold">
-                                                {item.name || "N/A"}
-                                            </p>
-                                        </div>
-                                    ))}
+                                                </div>
+                                            );
+                                        }
+                                    )}
                                 </div>
                             </div>
 
@@ -453,7 +515,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Nama
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.full_name || "N/A"}
                                             </p>
                                         </div>
@@ -461,7 +523,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Nama Panggilan
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.nick_name || "N/A"}
                                             </p>
                                         </div>
@@ -469,7 +531,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Jenis Kelamin
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.gender
                                                     ? capitalizeFirstLetter(
                                                           data.gender
@@ -481,7 +543,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Agama
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.religion
                                                     ? capitalizeFirstLetter(
                                                           data.religion
@@ -493,7 +555,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Tempat Lahir
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.place_birth || "N/A"}
                                             </p>
                                         </div>
@@ -501,7 +563,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Tanggal Lahir
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.date_time_birth
                                                     ? formattedDate(
                                                           data.date_time_birth.toString()
@@ -513,7 +575,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Pendengaran
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.hearing_test
                                                     ? capitalizeFirstLetter(
                                                           data.hearing_test
@@ -525,7 +587,7 @@ export default function StudentDetails({}) {
                                             <p className="text-xs text-gray-400">
                                                 Jumlah Saudara
                                             </p>
-                                            <p className="text-medium font-semibold">
+                                            <p className="text-medium font-semibold break-words">
                                                 {data?.count_of_siblings ||
                                                     "N/A"}
                                             </p>
@@ -586,7 +648,7 @@ export default function StudentDetails({}) {
                                                             " "
                                                         )}
                                                     </p>
-                                                    <p className="text-medium font-semibold">
+                                                    <p className="text-medium font-semibold break-words">
                                                         {typeof value ===
                                                             "string" && value
                                                             ? capitalizeFirstLetter(
@@ -643,7 +705,7 @@ export default function StudentDetails({}) {
                                                             " "
                                                         )}
                                                     </p>
-                                                    <p className="text-medium font-semibold">
+                                                    <p className="text-medium font-semibold break-words">
                                                         {typeof value ===
                                                             "string" && value
                                                             ? capitalizeFirstLetter(
@@ -715,7 +777,7 @@ export default function StudentDetails({}) {
                                                             " "
                                                         )}
                                                     </p>
-                                                    <p className="text-medium font-semibold">
+                                                    <p className="text-medium font-semibold break-words">
                                                         {typeof value ===
                                                             "string" && value
                                                             ? capitalizeFirstLetter(

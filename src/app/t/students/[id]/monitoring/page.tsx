@@ -185,7 +185,7 @@ export default function MonitoringRecommendations() {
 
     return (
         <>
-            {isLoading ? (
+            {isLoading || !isReady ? (
                 <div className="mx-auto max-w-lg flex flex-col justify-center items-center min-h-svh h-full gap-2 p-2">
                     <div className="skeleton h-8 w-1/3 rounded-lg"></div>
                     <div className="skeleton w-full">

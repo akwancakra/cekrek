@@ -20,7 +20,7 @@ export default function CompareMonitoringTeacherLayout() {
 
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
-    const router = useRouter();
+    const { push } = useRouter();
     const { id } = useParams();
 
     const { data, isLoading } = useSWR<{ status: string; child: Child }>(
@@ -41,18 +41,19 @@ export default function CompareMonitoringTeacherLayout() {
     }, [paramDate]);
 
     useEffect(() => {
-        if (data?.child) {
-            setStudent(data.child);
+        if (!isLoading && profile?.id) {
+            if (!data?.child) {
+                push("/t");
+            } else {
+                setStudent(data?.child);
+            }
         }
-        // else if (!isLoading && !data?.child) {
-        //     router.push(`/t/students/${id}`);
-        // }
-    }, [isLoading, data]);
+    }, [data, isLoading]);
 
     return (
         <>
             <section className="mx-auto max-w-7xl mb-4">
-                {isLoading ? (
+                {isLoading || !isReady ? (
                     <>
                         <div>
                             <div className="skeleton h-9 w-32 rounded-lg mb-3"></div>
