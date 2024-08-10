@@ -89,8 +89,8 @@ export default function StudentCard({
                             Terakhir asesmen
                         </p>
                         <p className="text-small text-gray-700 dark:text-neutral-200">
-                            {student?.last_assesment
-                                ? formattedDate(student.last_assesment)
+                            {student?.last_assesment_date
+                                ? formattedDate(student.last_assesment_date)
                                 : "N/A"}
                         </p>
                     </div>
