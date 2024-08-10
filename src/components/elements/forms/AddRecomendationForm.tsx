@@ -25,6 +25,7 @@ interface Props {
 
 type Recommendation = {
     id?: number;
+    aspect?: string;
     teacher_id?: string | number;
     is_main: boolean;
     assesment_number: string | number;
@@ -178,6 +179,30 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                         />
                         <ErrorMessage
                             name="description"
+                            component="div"
+                            className="text-small text-red-500"
+                        />
+                    </div>
+                    <div>
+                        <label className="form-control w-full">
+                            <div className="label ps-0">
+                                <span className="label-text">
+                                    Aspek{" "}
+                                    {formik.errors.aspect && (
+                                        <span className="text-red-500 text-xs italic">
+                                            *wajib diisi
+                                        </span>
+                                    )}
+                                </span>
+                            </div>
+                            <Field
+                                {...formik.getFieldProps("aspect")}
+                                placeholder="2 kali sehari..."
+                                className="input input-bordered px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            />
+                        </label>
+                        <ErrorMessage
+                            name="aspect"
                             component="div"
                             className="text-small text-red-500"
                         />

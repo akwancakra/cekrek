@@ -241,6 +241,7 @@ export async function POST(req: NextRequest) {
                 const newRecommendation = await prisma.recommendations.create({
                     data: {
                         title: recommendation.title,
+                        aspect: recommendation.aspect || "Perkembangan",
                         assesment_number: parseInt(
                             recommendation.assesment_number
                         ),

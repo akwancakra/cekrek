@@ -64,9 +64,9 @@ export default function AssessmentChoose({
                                         Asesmen Terakhir
                                     </p>
                                     <p className="font-medium tracking-tight text-medium">
-                                        {student?.last_assesment
+                                        {student?.last_assesment_date
                                             ? formattedDate(
-                                                  student?.last_assesment.toString()
+                                                  student?.last_assesment_date.toString()
                                               )
                                             : "N/A"}
                                     </p>

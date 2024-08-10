@@ -74,7 +74,7 @@ Informasi Anak:
     }
 - Kategori autis: ${risk_category}
 
-Berikan 3 rekomendasi aktivitas dalam format berikut:
+Berikan beberapa rekomendasi aktivitas dalam format berikut:
 [{
     aspect: string,
     title: string,

@@ -49,6 +49,7 @@ type Recommendation = {
     id?: number;
     id_temp?: number;
     teacher_id?: string | number;
+    aspect?: string;
     is_main: boolean;
     is_change?: boolean;
     assesment_number: string | number;
@@ -72,6 +73,7 @@ const formSchema = Yup.object().shape({
 const initialValues: Recommendation = {
     id_temp: 0,
     teacher_id: "",
+    aspect: "",
     is_main: false,
     is_change: false,
     title: "",
@@ -300,8 +302,6 @@ export default function AssessmentGetRecommendations({
                 ...newRecommendations,
             ],
         };
-
-        console.log("FINAL: ", finalData);
 
         const submitPromise = new Promise<void>(async (resolve, reject) => {
             try {

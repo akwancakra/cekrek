@@ -140,9 +140,6 @@ export default function AssessmentPage() {
             );
             return isExistingValue ? updatedValue : [...prevValue, newAnswer];
         });
-
-        // console.log("NEW: " + newAnswer);
-        // console.log("FULL: " + assessmentAnswers);
     };
 
     useEffect(() => {
