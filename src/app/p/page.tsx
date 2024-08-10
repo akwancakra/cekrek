@@ -16,22 +16,11 @@ import { MonitorChildRecommendation } from "@/types/monitorChildRecommendation.t
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Child } from "@/types/children.types";
+import { Child, MonitorRecommendationWrap } from "@/types/children.types";
 import useSWR from "swr";
 import { fetcher } from "@/utils/fetcher";
 import useProfile from "@/utils/useProfile";
 import { getRecommendationImageUrl } from "@/utils/converters";
-
-const getMonitoredRecToday = (
-    monitorChildRec: MonitorChildRecommendation[]
-) => {
-    // get monitoring child recommendation with date_time greater than or equal to today
-    monitorChildRec.filter(
-        (item) => item.date_time.toDateString() === new Date().toDateString()
-    );
-
-    return monitorChildRec.length;
-};
 
 export default function HomeParent({}) {
     const [childs, setChilds] = useState<Child[]>();
@@ -49,7 +38,6 @@ export default function HomeParent({}) {
     useEffect(() => {
         if (data?.children) {
             setChilds(data.children);
-            // console.log(data.children);
         }
     }, [data]);
 
@@ -115,6 +103,8 @@ export default function HomeParent({}) {
  * @return {JSX.Element} The rendered single child card component.
  */
 const SingleChildCard = ({ data }: { data: Child[] }) => {
+    // console.log(data[0]?.monitor_child_recommendation);
+
     return (
         <section className="mx-auto max-w-7xl flex gap-2 p-3 border rounded-lg border-gray-300 dark:border-neutral-600">
             <div className="mb-2 group-[.open]:mb-2 group-[.open]:w-full sm:mb-0 sm:w-7/12 md:group-[.open]:mb-0 md:group-[.open]:w-7/12">
@@ -138,10 +128,7 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
 
                 <div className="flex items-center mt-3">
                     <Pill
-                        text={`Rekomendasi ${getMonitoredRecToday(
-                            data[0]?.monitoringChildRecommendations?.[0]
-                                ?.monitorRecommendations || []
-                        )}/${data[0].child_recommendations?.length}`}
+                        text={`Rekomendasi ${data[0]?.finishedRecommendations}/${data[0].totalRecommendation}`}
                         icon="assignment"
                         type="secondary"
                         classnew="w-fit"
@@ -165,11 +152,7 @@ const SingleChildCard = ({ data }: { data: Child[] }) => {
                                     <RecommendationIndexCard
                                         key={index}
                                         recommendation={item.recommendations}
-                                        monitoringChildRec={
-                                            data[0]
-                                                ?.monitoringChildRecommendations?.[0]
-                                                ?.monitorRecommendations
-                                        }
+                                        isFinished={item.isFinished}
                                     />
                                 ) : null
                             )}

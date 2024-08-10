@@ -24,13 +24,14 @@ export type Child = {
     risk_category: string;
     hearing_test: string;
     child_recommendations: ChildRecommendation[];
-    monitor_child_recommendations: {
+    monitor_child_recommendation: {
         id: number;
         child_recommendation_id: number;
         date_time: string;
         is_done: boolean;
+        with_whom: string;
         child_recommendations: ChildRecommendation;
-        recommendations: Recommendation;
+        recommendations: RecommendationWrapper[];
     }[];
     finishedRecommendations?: number;
     unfinishedRecommendations?: number;
@@ -38,4 +39,10 @@ export type Child = {
     unfinishedRecommendationsByTeacher?: number;
     finishedRecommendationsByParent?: number;
     unfinishedRecommendationsByParent?: number;
+    last_assesment_date?: string;
+};
+
+type RecommendationWrapper = {
+    id: number;
+    recommendation: Recommendation;
 };

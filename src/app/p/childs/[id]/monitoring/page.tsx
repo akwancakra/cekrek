@@ -227,7 +227,7 @@ export default function MonitoringRecommendationsParent() {
                                         </div>
                                         <div className="grid gap-2 gap-y-2 mb-3 sm:grid-cols-2 md:group-[.open]:grid-cols-2">
                                             <div className="mb-3">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Nama
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -236,7 +236,7 @@ export default function MonitoringRecommendationsParent() {
                                                 </p>
                                             </div>
                                             <div className="mb-3">
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Tanggal Lahir
                                                 </p>
                                                 <p className="text-medium font-semibold">
@@ -248,7 +248,7 @@ export default function MonitoringRecommendationsParent() {
                                                 </p>
                                             </div>
                                             <div>
-                                                <p className="text-xs to-gray-400">
+                                                <p className="text-xs text-gray-400">
                                                     Jenis Kelamin
                                                 </p>
                                                 <p className="text-medium font-semibold">

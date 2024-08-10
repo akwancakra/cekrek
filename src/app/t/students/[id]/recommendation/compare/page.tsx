@@ -1,5 +1,6 @@
 "use client";
 
+import RecomendationCard from "@/components/elements/cards/RecomendationCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Child } from "@/types/customChild.types";
@@ -131,6 +132,23 @@ export default function CompareMonitoringTeacherLayout() {
                                         </p>
                                     </div>
                                 </div>
+
+                                <p className="my-2">Rekomendasi</p>
+                                <div>
+                                    {student?.child_recommendations?.map(
+                                        (child_recommendation) => (
+                                            <RecomendationCard
+                                                key={child_recommendation.id}
+                                                recommendation={
+                                                    child_recommendation.recommendations
+                                                }
+                                                isDone={
+                                                    child_recommendation.isFinishedByTeacher
+                                                }
+                                            />
+                                        )
+                                    )}
+                                </div>
                             </div>
                             <div className="divider group-[.open]:divider lg:group-[.open]:divider-horizontal md:divider-horizontal my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div className="grow">
@@ -157,6 +175,23 @@ export default function CompareMonitoringTeacherLayout() {
                                                 "0"}
                                         </p>
                                     </div>
+                                </div>
+
+                                <p className="my-2">Rekomendasi</p>
+                                <div>
+                                    {student?.child_recommendations?.map(
+                                        (child_recommendation) => (
+                                            <RecomendationCard
+                                                key={child_recommendation.id}
+                                                recommendation={
+                                                    child_recommendation.recommendations
+                                                }
+                                                isDone={
+                                                    child_recommendation.isFinishedByParent
+                                                }
+                                            />
+                                        )
+                                    )}
                                 </div>
                             </div>
                         </div>

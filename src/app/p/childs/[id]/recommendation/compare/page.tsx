@@ -1,11 +1,15 @@
 "use client";
 
+import RecomendationCard from "@/components/elements/cards/RecomendationCard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Child } from "@/types/customChild.types";
 import { getVariant } from "@/utils/converters";
 import { fetcher } from "@/utils/fetcher";
-import { formattedDateStripYearFirst } from "@/utils/formattedDate";
+import {
+    formattedDate,
+    formattedDateStripYearFirst,
+} from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
@@ -82,7 +86,7 @@ export default function CompareMonitoringParentLayout() {
                                 Kembali
                             </Link>
                         </Button>
-                        <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 dark:border-neutral-600">
+                        <div className="flex justify-between items-center w-full border border-gray-300 rounded-lg p-2 mb-3 dark:border-neutral-600">
                             <div>
                                 <p className="text-gray-400 text-small">
                                     Monitoring Asesmen M-Chart-R/F
@@ -103,6 +107,9 @@ export default function CompareMonitoringParentLayout() {
                                     Tingkat {student?.risk_category || "N/A"}
                                 </Badge>
                             </div>
+                            <p className="font-semibold tracking-tight text-large">
+                                {formattedDate(new Date().toString())}
+                            </p>
                         </div>
 
                         <div className="w-full border border-gray-300 rounded-lg p-2 mb-3 justify-between block group-[.open]:block lg:group-[.open]:flex sm:flex dark:border-neutral-600">
@@ -131,6 +138,23 @@ export default function CompareMonitoringParentLayout() {
                                         </p>
                                     </div>
                                 </div>
+
+                                <p className="my-2">Rekomendasi</p>
+                                <div>
+                                    {student?.child_recommendations?.map(
+                                        (child_recommendation) => (
+                                            <RecomendationCard
+                                                key={child_recommendation.id}
+                                                recommendation={
+                                                    child_recommendation.recommendations
+                                                }
+                                                isDone={
+                                                    child_recommendation.isFinishedByParent
+                                                }
+                                            />
+                                        )
+                                    )}
+                                </div>
                             </div>
                             <div className="divider group-[.open]:divider lg:group-[.open]:divider-horizontal md:divider-horizontal my-1 dark:after:!bg-neutral-600 dark:before:!bg-neutral-600"></div>
                             <div className="grow">
@@ -157,6 +181,23 @@ export default function CompareMonitoringParentLayout() {
                                                 "0"}
                                         </p>
                                     </div>
+                                </div>
+
+                                <p className="my-2">Rekomendasi</p>
+                                <div>
+                                    {student?.child_recommendations?.map(
+                                        (child_recommendation) => (
+                                            <RecomendationCard
+                                                key={child_recommendation.id}
+                                                recommendation={
+                                                    child_recommendation.recommendations
+                                                }
+                                                isDone={
+                                                    child_recommendation.isFinishedByTeacher
+                                                }
+                                            />
+                                        )
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -29,7 +29,7 @@ export default function RecomendationCard({
             <div className="collapse-title p-0 min-h-fit">
                 <div className="flex justify-between items-center mb-1">
                     <div className="flex items-center gap-2">
-                        <div className="bg-gray-300 rounded-lg hidden overflow-hidden sm:block sm:w-16 dark:bg-neutral-600">
+                        <div className="bg-gray-300 rounded-lg hidden overflow-hidden sm:block sm:w-16 sm:min-w-16 dark:bg-neutral-600">
                             <AspectRatio ratio={1 / 1}>
                                 <Image
                                     src={getRecommendationImageUrl({

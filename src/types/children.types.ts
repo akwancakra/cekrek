@@ -3,7 +3,8 @@ import { ChildAssesment } from "./childAssesment.type";
 import { ChildRecommendation } from "./childRecommendation.type";
 import { ExpertExamination } from "./expertExamination.type";
 import { HealthStatus } from "./healthStatus.type";
-import { MonitorChildRecommendation } from "./monitorChildRecommendation.type";
+// import { MonitorChildRecommendation } from "./monitorChildRecommendation.type";
+import { Recommendation } from "./recommendation.type";
 import { User } from "./user.types";
 
 export type Child = {
@@ -22,17 +23,19 @@ export type Child = {
         | "pendengaran dalam batas normal"
         | "pendengaran di bawah normal"
         | "hasil tidak menyakinkan atau tidak definitif";
-    last_assesment?: string;
     teacher?: User[];
     parent?: User[];
     child_recommendations?: ChildRecommendation[];
-    monitoringChildRecommendations?: MonitorRecommendationWrap[];
+    // monitoringChildRecommendations?: MonitorRecommendationWrap[];
+    monitor_child_recommendation?: MonitorRecommendationWrap[];
     birth_history?: BirthHistory;
     expert_examination?: ExpertExamination;
     health_status?: HealthStatus;
     child_assesments?: AssesmentWrap[];
-    finishedRecommendations: boolean;
-    unfinishedRecommendations: boolean;
+    totalRecommendation?: number;
+    finishedRecommendations?: boolean;
+    unfinishedRecommendations?: boolean;
+    last_assesment_date?: string;
 };
 
 export type AssesmentWrap = {
@@ -46,6 +49,21 @@ export type AssesmentWrap = {
 // };
 
 export type MonitorRecommendationWrap = {
+    id: number;
+    name: string;
+    child_recommendation_id: number;
     date_time: Date;
-    monitorRecommendations: MonitorChildRecommendation[];
+    is_done: boolean;
+    with_whom: string;
+    child_recommendations: {
+        id: number;
+        children_id: number;
+        recommendation_id: number;
+    };
+    recommendations: RecommendationWrapper[];
+};
+
+type RecommendationWrapper = {
+    id: number;
+    recommendation: Recommendation;
 };

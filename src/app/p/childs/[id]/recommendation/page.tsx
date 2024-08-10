@@ -39,6 +39,8 @@ import { getVariant } from "@/utils/converters";
 import { formattedDateStripYearFirst } from "@/utils/formattedDate";
 import useProfile from "@/utils/useProfile";
 import { Child } from "@/types/customChild.types";
+import axios from "axios";
+import ChartComponent from "@/components/elements/charts/RecommendationChart";
 
 ChartJS.register(
     CategoryScale,
@@ -50,50 +52,13 @@ ChartJS.register(
     Legend
 );
 
-const labels = ["Apr - M-1", "Apr - M-2", "Apr - M-3", "Apr - M-4"];
-
-// Fungsi untuk menghasilkan options
-const getOptions = () => ({
-    responsive: true,
-    plugins: {
-        legend: {
-            display: false,
-        },
-        title: {
-            display: false,
-        },
-    },
-    scales: {
-        y: {
-            display: true,
-        },
-    },
-});
-
-// Fungsi untuk menghasilkan data
-const getData = (datasets: any) => ({
-    labels,
-    datasets,
-});
-
-const datasets1 = [
-    {
-        label: "Nama Aksi",
-        data: [65, 59, 80, 81],
-        backgroundColor: "rgba(126, 73, 255, 0.5)",
-        borderColor: "rgba(126, 73, 255, 1)",
-        borderWidth: 2,
-        lineTension: 0.3,
-        fill: true,
-    },
-];
-
 export default function RecomendationStudent({}) {
     const [date, setDate] = useState<Date>(new Date());
     const [student, setStudent] = useState<Child>();
     const today = formattedDateStripYearFirst(new Date().toString());
-    const { profile, isReady } = useProfile();
+    const [aspects, setAspects] = useState<string[]>([]);
 
+    const { profile, isReady } = useProfile();
     const searchParams = useSearchParams();
     const paramDate = searchParams.get("date");
     const { id } = useParams();
@@ -128,6 +93,16 @@ export default function RecomendationStudent({}) {
                 push("/p/childs");
             } else {
                 setStudent(data.child);
+
+                // Set Aspek yang ada pada data rekomendasi anak
+                const recommendations =
+                    data?.child?.child_recommendations || [];
+                const uniqueAspects = Array.from(
+                    new Set(
+                        recommendations.map((r) => r.recommendations.aspect)
+                    )
+                );
+                setAspects(uniqueAspects);
             }
         }
     }, [isLoading, data, isReady]);
@@ -180,112 +155,45 @@ export default function RecomendationStudent({}) {
                 )}
             </div>
 
-            {student?.child_recommendations?.length > 0 && (
-                <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
-                    <div className="w-full border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
-                        <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                            <p className="text-medium font-medium tracking-tight">
-                                Mengikuti Perintah
-                            </p>
-                            <Select disabled={isLoading}>
-                                <SelectTrigger className="w-fit min-w-24">
-                                    <SelectValue placeholder="Pilih Minggu" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="light" defaultChecked>
-                                        Min 1 - Mar
-                                    </SelectItem>
-                                    <SelectItem value="dark">
-                                        Min 2 - Mar
-                                    </SelectItem>
-                                    <SelectItem value="system">
-                                        Min 3 - Mar
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+            <div className="grid grid-cols-1 gap-2 group-[.open]:grid-cols-1 md:group-[.open]:grid-cols-3 md:grid-cols-3 mb-3">
+                {isLoading || !isReady ? (
+                    <>
+                        <div className="skeleton w-full h-48 rounded-lg"></div>
+                        <div className="skeleton w-full h-48 rounded-lg"></div>
+                        <div className="skeleton w-full h-48 rounded-lg"></div>
+                    </>
+                ) : aspects.length === 0 ? (
+                    <>
+                        <div className="w-full min-h-36  border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                            <div className="h-full flex justify-center items-center mb-2 text-center text-sm sm:text-base">
+                                <p>Data chart tidak tersedia</p>
+                            </div>
                         </div>
-                        <div className="w-full">
-                            <AspectRatio ratio={16 / 9}>
-                                <Line
-                                    options={getOptions()}
-                                    data={getData(datasets1)}
-                                    // className="!h-full"
-                                />
-                            </AspectRatio>
+                        <div className="w-full min-h-36  border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                            <div className="h-full flex justify-center items-center mb-2 text-center text-sm sm:text-base">
+                                <p>Data chart tidak tersedia</p>
+                            </div>
                         </div>
-                    </div>
-                    <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
-                        <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                            <p className="font-medium tracking-tight">
-                                Motorik Halus
-                            </p>
-                            <Select disabled={isLoading}>
-                                <SelectTrigger className="w-fit min-w-24">
-                                    <SelectValue placeholder="Pilih Minggu" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="light">
-                                        Min 1 - Mar
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="dark"
-                                        defaultChecked={true}
-                                    >
-                                        Min 2 - Mar
-                                    </SelectItem>
-                                    <SelectItem value="system">
-                                        Min 3 - Mar
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
+                        <div className="w-full min-h-36  border border-gray-300 p-2 rounded-lg dark:border-neutral-600">
+                            <div className="h-full flex justify-center items-center mb-2 text-center text-sm sm:text-base">
+                                <p>Data chart tidak tersedia</p>
+                            </div>
                         </div>
-                        <div className="w-full">
-                            <AspectRatio ratio={16 / 9}>
-                                <Line
-                                    options={getOptions()}
-                                    data={getData(datasets1)}
-                                    // className="!h-full"
-                                />
-                            </AspectRatio>
-                        </div>
-                    </div>
-                    <div className="w-full border border-gray-300 p-2 rounded-lg sm:min-h-60 dark:border-neutral-600">
-                        <div className="flex justify-between items-center mb-2 text-sm sm:text-base">
-                            <p className="font-medium tracking-tight">
-                                Kognitif
-                            </p>
-                            <Select disabled={isLoading}>
-                                <SelectTrigger className="w-fit min-w-24">
-                                    <SelectValue placeholder="Pilih Minggu" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="light">
-                                        Min 1 - Mar
-                                    </SelectItem>
-                                    <SelectItem value="dark">
-                                        Min 2 - Mar
-                                    </SelectItem>
-                                    <SelectItem
-                                        value="system"
-                                        defaultChecked={true}
-                                    >
-                                        Min 3 - Mar
-                                    </SelectItem>
-                                </SelectContent>
-                            </Select>
-                        </div>
-                        <div className="w-full">
-                            <AspectRatio ratio={16 / 9}>
-                                <Line
-                                    options={getOptions()}
-                                    data={getData(datasets1)}
-                                    // className="!h-full"
-                                />
-                            </AspectRatio>
-                        </div>
-                    </div>
-                </div>
-            )}
+                    </>
+                ) : (
+                    <>
+                        {aspects.map((aspect) => (
+                            <ChartComponent
+                                key={aspect}
+                                aspect={aspect}
+                                teacherId={profile?.id}
+                                studentId={id}
+                            />
+                        ))}
+                    </>
+                )}
+            </div>
+
             <div className="rounded-lg p-4 w-full flex items-center text-white bg-primary h-fit mb-3 sm:min-h-24">
                 <div>
                     <p className="text-small -mb-1">Informasi</p>
@@ -294,6 +202,7 @@ export default function RecomendationStudent({}) {
                     </p>
                 </div>
             </div>
+
             <div className="border border-gray-300 rounded-lg overflow-hidden dark:border-neutral-600">
                 <div className="bg-purple-50 flex justify-between items-center p-2 !text-sm sm:text-base dark:bg-purple-900">
                     <p className="font-semibold tracking-tight text-medium">

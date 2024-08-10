@@ -4,6 +4,7 @@ export type Recommendation = {
     id: number;
     teacher_id?: number;
     assesment_number: number;
+    aspect: string;
     is_main: boolean;
     title: string;
     description: string;

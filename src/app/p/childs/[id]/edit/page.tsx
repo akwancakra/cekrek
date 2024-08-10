@@ -26,8 +26,9 @@ export default function EditChildParentPage() {
         "children-data-edit-parent",
         {} as ChildrenData
     );
-    const { profile, isReady } = useProfile();
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
+    const { profile, isReady } = useProfile();
     const router = useRouter();
     const { id } = useParams();
     const searchParams = useSearchParams();
@@ -300,12 +301,13 @@ export default function EditChildParentPage() {
                     healthStatus,
                 });
 
-                console.log("Value: ", value);
+                setIsDataLoaded(true);
+                // console.log("Value: ", value);
             }
         }
     }, [isLoading, data?.child, isReady]);
 
-    if (!data?.child || isLoading) {
+    if (!data?.child || isLoading || !isDataLoaded) {
         return (
             <div className="flex min-h-screen justify-center items-center">
                 <div className="flex items-center gap-1">

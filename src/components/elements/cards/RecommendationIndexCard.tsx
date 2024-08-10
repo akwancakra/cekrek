@@ -7,29 +7,13 @@ import Image from "next/image";
 
 interface RecommendationIndexCardProps {
     recommendation: Recommendation;
-    monitoringChildRec?: MonitorChildRecommendation[];
     isFinished?: boolean;
 }
 
 export default function RecommendationIndexCard({
     recommendation,
-    monitoringChildRec,
     isFinished = false,
 }: RecommendationIndexCardProps) {
-    // const isDone = () => {
-    //     const found = monitoringChildRec?.some((item) => {
-    //         if (
-    //             item.child_recommendation?.recommendation_id ===
-    //             recommendation.id
-    //         ) {
-    //             return true;
-    //         }
-    //         return false;
-    //     });
-
-    //     return found || false;
-    // };
-
     return (
         <>
             <div className="my-2 flex gap-2 items-center flex-col group-[.open]:flex-col sm:flex-row md:group-[.open]:flex-row">

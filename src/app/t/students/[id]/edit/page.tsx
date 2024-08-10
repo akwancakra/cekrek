@@ -213,7 +213,7 @@ export default function AddStudentPage() {
         if (childData) {
             removeValue();
 
-            console.log(value);
+            // console.log(value);
 
             const biodata = {
                 id: childData.id.toString(),
@@ -302,7 +302,7 @@ export default function AddStudentPage() {
             // Make sure all data is loaded to formik
             setIsDataLoaded(true);
 
-            console.log("Value: ", value);
+            // console.log("Value: ", value);
         }
     }, [data?.child]);
 
