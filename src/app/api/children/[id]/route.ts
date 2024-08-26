@@ -490,6 +490,76 @@ export async function PUT(req: any, { params }: any) {
     }
 }
 
+export async function DELETE(req: any, { params }: any) {
+    try {
+        const childId = parseInt(params.id);
+
+        // Check if the child exists
+        const childExists = await prisma.children.findUnique({
+            where: { id: childId },
+        });
+
+        if (!childExists) {
+            return NextResponse.json(
+                { status: "error", message: "Child not found" },
+                { status: 404 }
+            );
+        }
+
+        // Delete all associated data
+        await prisma.$transaction([
+            // Delete child_assesments
+            prisma.child_assesment.deleteMany({
+                where: { children_id: childId },
+            }),
+
+            // Delete child_recommendations and associated monitors
+            prisma.child_recommendations.deleteMany({
+                where: { children_id: childId },
+            }),
+
+            // Delete birth_history
+            prisma.birth_history.delete({
+                where: { child_id: childId },
+            }),
+
+            // Delete health_status
+            prisma.health_status.delete({
+                where: { child_id: childId },
+            }),
+
+            // Delete expert_examination
+            prisma.expert_examination.delete({
+                where: { child_id: childId },
+            }),
+
+            // Finally, delete the child
+            prisma.children.delete({
+                where: { id: childId },
+            }),
+        ]);
+
+        return NextResponse.json(
+            {
+                status: "success",
+                message: "Child and all associated data deleted successfully",
+            },
+            { status: 200 }
+        );
+    } catch (error: any) {
+        console.error("Error deleting child:", error);
+        return NextResponse.json(
+            {
+                status: "error",
+                message: error.message || "Internal Server Error",
+            },
+            { status: 500 }
+        );
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
 // export async function PUT(req: any, { params }: any) {
 //     try {
 //         const id = parseInt(params.id);

@@ -164,6 +164,7 @@ export default function RecommendationsTable({ keyword }: Props) {
             id: "actions",
             cell: ({ row }) => {
                 const rekomendasiId = row.getValue("id");
+                const isMain: boolean = row.getValue("is_main");
 
                 return (
                     <DropdownMenu>
@@ -189,19 +190,24 @@ export default function RecommendationsTable({ keyword }: Props) {
                                     Ubah rekomendasi
                                 </Link>
                             </DropdownMenuItem>
-                            {isDesktop ? (
-                                <RecommendationDeleteDialog
-                                    recommendation={row.original}
-                                    removeRecommendation={removeRecommendation}
-                                    isLoading={isLoading}
-                                />
-                            ) : (
-                                <RecommendationDeleteDrawer
-                                    recommendation={row.original}
-                                    removeRecommendation={removeRecommendation}
-                                    isLoading={isLoading}
-                                />
-                            )}
+                            {!isMain &&
+                                (isDesktop ? (
+                                    <RecommendationDeleteDialog
+                                        recommendation={row.original}
+                                        removeRecommendation={
+                                            removeRecommendation
+                                        }
+                                        isLoading={isLoading}
+                                    />
+                                ) : (
+                                    <RecommendationDeleteDrawer
+                                        recommendation={row.original}
+                                        removeRecommendation={
+                                            removeRecommendation
+                                        }
+                                        isLoading={isLoading}
+                                    />
+                                ))}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );

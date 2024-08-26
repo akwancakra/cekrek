@@ -68,6 +68,7 @@ const validationSchema = Yup.object().shape({
     risk_category: Yup.string()
         .oneOf(["other", "rendah", "sedang", "tinggi"])
         .required("Kategori Risiko wajib diisi"),
+    aspect: Yup.string().required("Aspek wajib diisi"),
 });
 
 export default function EditRecommendatioPage() {
@@ -88,6 +89,7 @@ export default function EditRecommendatioPage() {
             assesment_number: "0",
             frequency: "",
             risk_category: "",
+            aspect: "",
         },
         validationSchema,
         onSubmit: async (values) => {
@@ -173,6 +175,7 @@ export default function EditRecommendatioPage() {
                     assesment_number,
                     frequency,
                     risk_category,
+                    aspect,
                 } = recommendationData.recommendation;
 
                 formik.setValues({
@@ -183,6 +186,7 @@ export default function EditRecommendatioPage() {
                     assesment_number: assesment_number.toString() || "0",
                     frequency: frequency || "",
                     risk_category: risk_category || "other",
+                    aspect: aspect || "",
                 });
 
                 setIsDataLoaded(true);
@@ -400,6 +404,34 @@ export default function EditRecommendatioPage() {
                                                     </label>
                                                     <ErrorMessage
                                                         name="title"
+                                                        component="div"
+                                                        className="text-small text-red-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="form-control w-full">
+                                                        <div className="label ps-0">
+                                                            <span className="label-text">
+                                                                Aspek{" "}
+                                                                {formik.errors
+                                                                    .aspect && (
+                                                                    <span className="text-red-500 text-xs italic">
+                                                                        *wajib
+                                                                        diisi
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                        <Field
+                                                            {...formik.getFieldProps(
+                                                                "aspect"
+                                                            )}
+                                                            placeholder="Melatih Berpikir Kritis..."
+                                                            className="input input-bordered px-3 py-2 text-sm h-fit min-h-fit w-full"
+                                                        />
+                                                    </label>
+                                                    <ErrorMessage
+                                                        name="aspect"
                                                         component="div"
                                                         className="text-small text-red-500"
                                                     />

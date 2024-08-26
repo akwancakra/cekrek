@@ -45,7 +45,6 @@ import useProfile from "@/utils/useProfile";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Image from "next/image";
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { useMediaQuery } from "usehooks-ts";

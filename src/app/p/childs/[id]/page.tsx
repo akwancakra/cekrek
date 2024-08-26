@@ -14,13 +14,6 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuGroup,
@@ -56,7 +49,7 @@ import {
 } from "@/utils/formattedDate";
 import ExcelAssessmentStudent from "@/components/elements/exports/ExcelAssessmentStudent";
 import { PDFAssessmentStudent } from "@/components/elements/exports/PDFAssessmentStudent";
-import { getVariant, processChildAssessments } from "@/utils/converters";
+import { processChildAssessments } from "@/utils/converters";
 import { fetcher, getChildrenImage } from "@/utils/fetcher";
 import useSWR from "swr";
 import { useParams, useRouter } from "next/navigation";
@@ -68,6 +61,7 @@ import { HealthStatus } from "@/types/healthStatus.type";
 import { ProcessedAssessment } from "@/types/processedAssessments.type";
 import { toast } from "sonner";
 import useProfile from "@/utils/useProfile";
+import axios from "axios";
 
 type ChildRecommendation = {
     id: number;
@@ -146,9 +140,42 @@ export default function Template({}) {
     };
 
     const removeChildButton = (id: number) => {
-        toast.error("Anak berhasil dihapus!");
-        push("/p/childs");
-        console.log("Child Remove Button Clicked!");
+        if (id == null || id == undefined) {
+            return toast.error("Terjadi kesalahan!");
+        }
+
+        const submitPromise = new Promise<void>(async (resolve, reject) => {
+            try {
+                await axios.delete(`/api/children/${id}`);
+
+                resolve();
+            } catch (error) {
+                reject(error);
+            }
+        });
+
+        toast.promise(submitPromise, {
+            loading: "Mengirimkan data...",
+            success: () => {
+                // setIsLoading(false);
+                push("/p/childs");
+                return "Berhasil menghapus rekomendasi!";
+            },
+            error: (data: any) => {
+                // setIsLoading(false);
+                if (data?.response?.status === 400) {
+                    return data?.response?.data?.message;
+                } else if (data?.response?.status === 500) {
+                    return "Server Error";
+                } else {
+                    return "Terjadi kesalahan";
+                }
+            },
+        });
+
+        // toast.error("Anak berhasil dihapus!");
+        // push("/p/childs");
+        // console.log("Child Remove Button Clicked!");
     };
 
     useEffect(() => {
