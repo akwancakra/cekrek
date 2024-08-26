@@ -10,6 +10,7 @@ type QuestionType = {
     id: number;
     type: string;
     question: string;
+    image?: string;
     example_answer?: string;
 };
 
@@ -89,7 +90,11 @@ export default function BirthHealthYNMore({
             <div className="bg-gray-400 rounded-lg w-full dark:bg-neutral-900">
                 <AspectRatio ratio={16 / 9}>
                     <Image
-                        src={"/static/images/default.jpg"}
+                        src={
+                            question?.image
+                                ? `/static/images/child-form/${question?.image}`
+                                : "/static/images/default.jpg"
+                        }
                         alt="Recomendation Image"
                         fill={true}
                         className="rounded-lg object-cover"

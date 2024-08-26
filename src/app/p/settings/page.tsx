@@ -123,7 +123,7 @@ export default function ParentSettings({}) {
                     </div>
                     {isDesktop ? <InfoAccountDialog /> : <InfoAccountDrawer />}
                 </div> */}
-                <div className="flex justify-between items-center my-3">
+                {/* <div className="flex justify-between items-center my-3">
                     <div>
                         <p className="text-medium">Hapus akun saya</p>
                         <p className="text-gray-400 text-small">
@@ -140,7 +140,7 @@ export default function ParentSettings({}) {
                             removeAccountButton={removeAccountButton}
                         />
                     )}
-                </div>
+                </div> */}
                 <div className="flex justify-between items-center my-3">
                     <p className="text-medium">Keluar akun</p>
                     <Button

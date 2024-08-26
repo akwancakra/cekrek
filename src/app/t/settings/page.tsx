@@ -121,7 +121,7 @@ export default function TeacherSettings({}) {
                         <InfoAccountDrawer profile={data?.user} />
                     )}
                 </div>
-                <div className="flex justify-between items-center my-3">
+                {/* <div className="flex justify-between items-center my-3">
                     <div>
                         <p className="text-medium">Hapus akun saya</p>
                         <p className="text-gray-400 text-small">
@@ -138,7 +138,7 @@ export default function TeacherSettings({}) {
                             removeAccountButton={removeAccountButton}
                         />
                     )}
-                </div>
+                </div> */}
                 <div className="flex justify-between items-center my-3">
                     <p className="text-medium">Keluar akun</p>
                     <Button

@@ -110,6 +110,7 @@ model birth_history_question {
   id             Int     @id @default(autoincrement())
   type           String // sebelum kelahiran, saat kelahiran
   question       String
+  image           String?
   example_answer String? // contoh jawaban
 }
 
@@ -117,6 +118,7 @@ model health_status_question {
   id             Int     @id @default(autoincrement())
   type           String // keadaan kesehatan, perkembangan jasmani
   question       String // pernah sakit keras? dll
+  image           String?
   example_answer String? // contoh jawaban
 }
 

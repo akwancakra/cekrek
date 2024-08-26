@@ -43,6 +43,8 @@ export async function GET(req: NextRequest) {
                 { status: 200 }
             );
 
+        console.log(birth_history_question);
+
         return NextResponse.json(
             {
                 status: "success",

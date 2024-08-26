@@ -116,6 +116,14 @@ export default function AssessmentChoice({
         return isActive;
     };
 
+    const getAssessmentImage = (picture: string): string => {
+        if (picture) {
+            return `/static/images/assessments/${picture}`;
+        }
+
+        return "/static/images/default.jpg";
+    };
+
     // const incrementNumber = () => {
     //     setNumber((prevNumber) =>
     //         prevNumber < assessments.length ? prevNumber + 1 : prevNumber
@@ -171,17 +179,17 @@ export default function AssessmentChoice({
                     <p className="text-gray-500 text-center text-small dark:text-gray-300">
                         {assessments[count - 1]?.question}
                     </p>
-                    <div className="bg-gray-400 rounded-lg w-full overflow-hidden">
+                    <div className="bg-gray-400 rounded-lg w-full overflow-hidden dark:bg-neutral-900">
                         <AspectRatio ratio={16 / 9}>
                             <Image
-                                src={`/static/images/${
-                                    assessments[count - 1]?.picture ||
-                                    "default.jpg"
-                                }`}
+                                src={getAssessmentImage(
+                                    assessments[count - 1]?.picture
+                                )}
                                 alt="Assessment Image"
-                                width={400}
-                                height={225}
-                                className="rounded-lg w-full h-full object-cover"
+                                // width={400}
+                                // height={225}
+                                fill={true}
+                                className="rounded-lg object-cover"
                                 draggable={false}
                             />
                         </AspectRatio>

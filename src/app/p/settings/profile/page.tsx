@@ -147,7 +147,7 @@ export default function ParentProfilePage() {
                                                         Ubah akun
                                                     </Link>
                                                 </DropdownMenuItem>
-                                                <DropdownMenuItem
+                                                {/* <DropdownMenuItem
                                                     className="cursor-pointer bg-red-100 text-red-500 hover:!bg-red-200 hover:!text-red-600"
                                                     asChild
                                                 >
@@ -235,7 +235,7 @@ export default function ParentProfilePage() {
                                                             </AlertDialogFooter>
                                                         </AlertDialogContent>
                                                     </AlertDialog>
-                                                </DropdownMenuItem>
+                                                </DropdownMenuItem> */}
                                             </DropdownMenuGroup>
                                         </DropdownMenuContent>
                                     </DropdownMenu>

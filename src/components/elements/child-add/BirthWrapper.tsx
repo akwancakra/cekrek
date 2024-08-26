@@ -106,6 +106,7 @@ type QuestionType = {
     id: number;
     type: string;
     question: string;
+    image?: string;
     example_answer?: string;
 };
 
