@@ -59,6 +59,7 @@ type Recommendation = {
     is_change?: boolean;
     assesment_number: string | number;
     title: string;
+    aspect?: string;
     description: string;
     icon?: string;
     frequency?: string;
@@ -161,8 +162,26 @@ export default function CreateRecomendationCard({
                                                     : "Untuk semua kategori"}
                                             </p>
                                         </div>
-                                        <div className="col-span-2">
+                                        <div>
                                             <p className="text-small text-gray-400 -mb-1">
+                                                Aspek
+                                            </p>
+                                            <p>
+                                                {recommendation?.aspect ||
+                                                    "N/A"}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-small text-gray-400 -mb-1">
+                                                Frekuensi
+                                            </p>
+                                            <p>
+                                                {recommendation?.frequency ||
+                                                    "N/A"}
+                                            </p>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="col-span-2 text-small text-gray-400 -mb-1">
                                                 Deskripsi
                                             </p>
                                             <div
@@ -291,6 +310,24 @@ export default function CreateRecomendationCard({
                                                                 ? "Untuk kategori: " +
                                                                   recommendation.risk_category
                                                                 : "Untuk semua kategori"}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-small text-gray-400 -mb-1">
+                                                            Aspek
+                                                        </p>
+                                                        <p>
+                                                            {recommendation?.aspect ||
+                                                                "N/A"}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-small text-gray-400 -mb-1">
+                                                            Frekuensi
+                                                        </p>
+                                                        <p>
+                                                            {recommendation?.frequency ||
+                                                                "N/A"}
                                                         </p>
                                                     </div>
                                                     <div className="col-span-2">

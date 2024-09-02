@@ -93,6 +93,34 @@ export default function ImageRecommendationPicker({
         }
     };
 
+    // const handleImageChange = async (
+    //     event: React.ChangeEvent<HTMLInputElement>
+    // ) => {
+    //     const file = event.target.files?.[0];
+    //     if (file) {
+    //         if (file.size > 1024000) {
+    //             toast.error("Ukuran maksimal gambar 1MB");
+    //             return;
+    //         }
+
+    //         const allowedExtensions = ["jpg", "jpeg", "png"];
+    //         const fileExtension = file.name.split(".").pop()?.toLowerCase();
+    //         if (!fileExtension || !allowedExtensions.includes(fileExtension)) {
+    //             toast.error(
+    //                 "Hanya gambar dengan tipe jpg, jpeg, atau png yang diizinkan"
+    //             );
+    //             return;
+    //         }
+
+    //         const reader = new FileReader();
+    //         reader.onload = (e) => {
+    //             const base64String = e.target?.result as string;
+    //             setImage(base64String);
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // };
+
     const resetIcon = () => {
         setType("");
         setImage("");

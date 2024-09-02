@@ -41,7 +41,26 @@ export async function GET(req: any, { params }: any) {
         });
 
         if (monitors.length === 0) {
-            return NextResponse.json({ weeks: [] }, { status: 200 });
+            const emptyWeeks = [];
+            const startDate = new Date();
+            startDate.setHours(0, 0, 0, 0);
+
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);
+
+            emptyWeeks.push({
+                label: `Min 1 - ${endDate.toLocaleDateString("id-ID", {
+                    month: "short",
+                })}`,
+                startDate: startDate.toISOString(),
+                endDate: endDate.toISOString(),
+                value: 0,
+            });
+
+            return NextResponse.json(
+                { status: "success", weeks: emptyWeeks },
+                { status: 200 }
+            );
         }
 
         // Generate week ranges

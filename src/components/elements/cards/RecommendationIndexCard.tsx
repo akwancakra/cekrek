@@ -2,7 +2,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { MonitorChildRecommendation } from "@/types/monitorChildRecommendation.type";
 import { Recommendation } from "@/types/recommendation.type";
-import { truncateString } from "@/utils/converters";
+import { getRecommendationImageUrl, truncateString } from "@/utils/converters";
 import Image from "next/image";
 
 interface RecommendationIndexCardProps {
@@ -18,11 +18,11 @@ export default function RecommendationIndexCard({
         <>
             <div className="my-2 flex gap-2 items-center flex-col group-[.open]:flex-col sm:flex-row md:group-[.open]:flex-row">
                 <div className="w-24 bg-gray-300 rounded-lg overflow-hidden">
-                    <AspectRatio ratio={1 / 1} className="bg-muted">
+                    <AspectRatio ratio={1 / 1} className="bg-gray-200">
                         <Image
-                            src={`/static/images/${
-                                recommendation.icon || "default.jpg"
-                            }`}
+                            src={getRecommendationImageUrl({
+                                image: recommendation?.icon,
+                            })}
                             // src={"/static/images/recommendation.png"}
                             alt="Recomendation Image"
                             fill={true}

@@ -123,13 +123,14 @@ export default function ExpertWrapper({
 
     fields.forEach((field) => {
         const value = data[field];
-        const isOption = options.some((option) => option.value === value);
-
-        if (isOption) {
-            initialValues[field] = value;
-        } else {
-            initialValues[field] = "other";
-            initialValues[`${field}_other`] = value || "";
+        if (value) {
+            const isOption = options.some((option) => option.value === value);
+            if (isOption) {
+                initialValues[field] = value;
+            } else {
+                initialValues[field] = "other";
+                initialValues[`${field}_other`] = value;
+            }
         }
     });
 

@@ -77,7 +77,15 @@ export default function RecomendationCard({
                         />
                     </AspectRatio>
                 </div>
-                <p className="font-semibold text-small">Deskripsi</p>
+                <div className="mb-2">
+                    <p className="text-gray-500 text-small dark:text-gray-400">
+                        Aspek
+                    </p>
+                    <p className="text-small">{recommendation?.aspect}</p>
+                </div>
+                <p className="text-gray-500 text-small dark:text-gray-400">
+                    Deskripsi
+                </p>
                 {/* <p className="text-sm">
                     {recommendation?.description || "Tidak ada deskripsi"}
                 </p> */}

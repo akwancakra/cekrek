@@ -313,6 +313,7 @@ export default function AssessmentGetRecommendations({
         });
 
         try {
+            // console.log(finalData);
             toast.promise(submitPromise, {
                 loading: "Mengirim rekomendasi...",
                 success: () => {
@@ -511,13 +512,15 @@ export default function AssessmentGetRecommendations({
                         </>
                     )}
 
-                    {recommendations && recommendations.length === 0 && (
-                        <div>
-                            <p className="text-center text-small">
-                                Tidak ada rekomendasi
-                            </p>
-                        </div>
-                    )}
+                    {!isLoading &&
+                        recommendations.length === 0 &&
+                        newRecommendations.length === 0 && (
+                            <div>
+                                <p className="text-center text-small">
+                                    Tidak ada rekomendasi
+                                </p>
+                            </div>
+                        )}
 
                     {!isLoading &&
                         recommendations &&
@@ -622,6 +625,10 @@ const RecomendationForm = ({
     const [open, setOpen] = useState(false);
     // const [isAdd, setIsAdd] = useState(true);
 
+    const handleReset = () => {
+        formik.resetForm();
+    };
+
     // useEffect(() => {
     //     if (recommendation) {
     //         setIsAdd(false);
@@ -666,6 +673,13 @@ const RecomendationForm = ({
                                 Tambah
                             </Button>
                         </DrawerClose>
+                        <Button
+                            variant="secondary"
+                            onClick={handleReset}
+                            disabled={isSubmit}
+                        >
+                            Reset
+                        </Button>
                         <DrawerClose asChild>
                             <Button
                                 variant="outline"
@@ -694,6 +708,9 @@ const RecomendationFormDesktop = ({
     isSubmit: boolean;
 }) => {
     // const [isAdd, setIsAdd] = useState(true);
+    const handleReset = () => {
+        formik.resetForm();
+    };
 
     // useEffect(() => {
     //     if (recommendation) {
@@ -730,6 +747,13 @@ const RecomendationFormDesktop = ({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
+                        <Button
+                            variant="outline"
+                            onClick={handleReset}
+                            disabled={isSubmit}
+                        >
+                            Reset
+                        </Button>
                         <AlertDialogAction asChild>
                             <Button
                                 variant={"default"}

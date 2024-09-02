@@ -328,7 +328,7 @@ const getRecommendationImageUrl = ({
     localImages?: { label: string; value: string }[];
     image?: any;
 }) => {
-    const totalDefaultImage = 27;
+    // const totalDefaultImage = 27;
     // const defaultImagePrefix = "icon-cekrek (";
     // const defaultImageSuffix = ").png";
 

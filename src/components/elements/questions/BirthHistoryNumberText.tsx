@@ -51,12 +51,7 @@ export default function BirthHistoryNumberText({
     }, [index, getAnswerByIndex]);
 
     useEffect(() => {
-        if (
-            startMonth.trim() !== "" &&
-            endMonth.trim() !== "" &&
-            startMonth !== "0" &&
-            endMonth !== "0"
-        ) {
+        if (startMonth.trim() !== "" && endMonth.trim() !== "") {
             handleSave();
             setShowButtons(true);
             showNext();

@@ -250,7 +250,7 @@ export async function POST(req: NextRequest) {
                         frequency: recommendation.frequency,
                         risk_category: recommendation.risk_category || null,
                         is_main: false,
-                        teacher_id: parseInt(recommendation.teacher_id) || null,
+                        teacher_id: parseInt(teacher_id) || null,
                     },
                 });
 

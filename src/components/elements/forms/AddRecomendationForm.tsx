@@ -156,6 +156,30 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                         />
                     </div>
                     <div>
+                        <label className="form-control w-full">
+                            <div className="label ps-0">
+                                <span className="label-text">
+                                    Aspek{" "}
+                                    {formik.errors.aspect && (
+                                        <span className="text-red-500 text-xs italic">
+                                            *wajib diisi
+                                        </span>
+                                    )}
+                                </span>
+                            </div>
+                            <Field
+                                {...formik.getFieldProps("aspect")}
+                                placeholder="Melatih Gerak..."
+                                className="input input-bordered px-3 py-2 text-sm h-fit min-h-fit w-full"
+                            />
+                        </label>
+                        <ErrorMessage
+                            name="aspect"
+                            component="div"
+                            className="text-small text-red-500"
+                        />
+                    </div>
+                    <div>
                         <div className="label">
                             <span className="label-text">
                                 Deskripsi{" "}
@@ -179,30 +203,6 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                         />
                         <ErrorMessage
                             name="description"
-                            component="div"
-                            className="text-small text-red-500"
-                        />
-                    </div>
-                    <div>
-                        <label className="form-control w-full">
-                            <div className="label ps-0">
-                                <span className="label-text">
-                                    Aspek{" "}
-                                    {formik.errors.aspect && (
-                                        <span className="text-red-500 text-xs italic">
-                                            *wajib diisi
-                                        </span>
-                                    )}
-                                </span>
-                            </div>
-                            <Field
-                                {...formik.getFieldProps("aspect")}
-                                placeholder="2 kali sehari..."
-                                className="input input-bordered px-3 py-2 text-sm h-fit min-h-fit w-full"
-                            />
-                        </label>
-                        <ErrorMessage
-                            name="aspect"
                             component="div"
                             className="text-small text-red-500"
                         />
@@ -245,7 +245,10 @@ export const AddRecomendationForm = ({ formik, assessmentFails }: Props) => {
                         <Select
                             value={formik.values.risk_category}
                             onValueChange={(value) =>
-                                formik.setFieldValue("risk_category", value)
+                                formik.setFieldValue(
+                                    "risk_category",
+                                    value.toLowerCase()
+                                )
                             }
                         >
                             <SelectTrigger

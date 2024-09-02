@@ -124,12 +124,17 @@ export default function RecomendationStudent({}) {
                     </p>
                     <p className="text-header">{student?.full_name || "N/A"}</p>
                     <Badge
-                        variant={"default"}
-                        className={`${
-                            (student?.risk_category &&
-                                getVariant(student.risk_category)) ||
-                            "bg-primary hover:bg-primary-foreground"
-                        }`}
+                        variant={
+                            student?.risk_category === null
+                                ? "secondary"
+                                : student?.risk_category == "rendah"
+                                ? "default"
+                                : student?.risk_category == "sedang"
+                                ? "warning"
+                                : student?.risk_category == "tinggi"
+                                ? "destructive"
+                                : "default"
+                        }
                     >
                         Tingkat {student?.risk_category || "N/A"}
                     </Badge>

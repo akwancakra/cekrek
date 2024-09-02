@@ -81,49 +81,53 @@ Berikan beberapa rekomendasi aktivitas dalam format berikut:
     description: string,
     frequency: string,
     icon: string,
+    risk_category: string,
 },{
     aspect: string,
     title: string,
     description: string,
     frequency: string,
     icon: string,
+    risk_category: string,
 },{
     aspect: string,
     title: string,
     description: string,
     frequency: string,
     icon: string,
+    risk_category: string,
 }]
 
 Catatan:
-Anda dapat menggunakan tag html pada description untuk rekomendasi, untuk aspect itu maksimal 2 kata contohnya "Melatih Kognitif", "Motorik Halus". Untuk icon anda dapat memilih icon yang sesuai, berikut daftarnya:
-- berekspresi-sesuai-arahan.png
-- bermain-bowling.png
-- bermain-di-tempat-sempit.png
-- bermain-keseimbangan-dengan-satu-kaki.png
-- bermain-keseimbangan.png
-- bermain-lompat-tali.png
-- berpura-pura-bermain-dengan-boneka.png
-- bertanya-tentang-mobil.png
-- ban-bergerak.png
-- memanggil-dan-gestur.png
-- memberikan-pernyataan-jalan-ramai.png
-- menangkap-bola.png
-- menanyakan-ingin-pergi-atau-tetap.png
-- menatap-mata-afirmasi.png
-- menatap-mata.png
-- menatap-tangan-orang-tua.png
-- menunjuk-boneka.png
-- menunjuk-untuk-melihat-barang.png
-- menunjuk-untuk-melihat-sesuatu.png
-- menyesuaikan-boneka-dengan-gambar.png
-- menyesuaikan-mobil-dengan-gambar.png
-- menyodorkan-mobil.png
-- menyuruh-membuka-sepatu.png
-- menyusun-kubus.png
-- menyusun-lego.png
-- menyusun-puzzle.png
-- tidak-boleh-melakukan-suatu-hal.png
+1. Pastikan untuk mengisi risk_category dengan nilai "${risk_category}" untuk setiap rekomendasi dan lowercase.
+2. Anda dapat menggunakan tag html pada description untuk rekomendasi, untuk aspect itu maksimal 2 kata contohnya "Melatih Kognitif", "Motorik Halus". Untuk icon anda dapat memilih icon yang sesuai, berikut daftarnya:
+    - berekspresi-sesuai-arahan.png
+    - bermain-bowling.png
+    - bermain-di-tempat-sempit.png
+    - bermain-keseimbangan-dengan-satu-kaki.png
+    - bermain-keseimbangan.png
+    - bermain-lompat-tali.png
+    - berpura-pura-bermain-dengan-boneka.png
+    - bertanya-tentang-mobil.png
+    - ban-bergerak.png
+    - memanggil-dan-gestur.png
+    - memberikan-pernyataan-jalan-ramai.png
+    - menangkap-bola.png
+    - menanyakan-ingin-pergi-atau-tetap.png
+    - menatap-mata-afirmasi.png
+    - menatap-mata.png
+    - menatap-tangan-orang-tua.png
+    - menunjuk-boneka.png
+    - menunjuk-untuk-melihat-barang.png
+    - menunjuk-untuk-melihat-sesuatu.png
+    - menyesuaikan-boneka-dengan-gambar.png
+    - menyesuaikan-mobil-dengan-gambar.png
+    - menyodorkan-mobil.png
+    - menyuruh-membuka-sepatu.png
+    - menyusun-kubus.png
+    - menyusun-lego.png
+    - menyusun-puzzle.png
+    - tidak-boleh-melakukan-suatu-hal.png
     `;
 };
 
