@@ -1,10 +1,11 @@
 "use client";
 
+import Footer from "@/components/layouts/Footer";
+import Header from "@/components/layouts/Header";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Button } from "@/components/ui/button";
 import { getUrlFromRole } from "@/utils/converters";
 import useProfile from "@/utils/useProfile";
-import { signOut } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -13,134 +14,7 @@ export default function Home() {
 
     return (
         <>
-            <header>
-                <nav className="z-10 w-full absolute">
-                    <div className="max-w-7xl mx-auto px-6 md:px-12 xl:px-6">
-                        <div className="flex flex-wrap items-center justify-between py-2 gap-6 md:py-4 md:gap-0 relative">
-                            <input
-                                aria-hidden="true"
-                                type="checkbox"
-                                name="toggle_nav"
-                                id="toggle_nav"
-                                className="hidden peer"
-                            />
-                            <div className="relative z-20 w-full flex justify-between lg:w-max md:px-0">
-                                <Link
-                                    href={"/"}
-                                    aria-label="logo"
-                                    className="flex space-x-2 items-center"
-                                >
-                                    <Image
-                                        src={"/static/images/logo-cekrek.png"}
-                                        alt="Logo CekRek"
-                                        width={35}
-                                        height={35}
-                                    />
-                                    <span className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        CekRek
-                                    </span>
-                                </Link>
-                                <div className="relative flex items-center lg:hidden max-h-10">
-                                    <label
-                                        role="button"
-                                        htmlFor="toggle_nav"
-                                        aria-label="humburger"
-                                        id="hamburger"
-                                        className="relative  p-6 -mr-6"
-                                    >
-                                        <div
-                                            aria-hidden="true"
-                                            id="line"
-                                            className="m-auto h-0.5 w-5 rounded bg-sky-900 dark:bg-gray-300 transition duration-300"
-                                        />
-                                        <div
-                                            aria-hidden="true"
-                                            id="line2"
-                                            className="m-auto mt-2 h-0.5 w-5 rounded bg-sky-900 dark:bg-gray-300 transition duration-300"
-                                        />
-                                    </label>
-                                </div>
-                            </div>
-                            <div
-                                aria-hidden="true"
-                                className="fixed z-10 inset-0 h-screen w-screen bg-white/70 backdrop-blur-2xl origin-bottom scale-y-0 transition duration-500 peer-checked:origin-top peer-checked:scale-y-100 lg:hidden dark:bg-gray-900/70"
-                            />
-                            <div
-                                className="flex-col z-20 flex-wrap gap-6 p-8 rounded-xl border border-gray-100 bg-white shadow-2xl shadow-gray-600/10 justify-end w-full invisible opacity-0 translate-y-1  absolute top-full left-0 transition-all duration-300 scale-95 origin-top 
-                      lg:relative lg:scale-100 lg:peer-checked:translate-y-0 lg:translate-y-0 lg:flex lg:flex-row lg:items-center lg:gap-0 lg:p-0 lg:bg-transparent lg:w-7/12 lg:visible lg:opacity-100 lg:border-none
-                      peer-checked:scale-100 peer-checked:opacity-100 peer-checked:visible lg:shadow-none 
-                      dark:shadow-none dark:bg-neutral-800/40 dark:border-neutral-700 dark:lg:bg-transparent"
-                            >
-                                <div className="text-gray-600 dark:text-gray-300 lg:pr-4 lg:w-auto w-full lg:pt-0">
-                                    <ul className="tracking-wide font-medium lg:text-sm flex-col flex lg:flex-row gap-6 lg:gap-0">
-                                        {profile?.role && (
-                                            <li>
-                                                <Link
-                                                    href={getUrlFromRole(
-                                                        profile.role
-                                                    )}
-                                                    className="block md:px-4 transition hover:text-primary"
-                                                >
-                                                    <span>Dasbor</span>
-                                                </Link>
-                                            </li>
-                                        )}
-                                        <li>
-                                            <Link
-                                                href="#features"
-                                                className="block md:px-4 transition hover:text-primary"
-                                            >
-                                                <span>Fitur</span>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link
-                                                href="#solution"
-                                                className="block md:px-4 transition hover:text-primary"
-                                            >
-                                                <span>Solusi</span>
-                                            </Link>
-                                        </li>
-                                        <li>
-                                            <Link
-                                                href="#testimonials"
-                                                className="block md:px-4 transition hover:text-primary"
-                                            >
-                                                <span>Testimoni</span>
-                                            </Link>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <div className="mt-6 lg:mt-0">
-                                    {profile ? (
-                                        <Button
-                                            variant={"default"}
-                                            className="rounded-full w-full sm:w-fit"
-                                            onClick={() => signOut()}
-                                        >
-                                            <span className="relative text-sm font-semibold text-white">
-                                                Keluar
-                                            </span>
-                                        </Button>
-                                    ) : (
-                                        <Button
-                                            variant={"default"}
-                                            asChild
-                                            className="rounded-full w-full sm:w-fit"
-                                        >
-                                            <Link href={"/login"}>
-                                                <span className="relative text-sm font-semibold text-white">
-                                                    Masuk
-                                                </span>
-                                            </Link>
-                                        </Button>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </nav>
-            </header>
+            <Header />
 
             <div className="relative" id="home">
                 <div
@@ -840,67 +714,7 @@ export default function Home() {
                 </div>
             </div>
 
-            <footer className="footer footer-center p-10 text-base-content rounded">
-                <nav className="grid grid-flow-col gap-4">
-                    <Link
-                        href="#testimonials"
-                        className="link link-hover dark:text-neutral-300"
-                    >
-                        Tentang Kami
-                    </Link>
-                    <Link
-                        href="https://wa.me/+6285960224084"
-                        target="_blank"
-                        className="link link-hover dark:text-neutral-300"
-                    >
-                        Kontak
-                    </Link>
-                    {/* <Link
-                        href="/terms"
-                        className="link link-hover dark:text-neutral-300"
-                    >
-                        Syarat & Ketentuan
-                    </Link> */}
-                </nav>
-                <nav>
-                    <div className="grid grid-flow-col gap-4">
-                        <Link
-                            href={"https://instagram.com/cekrek_assist"}
-                            className="dark:text-neutral-300"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={24}
-                                height={24}
-                                viewBox="0 0 24 24"
-                                className="fill-current"
-                            >
-                                <path d="M20.947 8.305a6.53 6.53 0 0 0-.419-2.216 4.61 4.61 0 0 0-2.633-2.633 6.606 6.606 0 0 0-2.186-.42c-.962-.043-1.267-.055-3.709-.055s-2.755 0-3.71.055a6.606 6.606 0 0 0-2.185.42 4.607 4.607 0 0 0-2.633 2.633 6.554 6.554 0 0 0-.419 2.185c-.043.963-.056 1.268-.056 3.71s0 2.754.056 3.71c.015.748.156 1.486.419 2.187a4.61 4.61 0 0 0 2.634 2.632 6.584 6.584 0 0 0 2.185.45c.963.043 1.268.056 3.71.056s2.755 0 3.71-.056a6.59 6.59 0 0 0 2.186-.419 4.615 4.615 0 0 0 2.633-2.633c.263-.7.404-1.438.419-2.187.043-.962.056-1.267.056-3.71-.002-2.442-.002-2.752-.058-3.709zm-8.953 8.297c-2.554 0-4.623-2.069-4.623-4.623s2.069-4.623 4.623-4.623a4.623 4.623 0 0 1 0 9.246zm4.807-8.339a1.077 1.077 0 0 1-1.078-1.078 1.077 1.077 0 1 1 2.155 0c0 .596-.482 1.078-1.077 1.078z" />
-                                <circle cx="11.994" cy="11.979" r="3.003" />
-                            </svg>
-                        </Link>
-                        <Link
-                            href={"mailto:cekrek_assist@gmail.com"}
-                            className="dark:text-neutral-300"
-                        >
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width={24}
-                                height={24}
-                                viewBox="0 0 24 24"
-                                className="fill-current"
-                            >
-                                <path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4.7-8 5.334L4 8.7V6.297l8 5.333 8-5.333V8.7z" />
-                            </svg>
-                        </Link>
-                    </div>
-                </nav>
-                <aside>
-                    <p className="dark:text-neutral-400">
-                        Copyright © 2024 - All right reserved by Helov Team
-                    </p>
-                </aside>
-            </footer>
+            <Footer />
         </>
     );
 }
